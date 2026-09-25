@@ -126,7 +126,7 @@ export function FormField({
     <div>
       <label
         htmlFor={htmlFor}
-        className="block text-sm font-semibold text-foreground"
+        className="block font-heading text-sm font-bold tracking-tight text-foreground"
       >
         {label}
       </label>

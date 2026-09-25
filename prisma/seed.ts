@@ -16,6 +16,10 @@ const email = process.env.ADMIN_EMAIL ?? "admin@docavia.com";
 const password = process.env.ADMIN_PASSWORD ?? "docavia2026";
 const name = process.env.ADMIN_NAME ?? "Docavia Admin";
 
+/** View-only staff account — can browse every admin page, can never edit. */
+const DEMO_EMAIL = process.env.DEMO_EMAIL ?? "demo@docavia.com";
+const DEMO_PASSWORD = process.env.DEMO_PASSWORD ?? "demo2026";
+
 /* ---------------------------- article → HTML ------------------------------ */
 
 function blocksToHtml(blocks: ArticleBlock[]): string {
@@ -110,14 +114,28 @@ async function seedAdmin() {
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
     console.log(`Admin already exists: ${email}`);
-    return;
+  } else {
+    await auth.api.signUpEmail({ body: { name, email, password } });
+    await prisma.user.update({
+      where: { email },
+      data: { role: "admin", emailVerified: true },
+    });
+    console.log(`Created admin user: ${email} (password from ADMIN_PASSWORD or 'docavia2026')`);
   }
-  await auth.api.signUpEmail({ body: { name, email, password } });
-  await prisma.user.update({
-    where: { email },
-    data: { role: "admin", emailVerified: true },
-  });
-  console.log(`Created admin user: ${email} (password from ADMIN_PASSWORD or 'docavia2026')`);
+
+  const demoExisting = await prisma.user.findUnique({ where: { email: DEMO_EMAIL } });
+  if (demoExisting) {
+    console.log(`Demo user already exists: ${DEMO_EMAIL}`);
+  } else {
+    await auth.api.signUpEmail({
+      body: { name: "Demo Viewer", email: DEMO_EMAIL, password: DEMO_PASSWORD },
+    });
+    await prisma.user.update({
+      where: { email: DEMO_EMAIL },
+      data: { role: "demo", emailVerified: true },
+    });
+    console.log(`Created demo (read-only) user: ${DEMO_EMAIL} (password from DEMO_PASSWORD or 'demo2026')`);
+  }
 }
 
 async function seedEntities() {

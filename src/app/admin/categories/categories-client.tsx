@@ -20,7 +20,13 @@ type FormState = { id: string | null; name: string; slug: string; description: s
 
 const EMPTY: FormState = { id: null, name: "", slug: "", description: "" };
 
-export function CategoriesClient({ rows }: { rows: Row[] }) {
+export function CategoriesClient({
+  rows,
+  readOnly = false,
+}: {
+  rows: Row[];
+  readOnly?: boolean;
+}) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [formOpen, setFormOpen] = useState(false);
@@ -81,14 +87,16 @@ export function CategoriesClient({ rows }: { rows: Row[] }) {
         title="Blog Categories"
         description="Create and manage the categories posts are filed under. Posts in a deleted category become uncategorized."
       >
-        <button
-          type="button"
-          onClick={openCreate}
-          className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_-14px_rgb(47_118_109/0.6)] transition-all duration-200 hover:bg-primary-dark"
-        >
-          <Plus className="size-4" aria-hidden="true" />
-          New Category
-        </button>
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={openCreate}
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_-14px_rgb(47_118_109/0.6)] transition-all duration-200 hover:bg-primary-dark"
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            New Category
+          </button>
+        )}
       </PageToolbar>
 
       <DataTable headers={["Category", "Slug", "Posts", ""]}>
@@ -122,7 +130,9 @@ export function CategoriesClient({ rows }: { rows: Row[] }) {
                 </span>
               </td>
               <td className="px-5 py-4">
-                <div className="flex justify-end gap-1.5 opacity-60 transition-opacity duration-200 group-hover:opacity-100">
+                <div className={"flex justify-end gap-1.5" + (!readOnly ? " opacity-60 transition-opacity duration-200 group-hover:opacity-100" : "")}>
+                {!readOnly && (
+                  <>
                   <button
                     type="button"
                     onClick={() => openEdit(row)}
@@ -139,6 +149,8 @@ export function CategoriesClient({ rows }: { rows: Row[] }) {
                   >
                     <Trash2 className="size-4" aria-hidden="true" />
                   </button>
+                  </>
+                )}
                 </div>
               </td>
             </tr>

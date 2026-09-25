@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { hashPassword } from "better-auth/crypto";
 import { auth } from "@/lib/auth";
-import { requireAdmin } from "@/lib/auth-server";
+import { requireEditor } from "@/lib/auth-server";
 import { prisma } from "@/lib/prisma";
 
 export type ActionResult = { ok: boolean; message: string };
@@ -36,7 +36,7 @@ export async function saveDoctor(input: {
   order: number;
 }): Promise<ActionResult> {
   try {
-    await requireAdmin();
+    await requireEditor();
     const name = str(input.name);
     const specialty = str(input.specialty);
     const bio = str(input.bio);
@@ -64,7 +64,7 @@ export async function saveDoctor(input: {
 
 export async function deleteDoctor(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin();
+    await requireEditor();
     await prisma.doctor.delete({ where: { id } });
     revalidateAll();
     return { ok: true, message: "Doctor removed." };
@@ -85,7 +85,7 @@ export async function saveTestimonial(input: {
   order: number;
 }): Promise<ActionResult> {
   try {
-    await requireAdmin();
+    await requireEditor();
     const quote = str(input.quote);
     const name = str(input.name);
     const role = str(input.role);
@@ -118,7 +118,7 @@ export async function saveTestimonial(input: {
 
 export async function deleteTestimonial(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin();
+    await requireEditor();
     await prisma.testimonial.delete({ where: { id } });
     revalidateAll();
     return { ok: true, message: "Testimonial removed." };
@@ -137,7 +137,7 @@ export async function createUser(input: {
   role: string;
 }): Promise<ActionResult> {
   try {
-    await requireAdmin();
+    await requireEditor();
     const name = str(input.name);
     const email = str(input.email).toLowerCase();
     const password = typeof input.password === "string" ? input.password : "";
@@ -180,15 +180,20 @@ export async function updateUser(input: {
   id: string;
   name: string;
   role: string;
+  image?: string;
   password?: string;
 }): Promise<ActionResult> {
   try {
-    const session = await requireAdmin();
+    const session = await requireEditor();
     const name = str(input.name);
     const role = str(input.role) || "admin";
     if (!name) return { ok: false, message: "Name is required." };
 
-    await prisma.user.update({ where: { id: input.id }, data: { name, role } });
+    const image = typeof input.image === "string" ? input.image.trim() : "";
+    await prisma.user.update({
+      where: { id: input.id },
+      data: { name, role, image: image || null },
+    });
 
     const password =
       typeof input.password === "string" ? input.password.trim() : "";
@@ -224,7 +229,7 @@ export async function deleteUser(input: {
   id: string;
 }): Promise<ActionResult> {
   try {
-    const session = await requireAdmin();
+    const session = await requireEditor();
     if (session.user.id === input.id) {
       return { ok: false, message: "You cannot delete your own account." };
     }
@@ -246,7 +251,7 @@ export async function saveCategory(input: {
   description?: string;
 }): Promise<ActionResult> {
   try {
-    await requireAdmin();
+    await requireEditor();
     const name = str(input.name);
     if (!name) return { ok: false, message: "Category name is required." };
     const slug = str(input.slug) ? slugify(str(input.slug)!) : slugify(name);
@@ -278,7 +283,7 @@ export async function saveCategory(input: {
 
 export async function deleteCategory(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin();
+    await requireEditor();
     await prisma.blogCategory.delete({ where: { id } });
     revalidateAll();
     return { ok: true, message: "Category deleted. Its posts are now uncategorized." };
@@ -306,7 +311,7 @@ export async function savePost(input: {
   published: boolean;
 }): Promise<ActionResult & { slug?: string }> {
   try {
-    await requireAdmin();
+    await requireEditor();
     const title = str(input.title);
     const excerpt = str(input.excerpt);
     const authorName = str(input.authorName);
@@ -379,7 +384,7 @@ export async function setPostPublished(input: {
   published: boolean;
 }): Promise<ActionResult> {
   try {
-    await requireAdmin();
+    await requireEditor();
     await prisma.blogPost.update({
       where: { id: input.id },
       data: {
@@ -400,7 +405,7 @@ export async function setPostPublished(input: {
 
 export async function deletePost(id: string): Promise<ActionResult> {
   try {
-    await requireAdmin();
+    await requireEditor();
     await prisma.blogPost.delete({ where: { id } });
     revalidateAll();
     return { ok: true, message: "Post deleted." };

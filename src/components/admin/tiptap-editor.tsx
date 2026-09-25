@@ -179,13 +179,16 @@ function Toolbar({ editor }: { editor: Editor }) {
  */
 export function TiptapEditor({
   initialHtml,
+  editable = true,
   onChange,
 }: {
   initialHtml: string;
+  editable?: boolean;
   onChange: (html: string, json: object) => void;
 }) {
   const editor = useEditor({
     immediatelyRender: false,
+    editable,
     extensions: [
       StarterKit.configure({
         heading: { levels: [2, 3] },

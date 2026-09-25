@@ -26,7 +26,8 @@ export function SelectField({
   placeholder,
   value,
   onChange,
-  hasError,
+  hasError = false,
+  disabled = false,
 }: {
   id: string;
   label: string;
@@ -34,7 +35,8 @@ export function SelectField({
   placeholder: string;
   value: string;
   onChange: (value: string) => void;
-  hasError: boolean;
+  hasError?: boolean;
+  disabled?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [highlighted, setHighlighted] = useState(-1);
@@ -105,14 +107,17 @@ export function SelectField({
           open && highlighted >= 0 ? `${id}-option-${highlighted}` : undefined
         }
         onClick={() => {
+          if (disabled) return;
           setOpen((o) => !o);
           setHighlighted(options.findIndex((o) => o.value === value));
         }}
         onKeyDown={onKeyDown}
+        disabled={disabled}
         className={cn(
           fieldClass,
           "flex items-center justify-between text-left",
-          hasError && "border-red-400 focus:border-red-500"
+          hasError && "border-red-400 focus:border-red-500",
+          disabled && "cursor-not-allowed opacity-60 hover:border-border"
         )}
       >
         <span className={selected ? "" : "text-muted/70"}>

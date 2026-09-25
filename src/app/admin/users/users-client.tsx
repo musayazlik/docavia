@@ -1,16 +1,20 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Loader2, Pencil, Plus, ShieldCheck, Trash2, UserRound } from "lucide-react";
 import { Dialog, FormField, inputClasses } from "@/components/admin/ui/dialog";
+import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { DataTable, PageToolbar, TableEmptyState } from "@/components/admin/ui/table";
+import { SelectField } from "@/components/ui/select-field";
 import { createUser, deleteUser, updateUser } from "@/app/admin/entity-actions";
 
 type Row = {
   id: string;
   name: string;
   email: string;
+  image: string;
   role: string | null;
   emailVerified: boolean;
   createdAt: Date;
@@ -20,6 +24,7 @@ type FormState = {
   id: string | null;
   name: string;
   email: string;
+  image: string;
   password: string;
   role: string;
 };
@@ -28,6 +33,7 @@ const EMPTY: FormState = {
   id: null,
   name: "",
   email: "",
+  image: "",
   password: "",
   role: "admin",
 };
@@ -45,9 +51,13 @@ function initials(name: string, email: string) {
 export function UsersClient({
   rows,
   currentUserId,
+  uploadsEnabled,
+  readOnly = false,
 }: {
   rows: Row[];
   currentUserId: string;
+  uploadsEnabled: boolean;
+  readOnly?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -68,6 +78,7 @@ export function UsersClient({
       id: row.id,
       name: row.name,
       email: row.email,
+      image: row.image,
       password: "",
       role: row.role ?? "admin",
     });
@@ -84,6 +95,7 @@ export function UsersClient({
             id: form.id,
             name: form.name,
             role: form.role,
+            image: form.image,
             password: form.password,
           })
         : await createUser({
@@ -122,14 +134,16 @@ export function UsersClient({
         title="Staff Users"
         description="Accounts with access to this admin panel. Users sign in with email and password on /login."
       >
-        <button
-          type="button"
-          onClick={openCreate}
-          className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_-14px_rgb(47_118_109/0.6)] transition-all duration-200 hover:bg-primary-dark"
-        >
-          <Plus className="size-4" aria-hidden="true" />
-          Add User
-        </button>
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={openCreate}
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_-14px_rgb(47_118_109/0.6)] transition-all duration-200 hover:bg-primary-dark"
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            Add User
+          </button>
+        )}
       </PageToolbar>
 
       {notice && (
@@ -150,12 +164,22 @@ export function UsersClient({
             <tr key={row.id} className="group transition-colors duration-200 hover:bg-secondary/40">
               <td className="px-5 py-4">
                 <div className="flex items-center gap-3.5">
-                  <span
-                    aria-hidden="true"
-                    className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-pine text-xs font-bold text-white"
-                  >
-                    {initials(row.name, row.email)}
-                  </span>
+                  {row.image ? (
+                    <Image
+                      src={row.image}
+                      alt={`Profile photo of ${row.name}`}
+                      width={44}
+                      height={44}
+                      className="size-11 shrink-0 rounded-xl object-cover"
+                    />
+                  ) : (
+                    <span
+                      aria-hidden="true"
+                      className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-pine text-xs font-bold text-white"
+                    >
+                      {initials(row.name, row.email)}
+                    </span>
+                  )}
                   <div className="min-w-0">
                     <p className="font-heading flex items-center gap-2 text-[0.9375rem] font-bold text-foreground">
                       {row.name}
@@ -192,7 +216,9 @@ export function UsersClient({
                 }).format(row.createdAt)}
               </td>
               <td className="px-5 py-4">
-                <div className="flex justify-end gap-1.5 opacity-60 transition-opacity duration-200 group-hover:opacity-100">
+                <div className={"flex justify-end gap-1.5" + (!readOnly ? " opacity-60 transition-opacity duration-200 group-hover:opacity-100" : "")}>
+                {!readOnly && (
+                  <>
                   <button
                     type="button"
                     onClick={() => openEdit(row)}
@@ -215,6 +241,8 @@ export function UsersClient({
                   >
                     <Trash2 className="size-4" aria-hidden="true" />
                   </button>
+                  </>
+                )}
                 </div>
               </td>
             </tr>
@@ -233,6 +261,13 @@ export function UsersClient({
         }
       >
         <div className="space-y-5">
+          <ImageUploadField
+            label="Profile photo"
+            value={form.image}
+            canUpload={uploadsEnabled}
+            onChange={(image) => setForm({ ...form, image })}
+            aspect="square"
+          />
           <div className="grid gap-5 sm:grid-cols-2">
             <FormField label="Name" htmlFor="user-name">
               <input
@@ -243,17 +278,18 @@ export function UsersClient({
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
             </FormField>
-            <FormField label="Role" htmlFor="user-role">
-              <select
-                id="user-role"
-                className={inputClasses}
-                value={form.role}
-                onChange={(e) => setForm({ ...form, role: e.target.value })}
-              >
-                <option value="admin">Admin</option>
-                <option value="editor">Editor</option>
-              </select>
-            </FormField>
+            <SelectField
+              id="user-role"
+              label="Role"
+              placeholder="Select a role"
+              options={[
+                { value: "admin", label: "Admin — full access" },
+                { value: "editor", label: "Editor — can edit content" },
+                { value: "demo", label: "Demo — view only, cannot save" },
+              ]}
+              value={form.role}
+              onChange={(role) => setForm({ ...form, role })}
+            />
           </div>
 
           {!form.id && (

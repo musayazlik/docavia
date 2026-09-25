@@ -33,9 +33,11 @@ const EMPTY: FormState = {
 export function TestimonialsClient({
   rows,
   uploadsEnabled,
+  readOnly = false,
 }: {
   rows: Row[];
   uploadsEnabled: boolean;
+  readOnly?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -101,14 +103,16 @@ export function TestimonialsClient({
         title="Testimonials"
         description="Patient quotes shown in the homepage carousel and the doctors page. Lower Order numbers appear first."
       >
-        <button
-          type="button"
-          onClick={openCreate}
-          className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_-14px_rgb(47_118_109/0.6)] transition-all duration-200 hover:bg-primary-dark"
-        >
-          <Plus className="size-4" aria-hidden="true" />
-          Add Testimonial
-        </button>
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={openCreate}
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_-14px_rgb(47_118_109/0.6)] transition-all duration-200 hover:bg-primary-dark"
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            Add Testimonial
+          </button>
+        )}
       </PageToolbar>
 
       <DataTable headers={["Patient", "Role", "Quote", "Order", ""]}>
@@ -142,7 +146,9 @@ export function TestimonialsClient({
               </td>
               <td className="px-5 py-4 text-sm text-muted">{row.order}</td>
               <td className="px-5 py-4">
-                <div className="flex justify-end gap-1.5 opacity-60 transition-opacity duration-200 group-hover:opacity-100">
+                <div className={"flex justify-end gap-1.5" + (!readOnly ? " opacity-60 transition-opacity duration-200 group-hover:opacity-100" : "")}>
+                {!readOnly && (
+                  <>
                   <button
                     type="button"
                     onClick={() => openEdit(row)}
@@ -159,6 +165,8 @@ export function TestimonialsClient({
                   >
                     <Trash2 className="size-4" aria-hidden="true" />
                   </button>
+                  </>
+                )}
                 </div>
               </td>
             </tr>

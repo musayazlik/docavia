@@ -1,20 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { requireAdmin, requireEditor } from "@/lib/auth-server";
 import { prisma } from "@/lib/prisma";
 import { getGroup } from "@/lib/content/registry";
 
 export type ActionResult = { ok: boolean; message: string };
-
-async function requireAdmin() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) {
-    throw new Error("Unauthorized");
-  }
-  return session;
-}
 
 function revalidateAll() {
   // Content groups render on the homepage, inner pages and the admin area.
@@ -27,7 +18,7 @@ export async function saveContentGroup(
   valueJson: string,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin();
+    const session = await requireEditor();
     const group = getGroup(groupKey);
     if (!group) {
       return { ok: false, message: "Unknown content group." };
@@ -43,7 +34,6 @@ export async function saveContentGroup(
       return { ok: false, message: "Invalid content payload." };
     }
 
-    const session = await requireAdmin();
     const savedBy = session.user.email ?? session.user.name;
 
     await prisma.siteContent.upsert({
@@ -64,7 +54,7 @@ export async function resetContentGroup(
   groupKey: string,
 ): Promise<ActionResult> {
   try {
-    await requireAdmin();
+    await requireEditor();
     const group = getGroup(groupKey);
     if (!group) {
       return { ok: false, message: "Unknown content group." };

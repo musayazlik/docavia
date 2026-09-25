@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
@@ -186,7 +187,12 @@ export function AdminShell({
   user,
   children,
 }: {
-  user: { name: string; email: string };
+  user: {
+    name: string;
+    email: string;
+    image?: string | null;
+    role?: string | null;
+  };
   children: ReactNode;
 }) {
   const pathname = usePathname();
@@ -195,6 +201,7 @@ export function AdminShell({
   const [pendingSignOut, setPendingSignOut] = useState(false);
   const title = deriveTitle(pathname);
   const isDashboard = pathname === "/admin";
+  const readOnly = user.role === "demo";
 
   useEffect(() => {
     if (!drawerOpen) return;
@@ -290,9 +297,19 @@ export function AdminShell({
               <p className="text-[0.6875rem] font-bold tracking-[0.14em] text-muted uppercase">
                 Docavia Admin
               </p>
-              <h1 className="font-heading truncate text-[1.05rem] leading-tight font-bold tracking-tight text-foreground">
-                {title}
-              </h1>
+              <div className="flex items-center gap-2.5">
+                <h1 className="font-heading truncate text-[1.05rem] leading-tight font-bold tracking-tight text-foreground">
+                  {title}
+                </h1>
+                {readOnly && (
+                  <span
+                    title="Demo accounts can view every page but cannot save changes."
+                    className="hidden rounded-full bg-[#f2b01e]/15 px-2.5 py-0.5 text-[0.625rem] font-bold tracking-wide text-[#8a6200] uppercase sm:inline"
+                  >
+                    Demo · Read-only
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
@@ -315,12 +332,22 @@ export function AdminShell({
                   {user.email}
                 </p>
               </div>
-              <span
-                aria-hidden="true"
-                className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-xs font-bold text-white"
-              >
-                {initials}
-              </span>
+              {user.image ? (
+                <Image
+                  src={user.image}
+                  alt=""
+                  width={36}
+                  height={36}
+                  className="size-9 shrink-0 rounded-lg object-cover"
+                />
+              ) : (
+                <span
+                  aria-hidden="true"
+                  className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-xs font-bold text-white"
+                >
+                  {initials}
+                </span>
+              )}
               <button
                 type="button"
                 onClick={signOut}

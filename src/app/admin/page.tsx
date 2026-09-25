@@ -17,6 +17,13 @@ import { contentGroups } from "@/lib/content/registry";
 import { getPublishedPosts } from "@/lib/entities";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth-server";
+import {
+  AreaChart,
+  BarList,
+  CHART_COLORS,
+  DonutChart,
+  RadialGauge,
+} from "@/components/admin/charts";
 
 function greeting() {
   const hour = new Date().getHours();
@@ -35,16 +42,68 @@ function formatDate(date: Date) {
 }
 
 export default async function AdminDashboard() {
-  const [session, , meta, doctors, publishedPosts] = await Promise.all([
-    getSession(),
-    getContent(),
-    getOverrideMeta(),
-    prisma.doctor.count().catch(() => 0),
-    getPublishedPosts().then((posts) => posts?.length ?? 0).catch(() => 0),
-  ]);
+  const [session, , meta, doctors, publishedPosts, postRows] =
+    await Promise.all([
+      getSession(),
+      getContent(),
+      getOverrideMeta(),
+      prisma.doctor.count().catch(() => 0),
+      getPublishedPosts().then((posts) => posts?.length ?? 0).catch(() => 0),
+      prisma.blogPost
+        .findMany({
+          select: {
+            published: true,
+            publishedAt: true,
+            createdAt: true,
+            category: { select: { name: true } },
+          },
+        })
+        .catch(() => []),
+    ]);
 
   const editedKeys = Object.keys(meta);
   const name = session?.user.name?.split(" ")[0] || "Admin";
+
+  /* --- chart datasets (all plain serializable values) --------------------- */
+
+  // Cumulative published articles over the last six months.
+  const now = new Date();
+  const windowStart = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+  const monthLabels: string[] = [];
+  const monthCounts: number[] = [];
+  for (let i = 5; i >= 0; i--) {
+    const month = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    monthLabels.push(month.toLocaleString("en-US", { month: "short" }));
+    monthCounts.push(0);
+  }
+  let baseline = 0;
+  for (const post of postRows) {
+    if (!post.published) continue;
+    const date = post.publishedAt ?? post.createdAt;
+    if (date < windowStart) {
+      baseline++;
+      continue;
+    }
+    const monthsAgo =
+      (now.getFullYear() - date.getFullYear()) * 12 +
+      (now.getMonth() - date.getMonth());
+    if (monthsAgo <= 5) monthCounts[5 - monthsAgo]!++;
+  }
+  let running = baseline;
+  const cumulative = monthCounts.map((count) => (running += count));
+
+  // Library state + per-category totals.
+  const publishedTotal = postRows.filter((post) => post.published).length;
+  const draftTotal = postRows.length - publishedTotal;
+  const byCategory = [...postRows
+    .reduce((map, post) => {
+      const key = post.category?.name ?? "Uncategorized";
+      map.set(key, (map.get(key) ?? 0) + 1);
+      return map;
+    }, new Map<string, number>())]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([label, value]) => ({ label, value }));
 
   const stats = [
     {
@@ -117,6 +176,101 @@ export default async function AdminDashboard() {
           </div>
         ))}
       </dl>
+
+      {/* Insights */}
+      <section aria-labelledby="insights" className="mt-10">
+        <h2
+          id="insights"
+          className="font-heading text-lg font-bold tracking-tight text-foreground"
+        >
+          At a glance
+        </h2>
+
+        <div className="mt-4 grid gap-6 lg:grid-cols-[1.45fr_1fr]">
+          <div className="rounded-[1.75rem] border border-border bg-white p-7 sm:p-8">
+            <header>
+              <h3 className="font-heading text-[1.05rem] font-bold tracking-tight text-foreground">
+                Publishing rhythm
+              </h3>
+              <p className="mt-1 text-xs text-muted">
+                Cumulative published articles · last six months
+              </p>
+            </header>
+            <div className="mt-6">
+              <AreaChart
+                labels={monthLabels}
+                values={cumulative}
+                noun="article"
+                ariaLabel={`Cumulative published articles per month, currently ${running} in total.`}
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col rounded-[1.75rem] border border-border bg-white p-7 sm:p-8">
+            <header>
+              <h3 className="font-heading text-[1.05rem] font-bold tracking-tight text-foreground">
+                Blog library
+              </h3>
+              <p className="mt-1 text-xs text-muted">Posts by state</p>
+            </header>
+            <div className="mt-6 flex flex-1 items-center">
+              <DonutChart
+                segments={[
+                  {
+                    label: "Published",
+                    value: publishedTotal,
+                    color: CHART_COLORS.primary,
+                  },
+                  {
+                    label: "Drafts",
+                    value: draftTotal,
+                    color: CHART_COLORS.accent,
+                  },
+                ]}
+                centerValue={postRows.length}
+                centerLabel="articles"
+                ariaLabel={`${publishedTotal} published and ${draftTotal} draft articles.`}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          <div className="rounded-[1.75rem] border border-border bg-white p-7 sm:p-8">
+            <header>
+              <h3 className="font-heading text-[1.05rem] font-bold tracking-tight text-foreground">
+                Articles by category
+              </h3>
+              <p className="mt-1 text-xs text-muted">All time, top five</p>
+            </header>
+            <div className="mt-6">
+              <BarList
+                items={byCategory}
+                ariaLabel="Article count per blog category."
+              />
+            </div>
+          </div>
+
+          <div className="rounded-[1.75rem] border border-border bg-white p-7 sm:p-8">
+            <header>
+              <h3 className="font-heading text-[1.05rem] font-bold tracking-tight text-foreground">
+                Content coverage
+              </h3>
+              <p className="mt-1 text-xs text-muted">
+                Sections with custom copy
+              </p>
+            </header>
+            <div className="mt-6">
+              <RadialGauge
+                value={editedKeys.length}
+                total={contentGroups.length}
+                caption="Sections you have published with custom copy. Everything else still shows its original text."
+                ariaLabel={`${editedKeys.length} of ${contentGroups.length} sections customized.`}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Managed entities */}
       <section aria-labelledby="manage" className="mt-10">

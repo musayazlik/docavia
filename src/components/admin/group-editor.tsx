@@ -7,6 +7,7 @@ import {
   ArrowUp,
   Check,
   Loader2,
+  Pencil,
   Plus,
   RotateCcw,
   Trash2,
@@ -20,6 +21,8 @@ import {
 import type { FieldDef, ListDef } from "@/lib/content/registry";
 import { cn } from "@/lib/utils";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
+import { Dialog } from "@/components/admin/ui/dialog";
+import { DataTable, TableEmptyState } from "@/components/admin/ui/table";
 
 type Json = Record<string, unknown>;
 
@@ -63,11 +66,13 @@ function Field({
   def,
   value,
   canUpload,
+  disabled,
   onChange,
 }: {
   def: FieldDef;
   value: unknown;
   canUpload?: boolean;
+  disabled?: boolean;
   onChange: (next: unknown) => void;
 }) {
   if (def.type === "image") {
@@ -108,6 +113,7 @@ function Field({
           rows={def.type === "textarea" ? 4 : 3}
           value={display}
           placeholder={def.placeholder}
+          disabled={disabled}
           onChange={(event) =>
             onChange(
               isStringArray
@@ -115,7 +121,7 @@ function Field({
                 : event.target.value,
             )
           }
-          className={cn(inputClasses, "mt-2 resize-y")}
+          className={cn(inputClasses, "mt-2 resize-y disabled:cursor-not-allowed disabled:bg-secondary/40 disabled:text-muted")}
         />
       ) : (
         <input
@@ -124,6 +130,7 @@ function Field({
           inputMode={def.type === "number" ? "numeric" : undefined}
           value={display}
           placeholder={def.placeholder}
+          disabled={disabled}
           onChange={(event) =>
             onChange(
               def.type === "number"
@@ -133,7 +140,7 @@ function Field({
                 : event.target.value,
             )
           }
-          className={cn(inputClasses, "mt-2")}
+          className={cn(inputClasses, "mt-2 disabled:cursor-not-allowed disabled:bg-secondary/40 disabled:text-muted")}
         />
       )}
       {def.help && (
@@ -143,17 +150,50 @@ function Field({
   );
 }
 
+function blankItem(list: ListDef): Json {
+  const blank: Json = {};
+  for (const field of list.fields) {
+    blank[field.key] = "";
+  }
+  return blank;
+}
+
+function previewText(value: unknown): string {
+  if (Array.isArray(value)) {
+    return value.filter((entry) => typeof entry === "string").join(" / ");
+  }
+  if (value === undefined || value === null || value === "") return "";
+  return String(value);
+}
+
+function capitalize(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+/**
+ * Repeatable items of a content group, shown as a table like the entity
+ * pages. Rows are added/edited in a dialog; changes stay local until the
+ * sticky "Save & Publish" bar writes the whole group to the database.
+ */
 function ListEditor({
   list,
   items,
   canUpload,
+  readOnly,
   onChange,
 }: {
   list: ListDef;
   items: Json[];
   canUpload?: boolean;
+  readOnly?: boolean;
   onChange: (next: Json[]) => void;
 }) {
+  const [editing, setEditing] = useState<{ index: number | null; draft: Json } | null>(
+    null,
+  );
+  const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<number | null>(null);
+
   const move = (index: number, direction: -1 | 1) => {
     const next = [...items];
     const target = index + direction;
@@ -162,90 +202,175 @@ function ListEditor({
     onChange(next);
   };
 
-  const remove = (index: number) => {
-    onChange(items.filter((_, i) => i !== index));
+  const openAdd = () => {
+    setError(null);
+    setEditing({ index: null, draft: blankItem(list) });
   };
 
-  const add = () => {
-    const blank: Json = {};
-    for (const field of list.fields) {
-      blank[field.key] = "";
-    }
-    onChange([...items, blank]);
+  const openEdit = (index: number) => {
+    setError(null);
+    setEditing({ index, draft: clone(items[index]) });
   };
+
+  const apply = () => {
+    if (!editing) return;
+    const firstField = list.fields[0];
+    const firstValue = firstField ? previewText(editing.draft[firstField.key]) : "";
+    if (!firstValue) {
+      setError(`${firstField?.label ?? "The first field"} is required.`);
+      return;
+    }
+    if (editing.index === null) {
+      onChange([...items, editing.draft]);
+    } else {
+      onChange(items.toSpliced(editing.index, 1, editing.draft));
+    }
+    setEditing(null);
+  };
+
+  const confirmDelete = () => {
+    if (deleting === null) return;
+    onChange(items.filter((_, i) => i !== deleting));
+    setDeleting(null);
+  };
+
+  const deletingPreview =
+    deleting !== null
+      ? previewText(getPath(items[deleting], list.fields[0]?.key ?? ""))
+      : "";
 
   return (
-    <fieldset className="rounded-3xl border border-border bg-secondary/40 p-5 sm:p-6">
-      <legend className="sr-only">{list.label}</legend>
-      <div className="flex items-baseline justify-between gap-4 px-1">
+    <section className="space-y-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-4">
         <h3 className="font-heading text-[1.05rem] font-bold tracking-tight text-foreground">
           {list.label}
           <span className="ml-2 text-sm font-semibold text-muted">
             {items.length} {items.length === 1 ? "item" : "items"}
           </span>
         </h3>
-        <button
-          type="button"
-          onClick={add}
-          className="inline-flex items-center gap-1.5 rounded-xl border border-primary/30 bg-white px-3.5 py-2 text-sm font-semibold text-primary transition-colors duration-200 hover:border-primary hover:bg-primary hover:text-white"
-        >
-          <Plus className="size-4" aria-hidden="true" />
-          Add {list.itemLabel}
-        </button>
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={openAdd}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_-14px_rgb(47_118_109/0.6)] transition-colors duration-200 hover:bg-primary-dark"
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            Add {capitalize(list.itemLabel)}
+          </button>
+        )}
       </div>
       {list.help && (
-        <p className="mt-2 px-1 text-xs leading-relaxed text-muted">{list.help}</p>
+        <p className="text-xs leading-relaxed text-muted">{list.help}</p>
       )}
 
-      <ul className="mt-4 space-y-3">
-        {items.map((item, index) => (
-          <li
-            key={index}
-            className="rounded-2xl border border-border bg-white p-5 sm:p-6"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm font-bold text-primary">
+      <DataTable
+        headers={["#", ...list.fields.map((field) => field.label), ""]}
+        className="shadow-none"
+      >
+        {items.length === 0 ? (
+          <TableEmptyState
+            message={`No ${list.itemLabel}s yet`}
+            hint={`Use “Add ${capitalize(list.itemLabel)}” to create the first one.`}
+          />
+        ) : (
+          items.map((item, index) => (
+            <tr
+              key={index}
+              className="group transition-colors duration-200 hover:bg-secondary/40"
+            >
+              <td className="px-5 py-4 text-sm font-bold text-primary">
                 {String(index + 1).padStart(2, "0")}
-                <span className="ml-2 font-medium text-muted">
-                  {String(getPath(item, list.fields[0]?.key ?? "") ?? "") ||
-                    `Untitled ${list.itemLabel}`}
-                </span>
-              </p>
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => move(index, -1)}
-                  disabled={index === 0}
-                  aria-label={`Move ${list.itemLabel} ${index + 1} up`}
-                  className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent"
+              </td>
+              {list.fields.map((field) => (
+                <td
+                  key={field.key}
+                  className={
+                    field === list.fields[0]
+                      ? "max-w-[16rem] px-5 py-4"
+                      : "max-w-sm px-5 py-4"
+                  }
                 >
-                  <ArrowUp className="size-4" aria-hidden="true" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => move(index, 1)}
-                  disabled={index === items.length - 1}
-                  aria-label={`Move ${list.itemLabel} ${index + 1} down`}
-                  className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-secondary hover:text-foreground disabled:opacity-30 disabled:hover:bg-transparent"
-                >
-                  <ArrowDown className="size-4" aria-hidden="true" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => remove(index)}
-                  aria-label={`Remove ${list.itemLabel} ${index + 1}`}
-                  className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-red-50 hover:text-red-600"
-                >
-                  <Trash2 className="size-4" aria-hidden="true" />
-                </button>
-              </div>
-            </div>
-            <div className="mt-4 grid gap-5 sm:grid-cols-2">
+                  <span
+                    className={cn(
+                      "block truncate text-sm",
+                      field === list.fields[0]
+                        ? "font-semibold text-foreground"
+                        : "text-muted",
+                    )}
+                  >
+                    {previewText(getPath(item, field.key)) || "—"}
+                  </span>
+                </td>
+              ))}
+              <td className="px-5 py-4">
+                <div className={cn("flex justify-end gap-1", !readOnly && "opacity-70 transition-opacity duration-200 group-hover:opacity-100")}>
+                  {!readOnly && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => move(index, -1)}
+                        disabled={index === 0}
+                        aria-label={`Move ${list.itemLabel} ${index + 1} up`}
+                        className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-secondary hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
+                      >
+                        <ArrowUp className="size-4" aria-hidden="true" />
+                      </button>
+                    <button
+                      type="button"
+                      onClick={() => move(index, 1)}
+                      disabled={index === items.length - 1}
+                      aria-label={`Move ${list.itemLabel} ${index + 1} down`}
+                      className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-secondary hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
+                    >
+                      <ArrowDown className="size-4" aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openEdit(index)}
+                      aria-label={`Edit ${list.itemLabel} ${index + 1}`}
+                      className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-secondary hover:text-foreground"
+                    >
+                      <Pencil className="size-4" aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeleting(index)}
+                      aria-label={`Remove ${list.itemLabel} ${index + 1}`}
+                      className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-red-50 hover:text-red-600"
+                    >
+                      <Trash2 className="size-4" aria-hidden="true" />
+                    </button>
+                    </>
+                  )}
+                </div>
+              </td>
+            </tr>
+          ))
+        )}
+      </DataTable>
+
+      {/* Create / edit dialog */}
+      <Dialog
+        open={editing !== null}
+        onClose={() => setEditing(null)}
+        size="lg"
+        title={
+          editing?.index === null || editing === null
+            ? `Add ${capitalize(list.itemLabel)}`
+            : `Edit ${capitalize(list.itemLabel)}`
+        }
+        description="Applies locally — publish with the Save & Publish bar below."
+      >
+        {editing && (
+          <div className="space-y-5">
+            <div className="grid gap-5 sm:grid-cols-2">
               {list.fields.map((field) => (
                 <div
                   key={field.key}
                   className={
-                    field.type === "textarea" || Array.isArray(getPath(item, field.key))
+                    field.type === "textarea" ||
+                    field.type === "image" ||
+                    Array.isArray(editing.draft[field.key])
                       ? "sm:col-span-2"
                       : undefined
                   }
@@ -253,20 +378,78 @@ function ListEditor({
                   <Field
                     def={field}
                     canUpload={canUpload}
-                    value={getPath(item, field.key)}
+                    value={editing.draft[field.key]}
                     onChange={(next) => {
-                      const draft = clone(item);
+                      const draft = clone(editing.draft);
                       setMutablePath(draft, field.key, next);
-                      onChange(items.toSpliced(index, 1, draft));
+                      setEditing({ ...editing, draft });
                     }}
                   />
                 </div>
               ))}
             </div>
-          </li>
-        ))}
-      </ul>
-    </fieldset>
+
+            {error && (
+              <p
+                role="alert"
+                className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+              >
+                {error}
+              </p>
+            )}
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setEditing(null)}
+                className="rounded-xl px-5 py-3 text-sm font-semibold text-foreground transition-colors duration-200 hover:bg-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={apply}
+                className="inline-flex min-w-28 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-primary-dark"
+              >
+                {editing.index === null
+                  ? `Add ${capitalize(list.itemLabel)}`
+                  : "Apply"}
+              </button>
+            </div>
+          </div>
+        )}
+      </Dialog>
+
+      {/* Delete confirmation dialog */}
+      <Dialog
+        open={deleting !== null}
+        onClose={() => setDeleting(null)}
+        title={`Remove ${list.itemLabel}`}
+        description={
+          deletingPreview
+            ? `“${deletingPreview}” will be removed from this section once you publish.`
+            : "This row will be removed from this section once you publish."
+        }
+      >
+        <div className="flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => setDeleting(null)}
+            className="rounded-xl px-5 py-3 text-sm font-semibold text-foreground transition-colors duration-200 hover:bg-secondary"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={confirmDelete}
+            className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-red-700"
+          >
+            <Trash2 className="size-4" aria-hidden="true" />
+            Remove
+          </button>
+        </div>
+      </Dialog>
+    </section>
   );
 }
 
@@ -279,6 +462,7 @@ export function GroupEditor({
   initialValue,
   customized,
   uploadsEnabled,
+  readOnly = false,
 }: {
   groupKey: string;
   fields: FieldDef[];
@@ -286,6 +470,8 @@ export function GroupEditor({
   initialValue: Json;
   customized: boolean;
   uploadsEnabled: boolean;
+  /** Demo accounts browse everything but can never save. */
+  readOnly?: boolean;
 }) {
   const router = useRouter();
   const [value, setValue] = useState<Json>(initialValue);
@@ -355,7 +541,8 @@ export function GroupEditor({
                 >
                   <Field
                     def={field}
-                    canUpload={uploadsEnabled}
+                    canUpload={uploadsEnabled && !readOnly}
+                    disabled={readOnly}
                     value={getPath(value, field.key)}
                     onChange={(next) => {
                       const draft = clone(value);
@@ -375,7 +562,8 @@ export function GroupEditor({
             <ListEditor
               key={list.key}
               list={list}
-              canUpload={uploadsEnabled}
+              canUpload={uploadsEnabled && !readOnly}
+              readOnly={readOnly}
               items={Array.isArray(items) ? (items as Json[]) : []}
               onChange={(next) => {
                 const draft = clone(value);
@@ -393,8 +581,13 @@ export function GroupEditor({
         )}
       </div>
 
-      {/* Save bar */}
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-white/92 backdrop-blur-md lg:left-[17.5rem]">
+      {/* Save bar — demo accounts have nothing to save */}
+      <div
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-20 border-t border-border bg-white/92 backdrop-blur-md lg:left-[17.5rem]",
+          readOnly && "hidden",
+        )}
+      >
         <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-4 px-5 py-4 sm:px-8 lg:px-12">
           <div className="min-w-0 flex-1" aria-live="polite">
             {pending ? (

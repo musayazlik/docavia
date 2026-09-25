@@ -7,6 +7,7 @@ import { ArrowLeft, Eye, Loader2, Save } from "lucide-react";
 import { TiptapEditor } from "@/components/admin/tiptap-editor";
 import { FormField, inputClasses } from "@/components/admin/ui/dialog";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
+import { SelectField } from "@/components/ui/select-field";
 import { savePost } from "@/app/admin/entity-actions";
 
 type Category = { id: string; name: string };
@@ -45,10 +46,12 @@ export function PostEditor({
   initial,
   categories,
   uploadsEnabled,
+  readOnly = false,
 }: {
   initial: PostDraft | null;
   categories: Category[];
   uploadsEnabled: boolean;
+  readOnly?: boolean;
 }) {
   const router = useRouter();
   const [form, setForm] = useState<PostDraft>(initial ?? EMPTY);
@@ -125,6 +128,7 @@ export function PostEditor({
           <FormField label="Title" htmlFor="post-title">
             <input
               id="post-title"
+              disabled={readOnly}
               className={inputClasses}
               value={form.title}
               placeholder="5 Simple Ways to Improve Your Heart Health"
@@ -137,6 +141,7 @@ export function PostEditor({
             <div className="mt-2">
               <TiptapEditor
                 initialHtml={form.contentHtml}
+                editable={!readOnly}
                 onChange={(html, json) => {
                   update({ contentHtml: html });
                   setContentJson(json);
@@ -153,6 +158,7 @@ export function PostEditor({
             <textarea
               id="post-excerpt"
               rows={3}
+              disabled={readOnly}
               className={inputClasses}
               value={form.excerpt}
               placeholder="One or two sentences summarizing the article."
@@ -167,6 +173,13 @@ export function PostEditor({
             <p className="font-heading text-[0.8125rem] font-bold tracking-[0.12em] text-muted uppercase">
               Publish
             </p>
+            {readOnly ? (
+              <p className="mt-4 rounded-xl bg-secondary/60 px-4 py-3 text-xs leading-relaxed text-muted">
+                Read-only account — you can review this post but cannot save
+                changes.
+              </p>
+            ) : (
+              <>
             <div className="mt-4 flex flex-col gap-3">
               <button
                 type="button"
@@ -191,6 +204,8 @@ export function PostEditor({
                 Save as Draft
               </button>
             </div>
+              </>
+            )}
             {editing && (
               <p className="mt-4 flex items-center gap-2 text-xs text-muted">
                 <span
@@ -217,27 +232,28 @@ export function PostEditor({
               >
                 <input
                   id="post-slug"
-                  className={inputClasses}
+                  disabled={readOnly}
+              className={inputClasses}
                   value={form.slug}
                   placeholder="improve-your-heart-health"
                   onChange={(e) => update({ slug: e.target.value })}
                 />
               </FormField>
-              <FormField label="Category" htmlFor="post-category">
-                <select
-                  id="post-category"
-                  className={inputClasses}
-                  value={form.categoryId ?? ""}
-                  onChange={(e) => update({ categoryId: e.target.value || null })}
-                >
-                  <option value="">Uncategorized</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </FormField>
+              <SelectField
+                id="post-category"
+                label="Category"
+                placeholder="Uncategorized"
+                disabled={readOnly}
+                options={[
+                  { value: "", label: "Uncategorized" },
+                  ...categories.map((category) => ({
+                    value: category.id,
+                    label: category.name,
+                  })),
+                ]}
+                value={form.categoryId ?? ""}
+                onChange={(value) => update({ categoryId: value || null })}
+              />
               <ImageUploadField
                 label="Cover image"
                 value={form.coverImage}
@@ -257,7 +273,8 @@ export function PostEditor({
               <FormField label="Name" htmlFor="post-author">
                 <input
                   id="post-author"
-                  className={inputClasses}
+                  disabled={readOnly}
+              className={inputClasses}
                   value={form.authorName}
                   placeholder="Dr. Emily Carter"
                   onChange={(e) => update({ authorName: e.target.value })}
@@ -266,7 +283,8 @@ export function PostEditor({
               <FormField label="Role" htmlFor="post-author-role">
                 <input
                   id="post-author-role"
-                  className={inputClasses}
+                  disabled={readOnly}
+              className={inputClasses}
                   value={form.authorRole}
                   placeholder="Cardiologist"
                   onChange={(e) => update({ authorRole: e.target.value })}
@@ -285,7 +303,8 @@ export function PostEditor({
                   id="post-reading-time"
                   type="number"
                   min={1}
-                  className={inputClasses}
+                  disabled={readOnly}
+              className={inputClasses}
                   value={form.readingTime}
                   onChange={(e) =>
                     update({ readingTime: Number(e.target.value) })

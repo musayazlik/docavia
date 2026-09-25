@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getSession, isReadOnly } from "@/lib/auth-server";
 import { PostEditor } from "../post-editor";
 
 export const metadata = { title: "Edit Post — Admin" };
@@ -10,12 +11,13 @@ export default async function EditPostPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [post, categories] = await Promise.all([
+  const [post, categories, session] = await Promise.all([
     prisma.blogPost.findUnique({ where: { id } }),
     prisma.blogCategory.findMany({
       orderBy: { name: "asc" },
       select: { id: true, name: true },
     }),
+    getSession(),
   ]);
   if (!post) notFound();
 
@@ -23,6 +25,7 @@ export default async function EditPostPage({
     <PostEditor
       categories={categories}
       uploadsEnabled={Boolean(process.env.UPLOADTHING_TOKEN)}
+      readOnly={isReadOnly(session)}
       initial={{
         id: post.id,
         title: post.title,

@@ -26,6 +26,8 @@ export default async function AdminLayout({
   const user = {
     name: session.user.name,
     email: session.user.email,
+    image: session.user.image,
+    role: session.user.role ?? "admin",
   };
 
   return <AdminShell user={user}>{children}</AdminShell>;

@@ -38,7 +38,13 @@ function formatDate(date: Date | null) {
   }).format(date);
 }
 
-export function PostsClient({ rows }: { rows: Row[] }) {
+export function PostsClient({
+  rows,
+  readOnly = false,
+}: {
+  rows: Row[];
+  readOnly?: boolean;
+}) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
@@ -66,13 +72,15 @@ export function PostsClient({ rows }: { rows: Row[] }) {
         title="Blog Posts"
         description="Everything published here appears on /blog the moment it is saved as published."
       >
-        <Link
-          href="/admin/posts/new"
-          className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_-14px_rgb(47_118_109/0.6)] transition-all duration-200 hover:bg-primary-dark"
-        >
-          <Plus className="size-4" aria-hidden="true" />
-          New Post
-        </Link>
+        {!readOnly && (
+          <Link
+            href="/admin/posts/new"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_-14px_rgb(47_118_109/0.6)] transition-all duration-200 hover:bg-primary-dark"
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            New Post
+          </Link>
+        )}
       </PageToolbar>
 
       <DataTable headers={["Post", "Category", "Status", "Date", ""]}>
@@ -128,7 +136,9 @@ export function PostsClient({ rows }: { rows: Row[] }) {
                 </span>
               </td>
               <td className="px-5 py-4">
-                <div className="flex justify-end gap-1.5 opacity-60 transition-opacity duration-200 group-hover:opacity-100">
+                <div className={"flex justify-end gap-1.5" + (!readOnly ? " opacity-60 transition-opacity duration-200 group-hover:opacity-100" : "")}>
+                {!readOnly && (
+                  <>
                   <button
                     type="button"
                     onClick={() => togglePublish(row)}
@@ -167,6 +177,8 @@ export function PostsClient({ rows }: { rows: Row[] }) {
                   >
                     <Trash2 className="size-4" aria-hidden="true" />
                   </button>
+                  </>
+                )}
                 </div>
               </td>
             </tr>

@@ -246,7 +246,7 @@ export const contentGroups: ContentGroup[] = [
     key: "doctors",
     title: "Doctors Section",
     description:
-      "Homepage specialists grid — heading and the four doctor cards. Portraits are uploaded images.",
+      "Homepage specialists grid — heading only. The doctors themselves are managed under Administration → Doctors.",
     icon: Users,
     category: "home",
     fields: [
@@ -255,19 +255,7 @@ export const contentGroups: ContentGroup[] = [
       { key: "titleAccent", label: "Title accent (italic part)", type: "text" },
       { key: "viewAllLabel", label: "View-all button", type: "text" },
     ],
-    lists: [
-      {
-        key: "items",
-        label: "Doctors",
-        itemLabel: "doctor",
-        fields: [
-          { key: "name", label: "Name", type: "text" },
-          { key: "specialty", label: "Specialty", type: "text" },
-          { key: "bio", label: "Short bio", type: "textarea" },
-          { key: "image", label: "Portrait", type: "image" },
-        ],
-      },
-    ],
+    lists: [],
   },
   {
     key: "appointmentCta",
