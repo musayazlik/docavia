@@ -79,6 +79,7 @@ export default async function GroupEditorPage({
           lists={lists}
           initialValue={JSON.parse(JSON.stringify(value))}
           customized={customized}
+          uploadsEnabled={Boolean(process.env.UPLOADTHING_TOKEN)}
         />
       </div>
     </div>

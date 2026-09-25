@@ -23,7 +23,6 @@ const CATEGORY_ORDER = ["general", "home", "pages"] as const;
 function describeGroup(group: (typeof contentGroups)[number]) {
   const parts: string[] = [];
   const scalarCount = group.fields.length;
-  const listCount = group.lists.length;
   if (scalarCount > 0)
     parts.push(`${scalarCount} field${scalarCount === 1 ? "" : "s"}`);
   for (const list of group.lists) {

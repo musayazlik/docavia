@@ -27,3 +27,12 @@ export async function requireSession() {
   }
   return session;
 }
+
+/** Guard for privileged server actions — throws instead of redirecting. */
+export async function requireAdmin() {
+  const session = await getSession();
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+  return session;
+}

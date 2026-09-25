@@ -19,7 +19,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-export type FieldType = "text" | "textarea" | "number";
+export type FieldType = "text" | "textarea" | "number" | "image";
 
 export type FieldDef = {
   /** Dotted path within the group value, e.g. "about.title". */
@@ -246,7 +246,7 @@ export const contentGroups: ContentGroup[] = [
     key: "doctors",
     title: "Doctors Section",
     description:
-      "Homepage specialists grid — heading and the four doctor cards. Portraits use image paths from /public.",
+      "Homepage specialists grid — heading and the four doctor cards. Portraits are uploaded images.",
     icon: Users,
     category: "home",
     fields: [
@@ -264,12 +264,7 @@ export const contentGroups: ContentGroup[] = [
           { key: "name", label: "Name", type: "text" },
           { key: "specialty", label: "Specialty", type: "text" },
           { key: "bio", label: "Short bio", type: "textarea" },
-          {
-            key: "image",
-            label: "Portrait path",
-            type: "text",
-            placeholder: "/images/doctor-emily.jpg",
-          },
+          { key: "image", label: "Portrait", type: "image" },
         ],
       },
     ],
@@ -317,9 +312,9 @@ export const contentGroups: ContentGroup[] = [
   },
   {
     key: "testimonials",
-    title: "Testimonials",
+    title: "Testimonials Section",
     description:
-      "Patient quotes carousel — heading and the three quote cards.",
+      "Patient quotes carousel — heading only. The quotes themselves are managed under Adminstration → Testimonials.",
     icon: Quote,
     category: "home",
     fields: [
@@ -327,24 +322,7 @@ export const contentGroups: ContentGroup[] = [
       { key: "title", label: "Title", type: "text" },
       { key: "titleAccent", label: "Title accent (italic part)", type: "text" },
     ],
-    lists: [
-      {
-        key: "items",
-        label: "Quotes",
-        itemLabel: "testimonial",
-        fields: [
-          { key: "quote", label: "Quote", type: "textarea" },
-          { key: "name", label: "Name", type: "text" },
-          { key: "role", label: "Role", type: "text" },
-          {
-            key: "avatar",
-            label: "Avatar path",
-            type: "text",
-            placeholder: "/images/avatar-p1.jpg",
-          },
-        ],
-      },
-    ],
+    lists: [],
   },
   {
     key: "articles",

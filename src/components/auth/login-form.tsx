@@ -203,7 +203,7 @@ function SuccessPanelInline({ email }: { email: string }) {
         Welcome back.
       </h1>
       <p className="mt-3 text-[0.9375rem] leading-relaxed text-muted">
-        You're signed in as{" "}
+        You&apos;re signed in as{" "}
         <span className="font-semibold text-foreground">{email}</span>.
         Opening the admin panel…
       </p>

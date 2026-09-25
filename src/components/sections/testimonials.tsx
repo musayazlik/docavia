@@ -1,15 +1,17 @@
 import { TestimonialsCarousel } from "@/components/sections/testimonials-carousel";
 import { getContent } from "@/lib/content/store";
+import { getTestimonials } from "@/lib/entities";
 
 export async function Testimonials() {
-  const testimonials = (await getContent()).testimonials;
+  const [content, items] = await Promise.all([getContent(), getTestimonials()]);
+  const section = content.testimonials;
 
   return (
     <TestimonialsCarousel
-      eyebrow={testimonials.eyebrow}
-      title={testimonials.title}
-      titleAccent={testimonials.titleAccent}
-      items={testimonials.items.map((item) => ({ ...item }))}
+      eyebrow={section.eyebrow}
+      title={section.title}
+      titleAccent={section.titleAccent}
+      items={items}
     />
   );
 }

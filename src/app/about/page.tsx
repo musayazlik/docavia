@@ -34,7 +34,6 @@ export const metadata: Metadata = {
 
 export default async function AboutPage() {
   const content = await getContent();
-  const site = content.site;
   const hero = content.pages.about;
 
   return (

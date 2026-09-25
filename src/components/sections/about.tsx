@@ -40,7 +40,7 @@ export async function About() {
             delay={0.2}
             className="absolute -right-3 -bottom-10 hidden w-44 sm:block md:-right-6 md:w-52"
           >
-            <div className="aspect-[3/4] overflow-hidden rounded-[1.5rem] border-[6px] border-white shadow-card">
+            <div className="relative aspect-[3/4] overflow-hidden rounded-[1.5rem] border-[6px] border-white shadow-card">
               <Image
                 src="/images/about-small.jpg"
                 alt="Docavia physician reviewing notes at her desk"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowDown,
@@ -19,6 +19,7 @@ import {
 } from "@/app/admin/actions";
 import type { FieldDef, ListDef } from "@/lib/content/registry";
 import { cn } from "@/lib/utils";
+import { ImageUploadField } from "@/components/admin/image-upload-field";
 
 type Json = Record<string, unknown>;
 
@@ -49,19 +50,6 @@ function setMutablePath(target: Json, path: string, value: unknown) {
   node[keys[keys.length - 1]] = value;
 }
 
-function deleteMutablePath(target: Json, path: string) {
-  const keys = path.split(".");
-  let node: Json = target;
-  for (const key of keys.slice(0, -1)) {
-    const child = node[key];
-    if (child === null || typeof child !== "object" || Array.isArray(child)) {
-      return;
-    }
-    node = node[key] as Json;
-  }
-  delete node[keys[keys.length - 1]];
-}
-
 function clone<T>(value: T): T {
   return structuredClone(value);
 }
@@ -74,12 +62,26 @@ const inputClasses =
 function Field({
   def,
   value,
+  canUpload,
   onChange,
 }: {
   def: FieldDef;
   value: unknown;
+  canUpload?: boolean;
   onChange: (next: unknown) => void;
 }) {
+  if (def.type === "image") {
+    return (
+      <ImageUploadField
+        label={def.label}
+        value={value}
+        canUpload={canUpload ?? false}
+        onChange={onChange}
+        help={def.help}
+      />
+    );
+  }
+
   const id = `f-${def.key.replace(/\./g, "-")}`;
   const isStringArray =
     Array.isArray(value) && value.every((entry) => typeof entry === "string");
@@ -144,10 +146,12 @@ function Field({
 function ListEditor({
   list,
   items,
+  canUpload,
   onChange,
 }: {
   list: ListDef;
   items: Json[];
+  canUpload?: boolean;
   onChange: (next: Json[]) => void;
 }) {
   const move = (index: number, direction: -1 | 1) => {
@@ -248,6 +252,7 @@ function ListEditor({
                 >
                   <Field
                     def={field}
+                    canUpload={canUpload}
                     value={getPath(item, field.key)}
                     onChange={(next) => {
                       const draft = clone(item);
@@ -273,23 +278,25 @@ export function GroupEditor({
   lists,
   initialValue,
   customized,
+  uploadsEnabled,
 }: {
   groupKey: string;
   fields: FieldDef[];
   lists: ListDef[];
   initialValue: Json;
   customized: boolean;
+  uploadsEnabled: boolean;
 }) {
   const router = useRouter();
   const [value, setValue] = useState<Json>(initialValue);
   const [status, setStatus] = useState<ActionResult | null>(null);
   const [pending, startTransition] = useTransition();
   const [confirmingReset, setConfirmingReset] = useState(false);
-  const original = useRef(JSON.stringify(initialValue));
+  const [savedJson, setSavedJson] = useState(() => JSON.stringify(initialValue));
 
   const dirty = useMemo(
-    () => JSON.stringify(value) !== original.current,
-    [value],
+    () => JSON.stringify(value) !== savedJson,
+    [value, savedJson],
   );
 
   const save = () => {
@@ -299,7 +306,7 @@ export function GroupEditor({
       const result = await saveContentGroup(groupKey, JSON.stringify(value));
       setStatus(result);
       if (result.ok) {
-        original.current = JSON.stringify(value);
+        setSavedJson(JSON.stringify(value));
         router.refresh();
       }
     });
@@ -322,7 +329,7 @@ export function GroupEditor({
         const fresh = await getGroupValue(groupKey);
         const restored = JSON.parse(fresh) as Json;
         setValue(restored);
-        original.current = JSON.stringify(restored);
+        setSavedJson(JSON.stringify(restored));
         router.refresh();
       }
     });
@@ -348,6 +355,7 @@ export function GroupEditor({
                 >
                   <Field
                     def={field}
+                    canUpload={uploadsEnabled}
                     value={getPath(value, field.key)}
                     onChange={(next) => {
                       const draft = clone(value);
@@ -367,6 +375,7 @@ export function GroupEditor({
             <ListEditor
               key={list.key}
               list={list}
+              canUpload={uploadsEnabled}
               items={Array.isArray(items) ? (items as Json[]) : []}
               onChange={(next) => {
                 const draft = clone(value);

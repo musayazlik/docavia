@@ -9,9 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Newsletter } from "@/components/sections/newsletter";
 import { AppointmentCta } from "@/components/sections/appointment-cta";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
-import { articles } from "@/lib/data";
-
-const [featured, ...rest] = articles;
+import { getPublishedPosts, type PostListItem } from "@/lib/entities";
 
 import { getContent } from "@/lib/content/store";
 
@@ -25,14 +23,24 @@ export const metadata: Metadata = {
     description:
       "The Docavia Health Journal — practical articles on heart health, prevention and wellbeing, written by our physicians.",
     url: "/blog",
-    images: [{ url: featured.image }],
+    images: [{ url: "/images/og.jpg" }],
   },
 };
 
+function formatDate(date: Date | null) {
+  if (!date) return "";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+}
+
 export default async function BlogPage() {
-  const content = await getContent();
-  const site = content.site;
+  const [content, posts] = await Promise.all([getContent(), getPublishedPosts()]);
   const hero = content.pages.blog;
+  const list = posts ?? [];
+  const [featured, ...rest] = list;
 
   return (
     <>
@@ -55,11 +63,22 @@ export default async function BlogPage() {
         {/* Featured article */}
         <section className="py-16 md:py-24">
           <div className="shell">
+            {!featured && (
+              <div className="rounded-[2.5rem] border border-dashed border-border px-8 py-20 text-center">
+                <p className="font-heading text-xl font-bold text-foreground">
+                  No articles yet
+                </p>
+                <p className="mt-2 text-[0.9375rem] text-muted">
+                  Published posts from the admin panel will appear here.
+                </p>
+              </div>
+            )}
+            {featured && (
             <Reveal>
               <article className="group grid overflow-hidden rounded-[2.5rem] border border-border bg-white shadow-card transition-shadow duration-500 hover:shadow-soft lg:grid-cols-[1.05fr_0.95fr]">
                 <div className="relative aspect-[16/10] lg:aspect-auto lg:min-h-[26rem]">
                   <Image
-                    src={featured.image}
+                    src={featured.coverImage}
                     alt={featured.title}
                     fill
                     sizes="(min-width: 1024px) 52vw, 100vw"
@@ -72,13 +91,13 @@ export default async function BlogPage() {
 
                 <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-12">
                   <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
-                    {featured.date} · {featured.readingTime} min read
+                    {formatDate(featured.publishedAt)} · {featured.readingTime} min read
                   </p>
                   <h2 className="font-heading mt-4 text-[1.7rem] leading-[1.15] font-bold tracking-tight text-balance text-foreground sm:text-[2.1rem]">
                     {featured.title}
                   </h2>
                   <p className="mt-4 text-[1.0625rem] leading-relaxed text-muted">
-                    {featured.description}
+                    {featured.excerpt}
                   </p>
                   <div className="mt-8">
                     <Button
@@ -92,6 +111,7 @@ export default async function BlogPage() {
                 </div>
               </article>
             </Reveal>
+            )}
           </div>
         </section>
 
@@ -99,7 +119,7 @@ export default async function BlogPage() {
         <section id="blog" className="bg-secondary/60 py-24 md:py-32">
           <div className="shell">
             <Stagger className="grid gap-x-6 gap-y-12 md:grid-cols-2">
-              {rest.map((article) => (
+              {rest.map((article: PostListItem) => (
                 <StaggerItem key={article.title}>
                   <article className="group">
                     <Link
@@ -109,7 +129,7 @@ export default async function BlogPage() {
                     >
                       <div className="relative aspect-[3/2] overflow-hidden rounded-[1.5rem]">
                         <Image
-                          src={article.image}
+                          src={article.coverImage}
                           alt={article.title}
                           fill
                           sizes="(min-width: 768px) 50vw, 100vw"
@@ -121,13 +141,13 @@ export default async function BlogPage() {
                       </div>
 
                       <p className="mt-5 text-xs font-semibold tracking-[0.12em] text-muted uppercase">
-                        {article.date} · {article.readingTime} min read
+                        {formatDate(article.publishedAt)} · {article.readingTime} min read
                       </p>
                       <h3 className="font-heading mt-2.5 text-xl leading-snug font-bold tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary sm:text-2xl">
                         {article.title}
                       </h3>
                       <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-muted">
-                        {article.description}
+                        {article.excerpt}
                       </p>
                       <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary">
                         Read Article

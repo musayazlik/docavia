@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight, CalendarDays, ChevronRight, Clock } from "lucide-react";
 import { articles, type ArticleBlock } from "@/lib/data";
 import { site } from "@/lib/constants";
+import { getPostBySlug, getPublishedPosts } from "@/lib/entities";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { AppointmentCta } from "@/components/sections/appointment-cta";
@@ -14,8 +15,72 @@ import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 
 type BlogPostParams = Promise<{ slug: string }>;
 
-export function generateStaticParams() {
-  return articles.map((article) => ({ slug: article.slug }));
+type PostView = {
+  title: string;
+  slug: string;
+  excerpt: string;
+  category: string;
+  coverImage: string;
+  dateLabel: string;
+  isoDate: string | null;
+  readingTime: number;
+  author: { name: string; role: string; avatar: string | null; bio?: string };
+  contentHtml: string | null;
+  blocks: ArticleBlock[] | null;
+};
+
+function formatDate(date: Date | null) {
+  if (!date) return "";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+}
+
+async function loadPost(slug: string): Promise<PostView | null> {
+  const row = await getPostBySlug(slug);
+  if (row && row.published) {
+    return {
+      title: row.title,
+      slug: row.slug,
+      excerpt: row.excerpt,
+      category: row.category?.name ?? "",
+      coverImage: row.coverImage,
+      dateLabel: formatDate(row.publishedAt),
+      isoDate: row.publishedAt?.toISOString() ?? null,
+      readingTime: row.readingTime,
+      author: {
+        name: row.authorName,
+        role: row.authorRole ?? "",
+        avatar: row.authorAvatar,
+      },
+      contentHtml: row.contentHtml,
+      blocks: null,
+    };
+  }
+
+  // Legacy fallback: the file-based articles predate the database.
+  const legacy = articles.find((article) => article.slug === slug);
+  if (!legacy) return null;
+  return {
+    title: legacy.title,
+    slug: legacy.slug,
+    excerpt: legacy.description,
+    category: legacy.category,
+    coverImage: legacy.image,
+    dateLabel: legacy.date,
+    isoDate: legacy.publishedAt,
+    readingTime: legacy.readingTime,
+    author: {
+      name: legacy.author.name,
+      role: legacy.author.role,
+      avatar: legacy.author.avatar,
+      bio: legacy.author.bio,
+    },
+    contentHtml: null,
+    blocks: legacy.content,
+  };
 }
 
 export async function generateMetadata({
@@ -24,42 +89,42 @@ export async function generateMetadata({
   params: BlogPostParams;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = articles.find((article) => article.slug === slug);
+  const post = await loadPost(slug);
   if (!post) return {};
 
   return {
     title: post.title,
-    description: post.description,
+    description: post.excerpt,
     alternates: { canonical: `/blog/${post.slug}` },
     openGraph: {
       type: "article",
       title: post.title,
-      description: post.description,
+      description: post.excerpt,
       url: `/blog/${post.slug}`,
-      publishedTime: post.publishedAt,
+      publishedTime: post.isoDate ?? undefined,
       authors: [post.author.name],
-      images: [{ url: post.image }],
+      images: [{ url: post.coverImage }],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
-      description: post.description,
-      images: [post.image],
+      description: post.excerpt,
+      images: [post.coverImage],
     },
   };
 }
 
-function JsonLd({ post }: { post: (typeof articles)[number] }) {
+function JsonLd({ post }: { post: PostView }) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "BlogPosting",
         headline: post.title,
-        description: post.description,
-        image: `${site.url}${post.image}`,
-        datePublished: post.publishedAt,
-        dateModified: post.publishedAt,
+        description: post.excerpt,
+        image: `${site.url}${post.coverImage}`,
+        datePublished: post.isoDate,
+        dateModified: post.isoDate,
         author: {
           "@type": "Person",
           name: post.author.name,
@@ -109,62 +174,30 @@ function JsonLd({ post }: { post: (typeof articles)[number] }) {
 
 function ArticleBody({ blocks }: { blocks: ArticleBlock[] }) {
   return (
-    <>
+    <div className="article-body">
       {blocks.map((block, index) => {
         switch (block.type) {
           case "heading":
-            return (
-              <h2
-                key={index}
-                className="font-heading mt-12 text-[1.55rem] leading-snug font-bold tracking-tight text-foreground first:mt-0"
-              >
-                {block.text}
-              </h2>
-            );
+            return <h2 key={index}>{block.text}</h2>;
           case "paragraph":
-            return (
-              <p
-                key={index}
-                className="mt-6 text-[1.0625rem] leading-[1.85] text-foreground/75"
-              >
-                {block.text}
-              </p>
-            );
+            return <p key={index}>{block.text}</p>;
           case "list":
             return (
-              <ul key={index} className="mt-7 space-y-3.5">
+              <ul key={index}>
                 {block.items.map((item) => (
-                  <li key={item} className="flex gap-3.5">
-                    <span
-                      aria-hidden="true"
-                      className="mt-[0.7em] size-1.5 shrink-0 rounded-full bg-primary"
-                    />
-                    <span className="text-[1.0625rem] leading-[1.75] text-foreground/75">
-                      {item}
-                    </span>
-                  </li>
+                  <li key={item}>{item}</li>
                 ))}
               </ul>
             );
           case "quote":
             return (
-              <blockquote
-                key={index}
-                className="mt-10 rounded-[1.5rem] bg-secondary/70 px-8 py-9"
-              >
-                <p className="font-accent text-[1.45rem] leading-snug text-primary italic md:text-[1.65rem]">
-                  “{block.text}”
-                </p>
-                {block.cite && (
-                  <cite className="mt-4 block text-sm font-semibold text-muted not-italic">
-                    — {block.cite}
-                  </cite>
-                )}
+              <blockquote key={index}>
+                <p>“{block.text}”</p>
               </blockquote>
             );
         }
       })}
-    </>
+    </div>
   );
 }
 
@@ -172,10 +205,14 @@ export default async function BlogPostPage({
   params,
 }: PageProps<"/blog/[slug]">) {
   const { slug } = await params;
-  const post = articles.find((article) => article.slug === slug);
+  const post = await loadPost(slug);
   if (!post) notFound();
 
-  const related = articles.filter((article) => article.slug !== post.slug);
+  const allPosts = (await getPublishedPosts()) ?? [];
+  const related = allPosts.filter((entry) => entry.slug !== post.slug).slice(0, 2);
+  const fallbackRelated = related.length === 0
+    ? articles.filter((article) => article.slug !== post.slug).slice(0, 2)
+    : [];
 
   return (
     <>
@@ -224,37 +261,45 @@ export default async function BlogPostPage({
               </nav>
 
               <div className="mt-8 max-w-3xl">
-                <p className="inline-flex items-center rounded-full border border-border bg-white px-3.5 py-1.5 text-xs font-semibold text-pine">
-                  {post.category}
-                </p>
+                {post.category && (
+                  <p className="inline-flex items-center rounded-full border border-border bg-white px-3.5 py-1.5 text-xs font-semibold text-pine">
+                    {post.category}
+                  </p>
+                )}
                 <h1 className="font-heading mt-5 text-[2.3rem] leading-[1.1] font-bold tracking-[-0.025em] text-balance text-foreground sm:text-[2.8rem] lg:text-[3.2rem]">
                   {post.title}
                 </h1>
                 <p className="mt-5 text-[1.125rem] leading-relaxed text-muted md:text-[1.1875rem]">
-                  {post.description}
+                  {post.excerpt}
                 </p>
               </div>
 
               <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4 border-t border-border pt-7">
-                <div className="flex items-center gap-3.5">
-                  <Image
-                    src={post.author.avatar}
-                    alt={`Portrait of ${post.author.name}`}
-                    width={48}
-                    height={48}
-                    className="size-12 rounded-full object-cover"
-                  />
-                  <div>
-                    <p className="font-heading text-[0.95rem] font-bold text-foreground">
-                      {post.author.name}
-                    </p>
-                    <p className="text-sm text-muted">{post.author.role}</p>
+                {post.author.avatar && (
+                  <div className="flex items-center gap-3.5">
+                    <Image
+                      src={post.author.avatar}
+                      alt={`Portrait of ${post.author.name}`}
+                      width={48}
+                      height={48}
+                      className="size-12 rounded-full object-cover"
+                    />
+                    <div>
+                      <p className="font-heading text-[0.95rem] font-bold text-foreground">
+                        {post.author.name}
+                      </p>
+                      {post.author.role && (
+                        <p className="text-sm text-muted">{post.author.role}</p>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <p className="flex items-center gap-2 text-sm text-muted">
-                  <CalendarDays className="size-4 text-primary" aria-hidden="true" />
-                  <time dateTime={post.publishedAt}>{post.date}</time>
-                </p>
+                )}
+                {post.dateLabel && (
+                  <p className="flex items-center gap-2 text-sm text-muted">
+                    <CalendarDays className="size-4 text-primary" aria-hidden="true" />
+                    <time dateTime={post.isoDate ?? undefined}>{post.dateLabel}</time>
+                  </p>
+                )}
                 <p className="flex items-center gap-2 text-sm text-muted">
                   <Clock className="size-4 text-primary" aria-hidden="true" />
                   {post.readingTime} min read
@@ -270,7 +315,7 @@ export default async function BlogPostPage({
             <Reveal>
               <div className="relative aspect-[16/10] overflow-hidden rounded-[2.5rem] sm:aspect-[16/8]">
                 <Image
-                  src={post.image}
+                  src={post.coverImage}
                   alt={post.title}
                   fill
                   priority
@@ -286,31 +331,47 @@ export default async function BlogPostPage({
         <section className="py-14 md:py-20">
           <div className="shell">
             <div className="mx-auto max-w-[44rem]">
-              <ArticleBody blocks={post.content} />
+              {post.contentHtml ? (
+                <div
+                  className="article-body"
+                  // Content is authored by authenticated admins in the
+                  // Tiptap editor, not by site visitors.
+                  dangerouslySetInnerHTML={{ __html: post.contentHtml }}
+                />
+              ) : (
+                <ArticleBody blocks={post.blocks ?? []} />
+              )}
 
               {/* Author card */}
               <aside className="mt-16 flex flex-col gap-5 rounded-[1.75rem] border border-border bg-secondary/50 p-8 sm:flex-row sm:items-center md:p-10">
-                <Image
-                  src={post.author.avatar}
-                  alt={`Portrait of ${post.author.name}`}
-                  width={72}
-                  height={72}
-                  className="size-18 rounded-full object-cover"
-                />
+                {post.author.avatar && (
+                  <Image
+                    src={post.author.avatar}
+                    alt={`Portrait of ${post.author.name}`}
+                    width={72}
+                    height={72}
+                    className="size-18 rounded-full object-cover"
+                  />
+                )}
                 <div>
                   <p className="text-xs font-semibold tracking-[0.12em] text-muted uppercase">
                     Written by
                   </p>
                   <p className="font-heading mt-1.5 text-lg font-bold text-foreground">
                     {post.author.name}
-                    <span className="font-normal text-primary">
-                      {" "}
-                      · {post.author.role}
-                    </span>
+                    {post.author.role && (
+                      <span className="font-normal text-primary">
+                        {" "}
+                        · {post.author.role}
+                      </span>
+                    )}
                   </p>
                   <p className="mt-2 text-[0.9375rem] leading-relaxed text-muted">
-                    {post.author.bio} Every Docavia article is reviewed for
-                    medical accuracy before publication.
+                    {post.author.bio
+                      ? `${post.author.bio} `
+                      : ""}
+                    Every Docavia article is reviewed for medical accuracy
+                    before publication.
                   </p>
                 </div>
               </aside>
@@ -337,7 +398,49 @@ export default async function BlogPostPage({
             />
 
             <Stagger className="mt-14 grid gap-x-6 gap-y-12 md:grid-cols-2">
-              {related.map((article) => (
+              {related.map((entry) => (
+                <StaggerItem key={entry.slug}>
+                  <article className="group">
+                    <Link
+                      href={`/blog/${entry.slug}`}
+                      className="block"
+                      aria-label={entry.title}
+                    >
+                      <div className="relative aspect-[3/2] overflow-hidden rounded-[1.5rem]">
+                        <Image
+                          src={entry.coverImage}
+                          alt={entry.title}
+                          fill
+                          sizes="(min-width: 768px) 50vw, 100vw"
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                        />
+                        {entry.category && (
+                          <span className="absolute top-4 left-4 rounded-full border border-white/40 bg-white/85 px-3.5 py-1.5 text-xs font-semibold text-pine backdrop-blur-sm">
+                            {entry.category}
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-5 text-xs font-semibold tracking-[0.12em] text-muted uppercase">
+                        {formatDate(entry.publishedAt)} · {entry.readingTime} min read
+                      </p>
+                      <h3 className="font-heading mt-2.5 text-xl leading-snug font-bold tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary sm:text-2xl">
+                        {entry.title}
+                      </h3>
+                      <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-muted">
+                        {entry.excerpt}
+                      </p>
+                      <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary">
+                        Read Article
+                        <ArrowRight
+                          className="size-4 transition-transform duration-300 group-hover:translate-x-1.5"
+                          aria-hidden="true"
+                        />
+                      </span>
+                    </Link>
+                  </article>
+                </StaggerItem>
+              ))}
+              {fallbackRelated.map((article) => (
                 <StaggerItem key={article.slug}>
                   <article className="group">
                     <Link

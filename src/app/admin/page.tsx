@@ -4,11 +4,18 @@ import {
   ArrowUpRight,
   CalendarClock,
   ExternalLink,
+  FileText,
+  FolderOpen,
   PencilLine,
+  Quote,
   Sparkles,
+  Stethoscope,
+  Users,
 } from "lucide-react";
 import { getContent, getOverrideMeta } from "@/lib/content/store";
-import { contentGroups, upcomingAreas } from "@/lib/content/registry";
+import { contentGroups } from "@/lib/content/registry";
+import { getPublishedPosts } from "@/lib/entities";
+import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth-server";
 
 function greeting() {
@@ -28,10 +35,12 @@ function formatDate(date: Date) {
 }
 
 export default async function AdminDashboard() {
-  const [session, content, meta] = await Promise.all([
+  const [session, , meta, doctors, publishedPosts] = await Promise.all([
     getSession(),
     getContent(),
     getOverrideMeta(),
+    prisma.doctor.count().catch(() => 0),
+    getPublishedPosts().then((posts) => posts?.length ?? 0).catch(() => 0),
   ]);
 
   const editedKeys = Object.keys(meta);
@@ -41,7 +50,7 @@ export default async function AdminDashboard() {
     {
       label: "Editable Sections",
       value: contentGroups.length,
-      note: "across the whole site",
+      note: "copy across the whole site",
     },
     {
       label: "Sections Customized",
@@ -49,15 +58,23 @@ export default async function AdminDashboard() {
       note: editedKeys.length === 0 ? "all using defaults" : "published live",
     },
     {
-      label: "Doctors on Site",
-      value: content.doctors.items.length,
-      note: "homepage grid",
+      label: "Doctors",
+      value: doctors,
+      note: "managed as a table",
     },
     {
-      label: "FAQ Entries",
-      value: content.faq.items.length,
-      note: "shared accordion",
+      label: "Blog Posts",
+      value: publishedPosts,
+      note: "published on /blog",
     },
+  ];
+
+  const manageLinks = [
+    { href: "/admin/users", label: "Users", icon: Users },
+    { href: "/admin/doctors", label: "Doctors", icon: Stethoscope },
+    { href: "/admin/testimonials", label: "Testimonials", icon: Quote },
+    { href: "/admin/posts", label: "Blog Posts", icon: FileText },
+    { href: "/admin/categories", label: "Categories", icon: FolderOpen },
   ];
 
   const recent = editedKeys
@@ -100,6 +117,33 @@ export default async function AdminDashboard() {
           </div>
         ))}
       </dl>
+
+      {/* Managed entities */}
+      <section aria-labelledby="manage" className="mt-10">
+        <h2
+          id="manage"
+          className="font-heading text-lg font-bold tracking-tight text-foreground"
+        >
+          Manage
+        </h2>
+        <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {manageLinks.map((link) => (
+            <li key={link.href}>
+              <Link
+                href={link.href}
+                className="group flex h-full flex-col gap-3 rounded-2xl border border-border bg-white p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_16px_36px_-24px_rgb(24_63_58/0.4)]"
+              >
+                <span className="flex size-10 items-center justify-center rounded-xl bg-secondary text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-white">
+                  <link.icon className="size-[1.1rem]" aria-hidden="true" />
+                </span>
+                <span className="text-[0.9375rem] font-bold text-foreground">
+                  {link.label}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         {/* Quick edits */}
@@ -228,37 +272,6 @@ export default async function AdminDashboard() {
         </section>
       </div>
 
-      {/* Phase 2 */}
-      <section
-        aria-labelledby="coming-soon"
-        className="mt-10 rounded-[1.75rem] border border-border bg-white p-7 sm:p-8"
-      >
-        <h2
-          id="coming-soon"
-          className="font-heading text-lg font-bold tracking-tight text-foreground"
-        >
-          Next up
-        </h2>
-        <p className="mt-1.5 text-sm text-muted">
-          Planned additions to the admin panel.
-        </p>
-        <ul className="mt-6 grid gap-3 sm:grid-cols-3">
-          {upcomingAreas.map((area) => (
-            <li
-              key={area.title}
-              className="rounded-2xl border border-dashed border-border px-5 py-5"
-            >
-              <area.icon className="size-5 text-muted" aria-hidden="true" />
-              <p className="mt-3 text-[0.9375rem] font-bold text-foreground">
-                {area.title}
-              </p>
-              <p className="mt-1 text-xs leading-relaxed text-muted">
-                {area.note}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </section>
     </div>
   );
 }
