@@ -1,6 +1,24 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Renders "Plain title *Accent.*" — the italic serif accent part of section
+ * headings. Content comes from the CMS as two plain strings.
+ */
+export function accentedTitle(
+  title: string,
+  accent: string,
+  accentClassName = "font-accent font-normal text-primary italic"
+): ReactNode {
+  if (!accent) return title;
+  return (
+    <>
+      {title}{" "}
+      <em className={accentClassName}>{accent}</em>
+    </>
+  );
+}
+
 export function Eyebrow({
   children,
   className,

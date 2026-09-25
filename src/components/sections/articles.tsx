@@ -5,26 +5,30 @@ import { articles } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
+import { getContent } from "@/lib/content/store";
 
-export function Articles() {
+export async function Articles() {
+  const [content] = await Promise.all([getContent()]);
+  const articlesSection = content.articles;
+
   return (
     <section id="blog" className="py-24 md:py-32">
       <div className="shell">
         <div className="flex flex-wrap items-end justify-between gap-8">
           <SectionHeading
-            eyebrow="Health Journal"
+            eyebrow={articlesSection.eyebrow}
             title={
               <>
-                Insights for{" "}
+                {articlesSection.title}{" "}
                 <em className="font-accent font-normal text-primary italic">
-                  Better Health.
+                  {articlesSection.titleAccent}
                 </em>
               </>
             }
           />
           <Reveal delay={0.1} className="hidden sm:block">
             <Button href="#blog" variant="outline" withArrow>
-              All Articles
+              {articlesSection.viewAllLabel}
             </Button>
           </Reveal>
         </div>
@@ -66,9 +70,9 @@ export function Articles() {
                       className="size-4 transition-transform duration-300 group-hover:translate-x-1.5"
                       aria-hidden="true"
                     />
-                    </span>
-                  </Link>
-                </article>
+                  </span>
+                </Link>
+              </article>
             </StaggerItem>
           ))}
         </Stagger>

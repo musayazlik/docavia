@@ -8,7 +8,6 @@ import {
   Video,
 } from "lucide-react";
 import { useState, type FormEvent } from "react";
-import { doctors, services } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import {
   SelectField,
@@ -36,7 +35,15 @@ function formatDate(iso: string) {
   });
 }
 
-export function AppointmentForm() {
+export function AppointmentForm({
+  serviceTitles,
+  doctors,
+}: {
+  /** Current service titles from the content store. */
+  serviceTitles: string[];
+  /** Current doctor roster from the content store. */
+  doctors: Array<{ name: string; specialty: string }>;
+}) {
   const [status, setStatus] = useState<Status>("idle");
   const [department, setDepartment] = useState("");
   const [departmentError, setDepartmentError] = useState(false);
@@ -57,10 +64,7 @@ export function AppointmentForm() {
   };
 
   const departmentOptions: Option[] = [
-    ...services.map((service) => ({
-      value: service.title,
-      label: service.title,
-    })),
+    ...serviceTitles.map((title) => ({ value: title, label: title })),
     { value: "other", label: "Other / Not sure" },
   ];
 

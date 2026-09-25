@@ -3,7 +3,6 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { CheckCircle2, Send } from "lucide-react";
 import { useState, type FormEvent } from "react";
-import { services } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import {
   SelectField,
@@ -16,17 +15,19 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 type Status = "idle" | "sending" | "sent";
 
-export function ContactForm() {
+export function ContactForm({
+  serviceTitles,
+}: {
+  /** Current service titles from the content store. */
+  serviceTitles: string[];
+}) {
   const [status, setStatus] = useState<Status>("idle");
   const [department, setDepartment] = useState("");
   const [departmentError, setDepartmentError] = useState(false);
   const reduce = useReducedMotion();
 
   const departmentOptions: Option[] = [
-    ...services.map((service) => ({
-      value: service.title,
-      label: service.title,
-    })),
+    ...serviceTitles.map((title) => ({ value: title, label: title })),
     { value: "other", label: "Other / Not sure" },
   ];
 

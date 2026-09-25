@@ -20,6 +20,8 @@ export const defaultContent = {
     address: "123 Medical Avenue",
     city: "New York, NY",
     copyright: "© 2026 Docavia. All rights reserved.",
+    footerTagline:
+      "Modern, patient-centered healthcare — expert specialists, effortless appointments and care built around you.",
   },
 
   /* -------------------------------- Info bar -------------------------------- */

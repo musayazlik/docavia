@@ -34,6 +34,8 @@ const assurances = [
   },
 ];
 
+import { getContent } from "@/lib/content/store";
+
 export const metadata: Metadata = {
   title: "Services",
   description:
@@ -47,23 +49,27 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const content = await getContent();
+  const site = content.site;
+  const hero = content.pages.services;
+
   return (
     <>
       <Navbar />
       <main id="main">
         <PageHero
-          label="Services"
-          eyebrow="What We Offer"
+          label={hero.label}
+          eyebrow={hero.eyebrow}
           title={
             <>
-              Complete Care,{" "}
+              {hero.title}{" "}
               <em className="font-accent font-normal text-primary italic">
-                Under One Roof.
+                {hero.titleAccent}
               </em>
             </>
           }
-          description="Thirty medical services from everyday check-ups to advanced specialist programs — always with the same standard of attention."
+          description={hero.description}
         />
 
         <Services />

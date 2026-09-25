@@ -1,28 +1,30 @@
 import Image from "next/image";
-import { whyUsFeatures } from "@/lib/data";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
+import { getContent } from "@/lib/content/store";
 
-export function WhyUs() {
+export async function WhyUs() {
+  const whyUs = (await getContent()).whyUs;
+
   return (
     <section id="why-us" className="py-24 md:py-32">
       <div className="shell grid gap-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch lg:gap-20 xl:gap-24">
         <div>
           <SectionHeading
-            eyebrow="Why Docavia"
+            eyebrow={whyUs.eyebrow}
             title={
               <>
-                Healthcare You Can{" "}
+                {whyUs.title}{" "}
                 <em className="font-accent font-normal text-primary italic">
-                  Trust.
+                  {whyUs.titleAccent}
                 </em>
               </>
             }
-            description="Choosing a doctor is choosing peace of mind. Here is what every patient can expect from us — on the first visit and every one after."
+            description={whyUs.description}
           />
 
           <Stagger className="mt-14 divide-y divide-border border-y border-border">
-            {whyUsFeatures.map((feature, index) => (
+            {whyUs.features.map((feature, index) => (
               <StaggerItem key={feature.title}>
                 <div className="flex gap-8 py-8">
                   <span
@@ -63,12 +65,10 @@ export function WhyUs() {
           <div className="absolute -bottom-8 left-5 sm:left-9">
             <div className="flex animate-float items-center gap-4 rounded-2xl border border-border/70 bg-white/92 px-6 py-5 shadow-float backdrop-blur-md motion-reduce:animate-none">
               <span className="font-heading text-4xl font-bold tracking-tight text-primary">
-                98%
+                {whyUs.badgeValue}
               </span>
               <span className="text-sm leading-snug text-muted">
-                Patient
-                <br />
-                Satisfaction
+                {whyUs.badgeLabel}
               </span>
             </div>
           </div>

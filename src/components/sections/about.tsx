@@ -1,11 +1,25 @@
 import Image from "next/image";
 import { CheckCircle2 } from "lucide-react";
-import { aboutBenefits } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
+import { getContent } from "@/lib/content/store";
 
-export function About() {
+/** Renders "15+" with the trailing +/% highlighted, matching the design. */
+function BadgeValue({ value }: { value: string }) {
+  const match = value.match(/^(.*?)([+%])$/);
+  if (!match) return <>{value}</>;
+  return (
+    <>
+      {match[1]}
+      <span className="text-primary-light">{match[2]}</span>
+    </>
+  );
+}
+
+export async function About() {
+  const about = (await getContent()).about;
+
   return (
     <section id="about" className="py-24 md:py-32">
       <div className="shell grid items-center gap-16 lg:grid-cols-2 lg:gap-20">
@@ -26,7 +40,7 @@ export function About() {
             delay={0.2}
             className="absolute -right-3 -bottom-10 hidden w-44 sm:block md:-right-6 md:w-52"
           >
-            <div className="relative aspect-[3/4] overflow-hidden rounded-[1.5rem] border-[6px] border-white shadow-card">
+            <div className="aspect-[3/4] overflow-hidden rounded-[1.5rem] border-[6px] border-white shadow-card">
               <Image
                 src="/images/about-small.jpg"
                 alt="Docavia physician reviewing notes at her desk"
@@ -43,12 +57,10 @@ export function About() {
           >
             <div className="rounded-2xl bg-pine px-6 py-5 text-white shadow-soft">
               <p className="font-heading text-[1.75rem] leading-none font-bold tracking-tight">
-                15<span className="text-primary-light">+</span>
+                <BadgeValue value={about.badgeValue} />
               </p>
               <p className="mt-1.5 text-xs leading-snug text-white/70">
-                Years of
-                <br />
-                Experience
+                {about.badgeLabel}
               </p>
             </div>
           </Reveal>
@@ -57,20 +69,20 @@ export function About() {
         {/* copy */}
         <div>
           <SectionHeading
-            eyebrow="About Docavia"
+            eyebrow={about.eyebrow}
             title={
               <>
-                Healthcare Built{" "}
+                {about.title}{" "}
                 <em className="font-accent font-normal text-primary italic">
-                  Around You.
+                  {about.titleAccent}
                 </em>
               </>
             }
-            description="We believe great healthcare starts with listening. Our clinics combine experienced specialists, modern technology and unhurried consultations — so every visit leaves you feeling informed and cared for."
+            description={about.description}
           />
 
           <Stagger className="mt-10 grid gap-x-8 gap-y-7 sm:grid-cols-2">
-            {aboutBenefits.map((benefit) => (
+            {about.benefits.map((benefit) => (
               <StaggerItem key={benefit.title}>
                 <div className="flex gap-3.5">
                   <CheckCircle2
@@ -92,7 +104,7 @@ export function About() {
 
           <Reveal className="mt-11">
             <Button href="#services" variant="outline" withArrow>
-              Discover Docavia
+              {about.buttonLabel}
             </Button>
           </Reveal>
         </div>

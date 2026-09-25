@@ -13,51 +13,53 @@ import { Testimonials } from "@/components/sections/testimonials";
 import { Articles } from "@/components/sections/articles";
 import { Faq } from "@/components/sections/faq";
 import { FinalCta } from "@/components/sections/final-cta";
-import { site } from "@/lib/constants";
+import { getContent } from "@/lib/content/store";
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebSite",
-      "@id": `${site.url}/#website`,
-      url: site.url,
-      name: site.name,
-      description:
-        "Modern, patient-centered healthcare with expert specialists and effortless appointment booking.",
-    },
-    {
-      "@type": "MedicalClinic",
-      "@id": `${site.url}/#clinic`,
-      name: site.name,
-      url: site.url,
-      description:
-        "Modern, patient-centered healthcare with expert specialists and effortless appointment booking.",
-      telephone: site.phone,
-      email: site.email,
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: site.address,
-        addressLocality: site.city,
-      },
-      openingHoursSpecification: {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "08:00",
-        closes: "20:00",
-      },
-      medicalSpecialty: [
-        "Cardiovascular",
-        "Neurologic",
-        "Pediatric",
-        "Dentistry",
-        "PhysicalTherapy",
-      ],
-    },
-  ],
-};
+export default async function Home() {
+  const site = (await getContent()).site;
 
-export default function Home() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://docavia.com/#website",
+        url: "https://docavia.com",
+        name: site.name,
+        description:
+          "Modern, patient-centered healthcare with expert specialists and effortless appointment booking.",
+      },
+      {
+        "@type": "MedicalClinic",
+        "@id": "https://docavia.com/#clinic",
+        name: site.name,
+        url: "https://docavia.com",
+        description:
+          "Modern, patient-centered healthcare with expert specialists and effortless appointment booking.",
+        telephone: site.phone,
+        email: site.email,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: site.address,
+          addressLocality: site.city,
+        },
+        openingHoursSpecification: {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          opens: "08:00",
+          closes: "20:00",
+        },
+        medicalSpecialty: [
+          "Cardiovascular",
+          "Neurologic",
+          "Pediatric",
+          "Dentistry",
+          "PhysicalTherapy",
+        ],
+      },
+    ],
+  };
+
   return (
     <>
       <Navbar />

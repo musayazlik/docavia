@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/motion/reveal";
+import { getContent } from "@/lib/content/store";
 import { HeroVisual } from "./hero-visual";
 
 const heroAvatars = [
@@ -11,7 +12,10 @@ const heroAvatars = [
   { src: "/images/avatar-p3.jpg", alt: "Docavia patient" },
 ];
 
-export function Hero() {
+export async function Hero() {
+  const content = await getContent();
+  const hero = content.hero;
+
   return (
     <section id="home" className="relative overflow-hidden pt-32 pb-28 md:pt-40 md:pb-36">
       {/* atmosphere */}
@@ -37,33 +41,31 @@ export function Hero() {
       <div className="shell relative grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
         <div>
           <Reveal>
-            <Eyebrow>Modern Healthcare</Eyebrow>
+            <Eyebrow>{hero.eyebrow}</Eyebrow>
           </Reveal>
 
           <Reveal delay={0.08}>
             <h1 className="font-heading mt-5 text-[2.85rem] leading-[1.06] font-bold tracking-[-0.03em] text-balance text-foreground sm:text-[3.75rem] lg:text-[4.25rem] xl:text-[4.75rem]">
-              Better Care Starts With the{" "}
+              {hero.title}{" "}
               <em className="font-accent font-normal text-primary italic">
-                Right Doctor.
+                {hero.titleAccent}
               </em>
             </h1>
           </Reveal>
 
           <Reveal delay={0.16}>
             <p className="mt-6 max-w-lg text-[1.0625rem] leading-relaxed text-muted sm:text-lg">
-              Expert medical care designed around you. Connect with experienced
-              specialists, book appointments easily and take the next step
-              toward better health.
+              {hero.description}
             </p>
           </Reveal>
 
           <Reveal delay={0.24}>
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <Button href="#appointment" withArrow>
-                Book Appointment
+                {hero.primaryCta}
               </Button>
               <Button href="#doctors" variant="outline" withArrow>
-                Find a Doctor
+                {hero.secondaryCta}
               </Button>
             </div>
           </Reveal>
@@ -83,18 +85,21 @@ export function Hero() {
                 ))}
               </div>
               <div>
-                <div className="flex items-center gap-1.5" aria-label="Rated 4.9 out of 5">
+                <div
+                  className="flex items-center gap-1.5"
+                  aria-label={`Rated ${hero.ratingValue.replace("/5", "")} out of 5`}
+                >
                   <span className="flex text-[#f2b01e]">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star key={i} className="size-3.5 fill-current" aria-hidden="true" />
                     ))}
                   </span>
                   <span className="font-heading text-sm font-bold text-foreground">
-                    4.9/5
+                    {hero.ratingValue}
                   </span>
                 </div>
                 <p className="mt-0.5 text-sm text-muted">
-                  Trusted by 12,000+ patients
+                  {hero.ratingLabel}
                 </p>
               </div>
             </div>

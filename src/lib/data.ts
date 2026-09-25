@@ -1,238 +1,28 @@
-import {
-  Baby,
-  Brain,
-  CalendarCheck,
-  Dumbbell,
-  HeartPulse,
-  Smile,
-  Stethoscope,
-  type LucideIcon,
-} from "lucide-react";
+/* ------------------------------- Footer links ------------------------------- */
 
-/* ---------------------------------- Info bar --------------------------------- */
-
-export type InfoItem = {
-  icon: LucideIcon;
-  title: string;
-  lines: string[];
-  action?: { label: string; href: string };
-};
-
-export const infoItems: InfoItem[] = [
+export const footerColumns = [
   {
-    icon: HeartPulse,
-    title: "Emergency Care",
-    lines: ["24/7 Emergency Support", "+1 234 567 890"],
+    title: "Company",
+    links: [
+      { label: "About", href: "/about" },
+      { label: "Doctors", href: "/doctors" },
+      { label: "Services", href: "/services" },
+      { label: "Appointment", href: "/appointment" },
+      { label: "Blog", href: "/blog" },
+      { label: "Contact", href: "/contact" },
+    ],
   },
   {
-    icon: Stethoscope,
-    title: "Opening Hours",
-    lines: ["Mon – Fri", "08:00 – 20:00"],
-  },
-  {
-    icon: CalendarCheck,
-    title: "Appointment",
-    lines: ["Schedule your consultation"],
-    action: { label: "Book Now", href: "/appointment" },
-  },
-];
-
-/* ----------------------------------- About ----------------------------------- */
-
-export const aboutBenefits = [
-  {
-    title: "Personalized Care",
-    description: "Treatment plans shaped around your history and goals.",
-  },
-  {
-    title: "Experienced Specialists",
-    description: "Board-certified doctors across 30+ medical services.",
-  },
-  {
-    title: "Modern Technology",
-    description: "Accurate diagnostics with the latest medical equipment.",
-  },
-  {
-    title: "Easy Appointments",
-    description: "Book online in under two minutes — no phone queues.",
+    title: "Services",
+    links: [
+      { label: "Cardiology", href: "/services" },
+      { label: "General Medicine", href: "/services" },
+      { label: "Dental Care", href: "/services" },
+      { label: "Pediatrics", href: "/services" },
+      { label: "Neurology", href: "/services" },
+    ],
   },
 ] as const;
-
-/* ---------------------------------- Services --------------------------------- */
-
-export type Service = {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  highlight?: "dark" | "tint";
-};
-
-export const services: Service[] = [
-  {
-    icon: Stethoscope,
-    title: "General Medicine",
-    description:
-      "Everyday primary care, annual check-ups and preventive screenings for the whole family.",
-  },
-  {
-    icon: HeartPulse,
-    title: "Cardiology",
-    description:
-      "Advanced heart care — from ECG and stress testing to long-term cardiovascular programs.",
-    highlight: "dark",
-  },
-  {
-    icon: Smile,
-    title: "Dental Care",
-    description:
-      "Gentle dentistry with modern imaging, hygiene treatments and cosmetic procedures.",
-  },
-  {
-    icon: Baby,
-    title: "Pediatrics",
-    description:
-      "Compassionate care for newborns, children and teens through every growth stage.",
-    highlight: "tint",
-  },
-  {
-    icon: Brain,
-    title: "Neurology",
-    description:
-      "Diagnosis and treatment for headaches, sleep disorders and neurological conditions.",
-  },
-  {
-    icon: Dumbbell,
-    title: "Physiotherapy",
-    description:
-      "Personalized rehabilitation programs that restore movement and build lasting strength.",
-  },
-];
-
-/* ----------------------------------- Why us ---------------------------------- */
-
-export const whyUsFeatures = [
-  {
-    title: "Expert Specialists",
-    description:
-      "A hand-picked team of senior physicians, each a leader in their field.",
-  },
-  {
-    title: "Advanced Technology",
-    description:
-      "Digital diagnostics, imaging and labs — all under one calm roof.",
-  },
-  {
-    title: "Patient-Centered Care",
-    description:
-      "Unrushed consultations where you are heard first and treated second.",
-  },
-  {
-    title: "Seamless Appointments",
-    description:
-      "Online booking, smart reminders and zero paperwork on arrival.",
-  },
-] as const;
-
-/* ----------------------------------- Stats ----------------------------------- */
-
-export const stats = [
-  { value: 25, suffix: "+", label: "Years Experience" },
-  { value: 50, suffix: "+", label: "Medical Specialists" },
-  { value: 12, suffix: "K+", label: "Happy Patients" },
-  { value: 30, suffix: "+", label: "Medical Services" },
-] as const;
-
-/* ---------------------------------- Doctors ---------------------------------- */
-
-export type Doctor = {
-  name: string;
-  specialty: string;
-  bio: string;
-  image: string;
-};
-
-export const doctors: Doctor[] = [
-  {
-    name: "Dr. Emily Carter",
-    specialty: "Cardiologist",
-    bio: "Interventional cardiology with a preventive, lifestyle-first approach.",
-    image: "/images/doctor-emily.jpg",
-  },
-  {
-    name: "Dr. James Wilson",
-    specialty: "Neurologist",
-    bio: "Specialist in headache medicine, sleep disorders and neuro-diagnostics.",
-    image: "/images/doctor-james.jpg",
-  },
-  {
-    name: "Dr. Olivia Martin",
-    specialty: "Pediatrician",
-    bio: "Gentle, family-centered care from the first check-up to adolescence.",
-    image: "/images/doctor-olivia.jpg",
-  },
-  {
-    name: "Dr. Daniel Brooks",
-    specialty: "General Practitioner",
-    bio: "Everyday medicine done thoroughly — prevention, screening and follow-up.",
-    image: "/images/doctor-daniel.jpg",
-  },
-];
-
-/* -------------------------------- How it works ------------------------------- */
-
-export const steps = [
-  {
-    number: "01",
-    title: "Find Your Doctor",
-    description:
-      "Browse specialists by field, read profiles and choose the right match for your needs.",
-  },
-  {
-    number: "02",
-    title: "Choose Your Time",
-    description:
-      "Pick a slot that fits your week and confirm instantly — no waiting on hold.",
-  },
-  {
-    number: "03",
-    title: "Get Expert Care",
-    description:
-      "Meet your doctor, receive a clear plan and follow up online whenever needed.",
-  },
-] as const;
-
-/* -------------------------------- Testimonials ------------------------------- */
-
-export type Testimonial = {
-  quote: string;
-  name: string;
-  role: string;
-  avatar: string;
-};
-
-export const testimonials: Testimonial[] = [
-  {
-    quote:
-      "The entire experience was simple, professional and reassuring. From booking my appointment to meeting the doctor, everything felt effortless.",
-    name: "Sophia Anderson",
-    role: "Patient — Cardiology",
-    avatar: "/images/patient-sophia.jpg",
-  },
-  {
-    quote:
-      "I never feel like a number here. My doctor took time to explain every option and the follow-up care has been exceptional.",
-    name: "Emma Collins",
-    role: "Patient — Physiotherapy",
-    avatar: "/images/avatar-p1.jpg",
-  },
-  {
-    quote:
-      "Booking took two minutes and the reminders kept me on track. The clinic itself feels calm and genuinely welcoming.",
-    name: "Rachel Nguyen",
-    role: "Patient — Pediatrics",
-    avatar: "/images/avatar-p3.jpg",
-  },
-];
 
 /* ---------------------------------- Articles --------------------------------- */
 
@@ -569,31 +359,5 @@ export const faqs = [
     question: "Do you accept insurance?",
     answer:
       "We work with all major insurance providers. Our team verifies your coverage before your visit so there are no surprises.",
-  },
-] as const;
-
-/* ----------------------------------- Footer ---------------------------------- */
-
-export const footerColumns = [
-  {
-    title: "Company",
-    links: [
-      { label: "About", href: "/about" },
-      { label: "Doctors", href: "/doctors" },
-      { label: "Services", href: "/services" },
-      { label: "Appointment", href: "/appointment" },
-      { label: "Blog", href: "/blog" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
-  {
-    title: "Services",
-    links: [
-      { label: "Cardiology", href: "/services" },
-      { label: "General Medicine", href: "/services" },
-      { label: "Dental Care", href: "/services" },
-      { label: "Pediatrics", href: "/services" },
-      { label: "Neurology", href: "/services" },
-    ],
   },
 ] as const;

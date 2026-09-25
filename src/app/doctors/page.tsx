@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowUpRight, Mail } from "lucide-react";
+import { ArrowUpRight, Mail, type LucideIcon } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { PageHero } from "@/components/ui/page-hero";
@@ -8,8 +8,15 @@ import { Doctors } from "@/components/sections/doctors";
 import { Testimonials } from "@/components/sections/testimonials";
 import { AppointmentCta } from "@/components/sections/appointment-cta";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
-import { services } from "@/lib/data";
-import { site } from "@/lib/constants";
+import { getContent } from "@/lib/content/store";
+import {
+  Baby,
+  Brain,
+  Dumbbell,
+  HeartPulse,
+  Smile,
+  Stethoscope,
+} from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Doctors",
@@ -24,23 +31,36 @@ export const metadata: Metadata = {
   },
 };
 
-export default function DoctorsPage() {
+const SERVICE_ICONS: LucideIcon[] = [
+  Stethoscope,
+  HeartPulse,
+  Smile,
+  Baby,
+  Brain,
+  Dumbbell,
+];
+
+export default async function DoctorsPage() {
+  const content = await getContent();
+  const site = content.site;
+  const hero = content.pages.doctors;
+
   return (
     <>
       <Navbar />
       <main id="main">
         <PageHero
-          label="Doctors"
-          eyebrow="The Team"
+          label={hero.label}
+          eyebrow={hero.eyebrow}
           title={
             <>
-              Experts Who{" "}
+              {hero.title}{" "}
               <em className="font-accent font-normal text-primary italic">
-                Listen First.
+                {hero.titleAccent}
               </em>
             </>
           }
-          description="Fifty board-certified physicians across thirty fields — hand-picked not only for their credentials, but for how they treat people."
+          description={hero.description}
         />
 
         <Doctors hideViewAll />
@@ -62,14 +82,16 @@ export default function DoctorsPage() {
             />
 
             <Stagger className="grid gap-4 sm:grid-cols-2">
-              {services.map((service) => (
+              {content.services.items.map((service, index) => {
+                const Icon = SERVICE_ICONS[index % SERVICE_ICONS.length];
+                return (
                 <StaggerItem key={service.title}>
                   <a
                     href="/services"
                     className="group flex items-center gap-4 rounded-2xl border border-border bg-white px-5 py-4.5 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-card"
                   >
                     <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-white">
-                      <service.icon className="size-5" aria-hidden="true" />
+                      <Icon className="size-5" aria-hidden="true" />
                     </span>
                     <span className="font-heading flex-1 text-[0.95rem] font-bold tracking-tight text-foreground">
                       {service.title}
@@ -80,7 +102,8 @@ export default function DoctorsPage() {
                     />
                   </a>
                 </StaggerItem>
-              ))}
+                );
+              })}
             </Stagger>
           </div>
         </section>

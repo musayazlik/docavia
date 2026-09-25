@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/motion/reveal";
+import { getContent } from "@/lib/content/store";
 
-export function FinalCta() {
+export async function FinalCta() {
+  const finalCta = (await getContent()).finalCta;
+
   return (
     <section className="pb-24 md:pb-32">
       <div className="shell">
@@ -36,21 +39,20 @@ export function FinalCta() {
 
             <div className="relative mx-auto max-w-2xl">
               <h2 className="font-heading text-[2.1rem] leading-[1.12] font-bold tracking-[-0.025em] text-balance text-foreground sm:text-[2.75rem] lg:text-[3.25rem]">
-                Ready to Take Better{" "}
+                {finalCta.title}{" "}
                 <em className="font-accent font-normal text-primary italic">
-                  Care of Your Health?
+                  {finalCta.titleAccent}
                 </em>
               </h2>
               <p className="mx-auto mt-6 max-w-xl text-[1.0625rem] leading-relaxed text-muted">
-                Book an appointment with one of our specialists and take the
-                next step toward better health.
+                {finalCta.description}
               </p>
               <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
                 <Button href="#appointment" withArrow>
-                  Book Appointment
+                  {finalCta.primaryCta}
                 </Button>
                 <Button href="#contact" variant="outline">
-                  Contact Us
+                  {finalCta.secondaryCta}
                 </Button>
               </div>
             </div>

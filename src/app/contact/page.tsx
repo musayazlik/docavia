@@ -15,7 +15,7 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { ContactForm } from "@/components/sections/contact-form";
 import { Faq } from "@/components/sections/faq";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
-import { site } from "@/lib/constants";
+import { getContent } from "@/lib/content/store";
 
 type ContactCard = {
   icon: LucideIcon;
@@ -35,39 +35,7 @@ const directionsHref =
 const mapEmbedHref =
   "https://maps.google.com/maps?q=40.7440,-73.9860&z=15&output=embed";
 
-const contactCards: ContactCard[] = [
-  {
-    icon: Phone,
-    title: "Call Us",
-    line1: site.phone,
-    line2: "Mon – Fri, 08:00 – 20:00",
-    href: site.phoneHref,
-    linkLabel: "Call now",
-  },
-  {
-    icon: Mail,
-    title: "Email Us",
-    line1: site.email,
-    line2: "Replies within one working day",
-    href: site.emailHref,
-    linkLabel: "Write an email",
-  },
-  {
-    icon: MapPin,
-    title: "Visit Us",
-    line1: site.address,
-    line2: site.city,
-    href: directionsHref,
-    linkLabel: "Get directions",
-    external: true,
-  },
-  {
-    icon: Clock,
-    title: "Opening Hours",
-    line1: "Mon – Fri · 08:00 – 20:00",
-    line2: "Saturday · 09:00 – 14:00",
-  },
-];
+
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -82,23 +50,61 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const content = await getContent();
+  const site = content.site;
+  const hero = content.pages.contact;
+
+  const contactCards: ContactCard[] = [
+    {
+      icon: Phone,
+      title: "Call Us",
+      line1: site.phone,
+      line2: "Mon – Fri, 08:00 – 20:00",
+      href: site.phoneHref,
+      linkLabel: "Call now",
+    },
+    {
+      icon: Mail,
+      title: "Email Us",
+      line1: site.email,
+      line2: "Replies within one working day",
+      href: site.emailHref,
+      linkLabel: "Write an email",
+    },
+    {
+      icon: MapPin,
+      title: "Visit Us",
+      line1: site.address,
+      line2: site.city,
+      href: directionsHref,
+      linkLabel: "Get directions",
+      external: true,
+    },
+    {
+      icon: Clock,
+      title: "Opening Hours",
+      line1: "Mon – Fri · 08:00 – 20:00",
+      line2: "Saturday · 09:00 – 14:00",
+    },
+  ];
+
   return (
     <>
       <Navbar />
       <main id="main">
         <PageHero
-          label="Contact"
-          eyebrow="Contact Us"
+          label={hero.label}
+          eyebrow={hero.eyebrow}
           title={
             <>
-              We&apos;re Here{" "}
+              {hero.title}{" "}
               <em className="font-accent font-normal text-primary italic">
-                When You Need Us.
+                {hero.titleAccent}
               </em>
             </>
           }
-          description="Questions about a service, your visit or an appointment? Reach out — a real person from our care team will answer."
+          description={hero.description}
         />
 
         {/* Contact channels */}
@@ -156,7 +162,9 @@ export default function ContactPage() {
                 description="Fill in the form and our care team will match you with the right specialist — usually within one working day."
               />
               <Reveal className="mt-9" delay={0.1}>
-                <ContactForm />
+                <ContactForm
+                  serviceTitles={content.services.items.map((item) => item.title)}
+                />
               </Reveal>
             </div>
 

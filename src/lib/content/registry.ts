@@ -70,6 +70,12 @@ const CONTACT_FIELDS: FieldDef[] = [
   { key: "address", label: "Street address", type: "text" },
   { key: "city", label: "City / region", type: "text" },
   { key: "copyright", label: "Footer copyright line", type: "text" },
+  {
+    key: "footerTagline",
+    label: "Footer tagline",
+    type: "textarea",
+    help: "Short mission line under the logo in the footer.",
+  },
 ];
 
 export const contentGroups: ContentGroup[] = [

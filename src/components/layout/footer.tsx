@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { site } from "@/lib/constants";
 import { footerColumns } from "@/lib/data";
+import { getContent } from "@/lib/content/store";
 
 function FacebookIcon({ className }: { className?: string }) {
   return (
@@ -45,7 +45,9 @@ const socials = [
   { Icon: LinkedInIcon, label: "LinkedIn", href: "#" },
 ];
 
-export function Footer() {
+export async function Footer() {
+  const site = (await getContent()).site;
+
   return (
     <footer id="contact" className="bg-pine-deep text-white/65">
       <div className="shell pt-20 pb-10 md:pt-24">
@@ -64,8 +66,7 @@ export function Footer() {
               </span>
             </span>
             <p className="mt-5 max-w-xs text-[0.9375rem] leading-relaxed">
-              Modern, patient-centered healthcare — expert specialists,
-              effortless appointments and care built around you.
+              {site.footerTagline}
             </p>
             <div className="mt-6 flex gap-3">
               {socials.map(({ Icon, label, href }) => (
@@ -137,7 +138,7 @@ export function Footer() {
         </div>
 
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-7 text-sm sm:flex-row">
-          <p>© 2026 {site.name}. All rights reserved.</p>
+          <p>{site.copyright}</p>
           <div className="flex gap-7">
             {[
               { label: "Privacy Policy", href: "/privacy-policy" },

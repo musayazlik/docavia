@@ -15,9 +15,9 @@ import { WhyUs } from "@/components/sections/why-us";
 import { AppointmentCta } from "@/components/sections/appointment-cta";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 
-import { aboutBenefits } from "@/lib/data";
-
 const valueIcons = [HeartHandshake, Award, Microscope, CalendarCheck];
+
+import { getContent } from "@/lib/content/store";
 
 export const metadata: Metadata = {
   title: "About",
@@ -32,23 +32,27 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const content = await getContent();
+  const site = content.site;
+  const hero = content.pages.about;
+
   return (
     <>
       <Navbar />
       <main id="main">
         <PageHero
-          label="About"
-          eyebrow="About Docavia"
+          label={hero.label}
+          eyebrow={hero.eyebrow}
           title={
             <>
-              Medicine With the{" "}
+              {hero.title}{" "}
               <em className="font-accent font-normal text-primary italic">
-                Human Touch.
+                {hero.titleAccent}
               </em>
             </>
           }
-          description="We are a team of specialists who believe great care starts with listening — and never stops at the prescription."
+          description={hero.description}
         />
 
         {/* Story */}
@@ -166,7 +170,7 @@ export default function AboutPage() {
             />
 
             <Stagger className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {aboutBenefits.map((benefit, index) => {
+              {content.about.benefits.map((benefit, index) => {
                 const Icon = valueIcons[index];
                 return (
                   <StaggerItem key={benefit.title} className="h-full">

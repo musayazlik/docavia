@@ -16,7 +16,7 @@ import { AppointmentForm } from "@/components/sections/appointment-form";
 import { OpeningHours } from "@/components/sections/opening-hours";
 import { Faq } from "@/components/sections/faq";
 import { Reveal } from "@/components/motion/reveal";
-import { site } from "@/lib/constants";
+import { getContent } from "@/lib/content/store";
 
 const directionsHref =
   "https://www.google.com/maps/search/?api=1&query=123+Medical+Avenue+New+York+NY";
@@ -77,53 +77,57 @@ export const metadata: Metadata = {
   },
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "MedicalClinic",
-  name: site.name,
-  url: site.url,
-  telephone: site.phone,
-  email: site.email,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: site.address,
-    addressLocality: "New York",
-    addressRegion: "NY",
-    addressCountry: "US",
-  },
-  openingHoursSpecification: [
-    {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-      opens: "08:00",
-      closes: "20:00",
-    },
-    {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: "Saturday",
-      opens: "09:00",
-      closes: "14:00",
-    },
-  ],
-};
+export default async function AppointmentPage() {
+  const content = await getContent();
+  const site = content.site;
+  const hero = content.pages.appointment;
 
-export default function AppointmentPage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "MedicalClinic",
+    name: site.name,
+    url: "https://docavia.com",
+    telephone: site.phone,
+    email: site.email,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: site.address,
+      addressLocality: "New York",
+      addressRegion: "NY",
+      addressCountry: "US",
+    },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        opens: "08:00",
+        closes: "20:00",
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: "Saturday",
+        opens: "09:00",
+        closes: "14:00",
+      },
+    ],
+  };
+
   return (
     <>
       <Navbar />
       <main id="main">
         <PageHero
-          label="Appointment"
-          eyebrow="Book a Visit"
+          label={hero.label}
+          eyebrow={hero.eyebrow}
           title={
             <>
-              Book Your Visit in{" "}
+              {hero.title}{" "}
               <em className="font-accent font-normal text-primary italic">
-                Under Two Minutes.
+                {hero.titleAccent}
               </em>
             </>
           }
-          description="Pick the department, the doctor and the time that suits you — our care team confirms every request personally, usually within one working day."
+          description={hero.description}
         />
 
         {/* Request form + opening hours */}
@@ -147,13 +151,19 @@ export default function AppointmentPage() {
                 description="Fill in the form below — no account needed. We'll call to confirm the exact time."
               />
               <Reveal className="mt-9" delay={0.1}>
-                <AppointmentForm />
+                <AppointmentForm
+                  serviceTitles={content.services.items.map((item) => item.title)}
+                  doctors={content.doctors.items.map((item) => ({
+                    name: item.name,
+                    specialty: item.specialty,
+                  }))}
+                />
               </Reveal>
             </div>
 
             <div className="flex flex-col gap-5">
               <Reveal delay={0.15}>
-                <OpeningHours />
+                <OpeningHours items={[...content.openingHours.items]} phoneHref={content.site.phoneHref} />
               </Reveal>
 
               <Reveal delay={0.2}>

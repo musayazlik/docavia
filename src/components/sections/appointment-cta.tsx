@@ -1,11 +1,14 @@
 import Image from "next/image";
 import { Phone } from "lucide-react";
-import { site } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/motion/reveal";
+import { getContent } from "@/lib/content/store";
 
-export function AppointmentCta() {
+export async function AppointmentCta() {
+  const content = await getContent();
+  const cta = content.appointmentCta;
+
   return (
     <section id="appointment" className="pt-24 pb-24 md:pt-32 md:pb-32">
       <div className="shell">
@@ -18,8 +21,8 @@ export function AppointmentCta() {
             />
             <svg
               viewBox="0 0 48 48"
-              aria-hidden="true"
               className="absolute bottom-12 left-12 hidden size-14 text-white/10 lg:block"
+              aria-hidden="true"
             >
               <path
                 d="M18 4h12v14h14v12H30v14H18V30H4V18h14V4Z"
@@ -36,30 +39,29 @@ export function AppointmentCta() {
 
             <div className="p-8 sm:p-12 lg:grid lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:p-0">
               <div className="lg:py-20 lg:pl-16 lg:pr-0">
-                <Eyebrow inverted>Book an Appointment</Eyebrow>
+                <Eyebrow inverted>{cta.eyebrow}</Eyebrow>
                 <h2 className="font-heading mt-5 max-w-md text-[2rem] leading-[1.14] font-bold tracking-[-0.025em] text-balance sm:text-[2.5rem] lg:text-[2.85rem]">
-                  Your Health Deserves the{" "}
+                  {cta.title}{" "}
                   <em className="font-accent font-normal text-primary-light italic">
-                    Right Attention.
+                    {cta.titleAccent}
                   </em>
                 </h2>
                 <p className="mt-5 max-w-md text-[1.0625rem] leading-relaxed text-white/65">
-                  Tell us what you need and we will match you with the right
-                  specialist — usually within one working day.
+                  {cta.description}
                 </p>
                 <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4 pb-2">
                   <Button href="/appointment" variant="light" withArrow>
-                    Schedule Appointment
+                    {cta.buttonLabel}
                   </Button>
                   <a
-                    href={site.phoneHref}
+                    href={content.site.phoneHref}
                     className="inline-flex items-center gap-2.5 text-sm font-semibold text-white/80 transition-colors hover:text-white"
                   >
                     <Phone
                       className="size-4 text-primary-light"
                       aria-hidden="true"
                     />
-                    or call {site.phone}
+                    or call {content.site.phone}
                   </a>
                 </div>
               </div>

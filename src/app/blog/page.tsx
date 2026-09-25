@@ -13,6 +13,8 @@ import { articles } from "@/lib/data";
 
 const [featured, ...rest] = articles;
 
+import { getContent } from "@/lib/content/store";
+
 export const metadata: Metadata = {
   title: "Blog",
   description:
@@ -27,23 +29,27 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const content = await getContent();
+  const site = content.site;
+  const hero = content.pages.blog;
+
   return (
     <>
       <Navbar />
       <main id="main">
         <PageHero
-          label="Blog"
-          eyebrow="Health Journal"
+          label={hero.label}
+          eyebrow={hero.eyebrow}
           title={
             <>
-              Insights for{" "}
+              {hero.title}{" "}
               <em className="font-accent font-normal text-primary italic">
-                Better Health.
+                {hero.titleAccent}
               </em>
             </>
           }
-          description="Practical, physician-reviewed articles on prevention, heart health and everyday wellbeing — no scare tactics, just clarity."
+          description={hero.description}
         />
 
         {/* Featured article */}

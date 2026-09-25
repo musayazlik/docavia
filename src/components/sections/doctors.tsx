@@ -1,22 +1,24 @@
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
-import { doctors } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
+import { getContent } from "@/lib/content/store";
 
-export function Doctors({ hideViewAll = false }: { hideViewAll?: boolean }) {
+export async function Doctors({ hideViewAll = false }: { hideViewAll?: boolean }) {
+  const doctors = (await getContent()).doctors;
+
   return (
     <section id="doctors" className="bg-secondary/60 py-24 md:py-32">
       <div className="shell">
         <div className="flex flex-wrap items-end justify-between gap-8">
           <SectionHeading
-            eyebrow="Our Specialists"
+            eyebrow={doctors.eyebrow}
             title={
               <>
-                Meet the People{" "}
+                {doctors.title}{" "}
                 <em className="font-accent font-normal text-primary italic">
-                  Behind Your Care.
+                  {doctors.titleAccent}
                 </em>
               </>
             }
@@ -24,14 +26,14 @@ export function Doctors({ hideViewAll = false }: { hideViewAll?: boolean }) {
           {!hideViewAll && (
             <Reveal delay={0.1} className="hidden sm:block">
               <Button href="/doctors" variant="outline" withArrow>
-                View All Doctors
+                {doctors.viewAllLabel}
               </Button>
             </Reveal>
           )}
         </div>
 
         <Stagger className="mt-14 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-          {doctors.map((doctor) => (
+          {doctors.items.map((doctor) => (
             <StaggerItem key={doctor.name}>
               <article className="group">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-[1.75rem]">
@@ -73,7 +75,7 @@ export function Doctors({ hideViewAll = false }: { hideViewAll?: boolean }) {
         {!hideViewAll && (
           <Reveal className="mt-12 text-center sm:hidden">
             <Button href="/doctors" variant="outline" withArrow>
-              View All Doctors
+              {doctors.viewAllLabel}
             </Button>
           </Reveal>
         )}
