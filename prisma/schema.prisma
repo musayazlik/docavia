@@ -146,3 +146,20 @@ model BlogPost {
 
   @@index([published, publishedAt])
 }
+
+// ------------------------------- Media library ------------------------------
+// Every admin upload lands here so content editors can reuse previously
+// uploaded images instead of re-uploading the same file.
+
+model MediaAsset {
+  id        String   @id @default(cuid())
+  url       String   @unique
+  filename  String
+  width     Int?
+  height    Int?
+  size      Int?
+  createdBy String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

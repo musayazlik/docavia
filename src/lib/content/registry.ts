@@ -98,7 +98,18 @@ export const contentGroups: ContentGroup[] = [
     icon: Settings,
     category: "general",
     fields: CONTACT_FIELDS,
-    lists: [],
+    lists: [
+      {
+        key: "socials",
+        label: "Social media",
+        itemLabel: "social link",
+        help: "Round icon buttons in the footer. Platform: Facebook, Instagram, X, LinkedIn or YouTube — other names get a globe icon.",
+        fields: [
+          { key: "platform", label: "Platform", type: "text", placeholder: "Instagram" },
+          { key: "url", label: "URL", type: "text", placeholder: "https://instagram.com/docavia" },
+        ],
+      },
+    ],
   },
   {
     key: "infoBar",

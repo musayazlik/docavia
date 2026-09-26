@@ -3,6 +3,7 @@ import { UTApi, UploadThingError } from "uploadthing/server";
 import type { UploadedFileData } from "uploadthing/types";
 import sharp from "sharp";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 const f = createUploadthing();
 
@@ -61,6 +62,19 @@ export const fileRouter = {
       } catch (error) {
         // never fail the upload over optimization — keep the original instead
         console.error("[uploadthing] WebP conversion failed, keeping original:", error);
+      }
+      try {
+        await prisma.mediaAsset.create({
+          data: {
+            url,
+            filename: file.name,
+            size: file.size,
+            createdBy: metadata.userId,
+          },
+        });
+      } catch (error) {
+        // library registration is best-effort; the upload itself is already done
+        console.error("[uploadthing] media library registration failed:", error);
       }
       return { uploadedBy: metadata.userId, url };
     }),

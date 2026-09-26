@@ -12,6 +12,7 @@ import {
   FileCode,
   Heading2,
   Heading3,
+  FolderOpen,
   ImagePlus,
   Italic,
   Link2,
@@ -28,6 +29,7 @@ import {
 } from "lucide-react";
 import { Dialog, FormField, inputClasses } from "@/components/admin/ui/dialog";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
+import { MediaPickerDialog } from "@/components/admin/media-picker-dialog";
 import { cn } from "@/lib/utils";
 
 function ToolButton({
@@ -248,6 +250,7 @@ export function TiptapEditor({
   const [dialog, setDialog] = useState<"image" | "youtube" | null>(null);
   const [mediaUrl, setMediaUrl] = useState("");
   const [mediaError, setMediaError] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -336,6 +339,14 @@ export function TiptapEditor({
               help="Uploaded images are hosted on the site's media CDN."
             />
           )}
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-white px-3.5 py-2 text-sm font-semibold text-foreground transition-colors duration-200 hover:border-primary/40 hover:text-primary"
+          >
+            <FolderOpen className="size-4" aria-hidden="true" />
+            Pick from library
+          </button>
           <FormField label="Image URL" htmlFor="editor-image-url">
             <input
               id="editor-image-url"
@@ -411,6 +422,15 @@ export function TiptapEditor({
           </div>
         </div>
       </Dialog>
+
+      <MediaPickerDialog
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onPick={(url) => {
+          setMediaUrl(url);
+          setPickerOpen(false);
+        }}
+      />
     </div>
   );
 }

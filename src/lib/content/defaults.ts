@@ -22,6 +22,12 @@ export const defaultContent = {
     copyright: "© 2026 Docavia. All rights reserved.",
     footerTagline:
       "Modern, patient-centered healthcare — expert specialists, effortless appointments and care built around you.",
+    socials: [
+      { platform: "Facebook", url: "#" },
+      { platform: "Instagram", url: "#" },
+      { platform: "X", url: "#" },
+      { platform: "LinkedIn", url: "#" },
+    ],
   },
 
   /* -------------------------------- Info bar -------------------------------- */

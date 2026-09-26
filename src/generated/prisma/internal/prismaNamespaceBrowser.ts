@@ -59,7 +59,8 @@ export const ModelName = {
   Doctor: 'Doctor',
   Testimonial: 'Testimonial',
   BlogCategory: 'BlogCategory',
-  BlogPost: 'BlogPost'
+  BlogPost: 'BlogPost',
+  MediaAsset: 'MediaAsset'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -207,6 +208,20 @@ export const BlogPostScalarFieldEnum = {
 } as const
 
 export type BlogPostScalarFieldEnum = (typeof BlogPostScalarFieldEnum)[keyof typeof BlogPostScalarFieldEnum]
+
+
+export const MediaAssetScalarFieldEnum = {
+  id: 'id',
+  url: 'url',
+  filename: 'filename',
+  width: 'width',
+  height: 'height',
+  size: 'size',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt'
+} as const
+
+export type MediaAssetScalarFieldEnum = (typeof MediaAssetScalarFieldEnum)[keyof typeof MediaAssetScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -62,3 +62,8 @@ export type BlogCategory = Prisma.BlogCategoryModel
  * 
  */
 export type BlogPost = Prisma.BlogPostModel
+/**
+ * Model MediaAsset
+ * 
+ */
+export type MediaAsset = Prisma.MediaAssetModel

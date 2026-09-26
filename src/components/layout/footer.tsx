@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Globe, Mail, MapPin, Phone } from "lucide-react";
 import { footerColumns } from "@/lib/data";
 import { getContent } from "@/lib/content/store";
 
@@ -38,12 +38,17 @@ function LinkedInIcon({ className }: { className?: string }) {
   );
 }
 
-const socials = [
-  { Icon: FacebookIcon, label: "Facebook", href: "#" },
-  { Icon: InstagramIcon, label: "Instagram", href: "#" },
-  { Icon: XIcon, label: "X (Twitter)", href: "#" },
-  { Icon: LinkedInIcon, label: "LinkedIn", href: "#" },
-];
+/** Brand icons are hand-drawn SVGs — lucide ships no brand marks. */
+const SOCIAL_ICONS: Record<
+  string,
+  (props: { className?: string }) => React.JSX.Element
+> = {
+  facebook: FacebookIcon,
+  instagram: InstagramIcon,
+  x: XIcon,
+  twitter: XIcon,
+  linkedin: LinkedInIcon,
+};
 
 export async function Footer() {
   const site = (await getContent()).site;
@@ -69,16 +74,20 @@ export async function Footer() {
               {site.footerTagline}
             </p>
             <div className="mt-6 flex gap-3">
-              {socials.map(({ Icon, label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="flex size-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition-all duration-300 hover:border-white/30 hover:bg-white/10 hover:text-white"
-                >
-                  <Icon className="size-4" />
-                </a>
-              ))}
+              {site.socials.map(({ platform, url }, index) => {
+                const Icon =
+                  SOCIAL_ICONS[platform.trim().toLowerCase()] ?? Globe;
+                return (
+                  <a
+                    key={`${platform}-${index}`}
+                    href={url || "#"}
+                    aria-label={platform}
+                    className="flex size-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition-all duration-300 hover:border-white/30 hover:bg-white/10 hover:text-white"
+                  >
+                    <Icon className="size-4" />
+                  </a>
+                );
+              })}
             </div>
           </div>
 

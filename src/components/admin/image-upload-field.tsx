@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import { useRef, useState, type DragEvent } from "react";
-import { ImageIcon, ImagePlus, Loader2 } from "lucide-react";
+import { FolderOpen, ImageIcon, ImagePlus, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUploadThing } from "@/lib/uploadthing";
 import { useToast } from "@/components/admin/toast";
+import { MediaPickerDialog } from "@/components/admin/media-picker-dialog";
 
-const SIZE_HINT = "JPG, PNG or WebP · up to 4 MB · auto-optimized as WebP (70%)";
+const SIZE_HINT = "JPG, PNG or WebP · up to 4 MB";
 const INACTIVE_HINT =
   "Uploads are inactive — add your UPLOADTHING_TOKEN to .env and restart the dev server.";
 
@@ -19,6 +20,9 @@ const ASPECT_CLASSES = {
 
 const replaceClasses =
   "inline-flex items-center gap-1.5 rounded-xl border border-primary/30 bg-white px-3.5 py-2 text-sm font-semibold text-primary transition-colors duration-200 hover:border-primary hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-primary/30 disabled:hover:bg-white disabled:hover:text-primary";
+
+const libraryClasses =
+  "inline-flex items-center gap-1.5 rounded-xl border border-border bg-white px-3.5 py-2 text-sm font-semibold text-foreground transition-colors duration-200 hover:border-primary/40 hover:text-primary";
 
 const removeClasses =
   "inline-flex items-center rounded-xl px-3 py-2 text-sm font-semibold text-red-600 transition-colors duration-200 hover:bg-red-50";
@@ -54,6 +58,7 @@ export function ImageUploadField({
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const { toastError } = useToast();
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: (files) => {
@@ -172,6 +177,14 @@ export function ImageUploadField({
                 <ImagePlus className="size-4" aria-hidden="true" />
                 Replace photo
               </button>
+              <button
+                type="button"
+                onClick={() => setPickerOpen(true)}
+                className={libraryClasses}
+              >
+                <FolderOpen className="size-4" aria-hidden="true" />
+                Library
+              </button>
               {allowRemove && (
                 <button
                   type="button"
@@ -230,6 +243,14 @@ export function ImageUploadField({
             </span>
             <span className="relative text-xs text-muted">{SIZE_HINT}</span>
           </button>
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            className={libraryClasses + " mt-2"}
+          >
+            <FolderOpen className="size-4" aria-hidden="true" />
+            Pick from library
+          </button>
           {!canUpload && (
             <p className="mt-2 text-xs leading-relaxed text-muted">
               {INACTIVE_HINT}
@@ -237,6 +258,12 @@ export function ImageUploadField({
           )}
         </>
       )}
+
+      <MediaPickerDialog
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onPick={onChange}
+      />
 
       {error && (
         <p role="alert" className="mt-2 text-xs font-medium text-red-600">
