@@ -16,6 +16,7 @@ import { AppointmentForm } from "@/components/sections/appointment-form";
 import { AppointmentLookup } from "@/components/sections/appointment-lookup";
 import { OpeningHours } from "@/components/sections/opening-hours";
 import { Faq } from "@/components/sections/faq";
+import { AppointmentCta } from "@/components/sections/appointment-cta";
 import { Reveal } from "@/components/motion/reveal";
 import { getContent } from "@/lib/content/store";
 
@@ -330,6 +331,7 @@ export default async function AppointmentPage() {
         </section>
 
         <Faq />
+        <AppointmentCta onAppointmentPage />
       </main>
       <Footer />
 

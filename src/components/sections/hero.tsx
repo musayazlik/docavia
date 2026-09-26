@@ -17,7 +17,7 @@ export async function Hero() {
   ].filter((src) => typeof src === "string" && src.trim().length > 0);
 
   return (
-    <section id="home" className="relative overflow-hidden pt-32 pb-28 md:pt-40 md:pb-36">
+    <section id="home" className="relative overflow-hidden pt-28 pb-20 md:pt-32 md:pb-24 lg:pt-36 lg:pb-28">
       {/* atmosphere */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 -right-32 size-[36rem] rounded-full bg-primary-light/60 blur-3xl" />
@@ -38,16 +38,16 @@ export async function Hero() {
         </svg>
       </div>
 
-      <div className="shell relative grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
-        <div>
+      <div className="shell relative grid items-center gap-14 lg:grid-cols-[1.03fr_0.97fr] lg:gap-12">
+        <div className="min-w-0">
           <Reveal>
             <Eyebrow>{hero.eyebrow}</Eyebrow>
           </Reveal>
 
           <Reveal delay={0.08}>
-            <h1 className="font-heading mt-5 text-[2.85rem] leading-[1.06] font-bold tracking-[-0.03em] text-balance text-foreground sm:text-[3.75rem] lg:text-[4.25rem] xl:text-[4.75rem]">
-              {hero.title}{" "}
-              <em className="font-accent font-normal text-primary italic">
+            <h1 className="font-heading mt-5 text-[2.7rem] leading-[1.08] font-bold tracking-[-0.03em] text-balance text-foreground sm:text-[3.5rem] lg:text-[4rem] xl:text-[4.35rem]">
+              <span className="block">{hero.title}</span>
+              <em className="font-accent block leading-[1.02] font-normal text-primary italic">
                 {hero.titleAccent}
               </em>
             </h1>
@@ -60,11 +60,11 @@ export async function Hero() {
           </Reveal>
 
           <Reveal delay={0.24}>
-            <div className="mt-9 flex flex-wrap items-center gap-4">
-              <Button href="#appointment" withArrow>
+            <div className="mt-8 flex flex-wrap items-center gap-4 max-[479px]:flex-col max-[479px]:items-stretch">
+              <Button href="/appointment" withArrow className="max-[479px]:w-full max-[479px]:justify-between">
                 {hero.primaryCta}
               </Button>
-              <Button href="#doctors" variant="outline" withArrow>
+              <Button href="#doctors" variant="outline" withArrow className="max-[479px]:w-full max-[479px]:justify-between">
                 {hero.secondaryCta}
               </Button>
             </div>

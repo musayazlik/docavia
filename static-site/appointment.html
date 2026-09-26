@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Appointment — Docavia</title>
+    <meta
+      name="description"
+      content="Request a Docavia appointment online — choose your department, specialist, date and time, and our care team confirms every request by phone within one working day."
+    />
+    <meta name="theme-color" content="#2f766d" />
+    <link rel="icon" href="assets/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=Instrument+Serif:ital@0;1&amp;family=Manrope:wght@600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/base.css?v=20260926-4" />
+    <link rel="stylesheet" href="assets/css/components.css?v=20260926-7" />
+    <link rel="stylesheet" href="assets/css/pages.css?v=20260926-8" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div data-nav></div>
+
+    <main id="main">
+      <!-- ============================= Page hero ============================= -->
+      <section class="page-hero page-hero--side">
+        <div class="blob blob--secondary" aria-hidden="true"></div>
+        <div class="bg-dots masked" aria-hidden="true"></div>
+        <span class="cross" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M18 4h12v14h14v12H30v14H18V30H4V18h14V4Z" /></svg>
+        </span>
+        <div class="shell">
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="index.html">Home</a>
+            <span class="breadcrumb__sep" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--sm" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+            </span>
+            <span class="breadcrumb__current" aria-current="page" data-bind="content.pages.appointment.label"></span>
+          </nav>
+          <div class="page-hero__grid">
+            <div>
+              <p class="eyebrow reveal" data-bind="content.pages.appointment.eyebrow"></p>
+              <h1 class="page-hero__title reveal delay-1">
+                <span data-bind="content.pages.appointment.title"></span>
+                <em class="accent" data-bind="content.pages.appointment.titleAccent"></em>
+              </h1>
+              <p class="lede reveal delay-3" data-bind="content.pages.appointment.description"></p>
+            </div>
+            <div class="page-hero__media reveal delay-4">
+              <img class="page-hero__img page-hero__img--focus-upper" src="assets/images/cta-doctor.jpg" alt="A Docavia doctor ready to welcome patients" loading="eager" fetchpriority="high" width="880" height="550" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================== Request an appointment ====================== -->
+      <section class="section section--tight" id="appointment" aria-label="Appointment request">
+        <div class="shell appt-grid">
+          <div>
+            <div class="section-heading reveal">
+              <p class="eyebrow">Request an Appointment</p>
+              <h2 class="heading">
+                <span>Tell Us When</span>
+                <em class="accent">Suits You.</em>
+              </h2>
+              <p class="lede">Fill in the form below — no account needed. We&rsquo;ll call to confirm the exact time.</p>
+            </div>
+            <div class="panel reveal delay-2 mt-10">
+              <div data-appointment-form></div>
+            </div>
+            <div class="panel reveal delay-3 mt-8">
+              <div data-appointment-lookup></div>
+            </div>
+          </div>
+          <div class="appt-side">
+            <div class="panel reveal delay-3">
+              <div data-opening-hours>
+                <div class="hours__head">
+                  <span class="well well--lg">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--lg" aria-hidden="true"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                  </span>
+                  <h2 class="hours__title">Opening Hours</h2>
+                  <p class="hours__status" data-hours-status></p>
+                </div>
+                <ul data-hours-list></ul>
+                <p class="hours__foot"><span data-bind="content.faq.callLabel"></span>
+                  <a data-bind="site.phoneHref" data-bind-attr="href">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--sm" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+                    <span data-bind="site.phone"></span>
+                  </a>
+                </p>
+              </div>
+            </div>
+            <div class="panel reveal delay-4">
+              <div data-render="nextSteps"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================ Getting here ========================== -->
+      <section class="section section--tint" aria-label="Getting here">
+        <div class="shell getting-here">
+          <div>
+            <div class="section-heading reveal">
+              <p class="eyebrow" data-bind="inline.gettingHere.eyebrow"></p>
+              <h2 class="heading">
+                <span data-bind="inline.gettingHere.title"></span>
+                <em class="accent" data-bind="inline.gettingHere.titleAccent"></em>
+              </h2>
+            </div>
+            <ul class="transport reveal-stagger" data-render="transport"></ul>
+            <div class="address-bar reveal delay-3">
+              <span class="well well--lg well--on-dark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--lg" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
+              </span>
+              <div class="address-bar__text"><p data-bind="site.address"></p><span data-bind="site.city"></span></div>
+              <a class="btn btn--light" data-bind="inline.contactChannels.items.2.actionHref" data-bind-attr="href" target="_blank" rel="noopener noreferrer">
+                <span>Get Directions</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--sm" aria-hidden="true"><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg>
+              </a>
+            </div>
+          </div>
+          <div class="map-frame reveal delay-4">
+            <iframe
+              src="https://maps.google.com/maps?q=40.7440,-73.9860&amp;z=15&amp;output=embed"
+              title="Map showing the Docavia clinic location in New York"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+            <div class="map-frame__tint" aria-hidden="true"></div>
+            <span class="map-frame__badge">
+              <a class="pill pill--glass" data-bind="inline.contactChannels.items.2.actionHref" data-bind-attr="href" target="_blank" rel="noopener noreferrer">
+                <span>Open in Google Maps</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--sm" aria-hidden="true"><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg>
+              </a>
+            </span>
+            <div class="map-frame__bar">
+              <div class="map-frame__text"><p data-bind="site.address"></p><span data-bind="site.city"></span></div>
+              <a class="btn btn--primary btn--sm" data-bind="site.phoneHref" data-bind-attr="href">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--sm" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+                <span>Call Us</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== FAQ =============================== -->
+      <section class="section" id="faq">
+        <div class="shell faq-grid" data-render="faq"></div>
+      </section>
+
+      <!-- ======================== Appointment CTA ========================= -->
+      <section class="cta-band">
+        <div class="shell">
+          <div class="band-dark reveal" data-render="appointmentCta"></div>
+        </div>
+      </section>
+    </main>
+
+    <div data-footer></div>
+
+    <script src="assets/js/data/site.js"></script>
+    <script src="assets/js/data/content.js"></script>
+    <script src="assets/js/data/posts.js"></script>
+    <script src="assets/js/data/legal.js"></script>
+    <script src="assets/js/core.js?v=20260926-2"></script>
+    <script src="assets/js/nav.js?v=20260926-6"></script>
+    <script src="assets/js/sections.js?v=20260926-8"></script>
+    <script src="assets/js/forms.js?v=20260926-2"></script>
+    <script src="assets/js/page.js?v=20260926-8"></script>
+  </body>
+</html>

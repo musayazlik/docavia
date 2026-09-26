@@ -5,12 +5,12 @@ import { Eyebrow } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/motion/reveal";
 import { getContent } from "@/lib/content/store";
 
-export async function AppointmentCta() {
+export async function AppointmentCta({ onAppointmentPage = false }: { onAppointmentPage?: boolean }) {
   const content = await getContent();
   const cta = content.appointmentCta;
 
   return (
-    <section id="appointment" className="pt-24 pb-24 md:pt-32 md:pb-32">
+    <section id={onAppointmentPage ? undefined : "appointment"} className="pt-24 pb-24 md:pt-32 md:pb-32">
       <div className="shell">
         <Reveal>
           <div className="relative rounded-[2.5rem] bg-pine text-white shadow-soft">
@@ -50,7 +50,7 @@ export async function AppointmentCta() {
                   {cta.description}
                 </p>
                 <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4 pb-2">
-                  <Button href="/appointment" variant="light" withArrow>
+                  <Button href={onAppointmentPage ? "#appointment" : "/appointment"} variant="light" withArrow>
                     {cta.buttonLabel}
                   </Button>
                   <a

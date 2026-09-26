@@ -75,7 +75,7 @@ export default async function ServicesPage() {
           description={hero.description}
         />
 
-        <Services />
+        <Services onServicesPage />
 
         {/* Assurances */}
         <section aria-label="Patient assurances" className="py-20 md:py-24">
@@ -128,7 +128,7 @@ export default async function ServicesPage() {
                     </p>
                   </div>
                   <a
-                    href="#appointment"
+                    href="/appointment#appointment"
                     className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-white px-6 py-3.5 text-[0.9375rem] font-semibold text-pine transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-primary-light"
                   >
                     Book a Consultation

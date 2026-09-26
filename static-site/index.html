@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Docavia — Modern Healthcare &amp; Medical Specialists</title>
+    <meta
+      name="description"
+      content="Expert healthcare, experienced specialists and simple appointments. Discover modern patient-centered care with Docavia."
+    />
+    <meta name="theme-color" content="#2f766d" />
+    <link rel="icon" href="assets/favicon.png" />
+    <link rel="preload" as="image" href="assets/images/hero-doctor.jpg" fetchpriority="high" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=Instrument+Serif:ital@0;1&amp;family=Manrope:wght@600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/base.css?v=20260926-4" />
+    <link rel="stylesheet" href="assets/css/components.css?v=20260926-7" />
+    <link rel="stylesheet" href="assets/css/pages.css?v=20260926-8" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div data-nav></div>
+
+    <main id="main">
+      <!-- ============================== Hero ============================== -->
+      <section class="hero" id="home">
+        <div class="blob blob--primary" aria-hidden="true"></div>
+        <div class="blob blob--secondary" aria-hidden="true"></div>
+        <div class="bg-dots masked" aria-hidden="true"></div>
+        <span class="cross hidden lg:block" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M18 4h12v14h14v12H30v14H18V30H4V18h14V4Z" /></svg>
+        </span>
+        <div class="shell hero__grid">
+          <div class="hero__copy">
+            <p class="eyebrow reveal" data-bind="content.hero.eyebrow"></p>
+            <h1 class="hero__title reveal delay-1">
+              <span class="hero__title-main" data-bind="content.hero.title"></span>
+              <em class="accent hero__title-accent" data-bind="content.hero.titleAccent"></em>
+            </h1>
+            <p class="hero__text reveal delay-3" data-bind="content.hero.description"></p>
+            <div class="hero__ctas reveal delay-5">
+              <a class="btn btn--primary" href="appointment.html">
+                <span data-bind="content.hero.primaryCta"></span>
+                <span data-icon="arrow-right" data-icon-class="icon--sm" aria-hidden="true"></span>
+              </a>
+              <a class="btn btn--outline" href="#doctors">
+                <span data-bind="content.hero.secondaryCta"></span>
+                <span data-icon="arrow-right" data-icon-class="icon--sm" aria-hidden="true"></span>
+              </a>
+            </div>
+            <div class="hero__proof reveal delay-6" data-render="heroProof"></div>
+          </div>
+          <div class="hero-visual" data-render="heroVisual"></div>
+        </div>
+      </section>
+
+      <!-- ============================ Info bar ============================ -->
+      <div class="shell info-bar reveal">
+        <div data-render="infoBar"></div>
+      </div>
+
+      <!-- ============================= About ============================= -->
+      <section class="section" id="about">
+        <div class="shell about__grid">
+          <div class="about__media reveal" data-render="aboutMedia"></div>
+          <div>
+            <div class="section-heading reveal">
+              <p class="eyebrow" data-bind="content.about.eyebrow"></p>
+              <h2 class="heading">
+                <span data-bind="content.about.title"></span>
+                <em class="accent" data-bind="content.about.titleAccent"></em>
+              </h2>
+              <p class="lede" data-bind="content.about.description"></p>
+            </div>
+            <div class="about__benefits reveal-stagger" data-render="benefits"></div>
+            <div class="about__cta reveal">
+              <a class="btn btn--outline" href="about.html">
+                <span data-bind="content.about.buttonLabel"></span>
+                <span data-icon="arrow-right" data-icon-class="icon--sm" aria-hidden="true"></span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================ Services =========================== -->
+      <section class="section section--tint" id="services">
+        <div class="shell">
+          <div class="services-head">
+            <div class="section-heading reveal">
+              <p class="eyebrow" data-bind="content.services.eyebrow"></p>
+              <h2 class="heading">
+                <span data-bind="content.services.title"></span>
+                <em class="accent" data-bind="content.services.titleAccent"></em>
+              </h2>
+            </div>
+            <p class="services-head__intro muted reveal delay-2" data-bind="content.services.intro"></p>
+          </div>
+          <div class="services-grid reveal-stagger" data-render="services"></div>
+        </div>
+      </section>
+
+      <!-- ============================= Why us ============================= -->
+      <section class="section" id="why-us">
+        <div class="shell why__grid">
+          <div>
+            <div class="section-heading reveal">
+              <p class="eyebrow" data-bind="content.whyUs.eyebrow"></p>
+              <h2 class="heading">
+                <span data-bind="content.whyUs.title"></span>
+                <em class="accent" data-bind="content.whyUs.titleAccent"></em>
+              </h2>
+              <p class="lede" data-bind="content.whyUs.description"></p>
+            </div>
+            <ol class="why__list reveal-stagger" data-render="whyUsList"></ol>
+          </div>
+          <div class="why__media reveal">
+            <img class="why__img" src="assets/images/why-us.jpg" alt="A Docavia doctor consulting a patient" loading="lazy" width="640" height="520" />
+            <div class="why__badge">
+              <span class="why__badge-value" data-bind="content.whyUs.badgeValue"></span>
+              <span class="why__badge-label" data-bind="content.whyUs.badgeLabel"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== Stats ============================= -->
+      <section class="pb-4">
+        <div class="shell reveal" data-render="stats"></div>
+      </section>
+
+      <!-- ============================ Doctors ============================= -->
+      <section class="section section--tint" id="doctors">
+        <div class="shell">
+          <div class="flex flex-wrap items-end justify-between gap-8">
+            <div class="section-heading reveal">
+              <p class="eyebrow" data-bind="content.doctors.eyebrow"></p>
+              <h2 class="heading">
+                <span data-bind="content.doctors.title"></span>
+                <em class="accent" data-bind="content.doctors.titleAccent"></em>
+              </h2>
+            </div>
+            <div class="reveal delay-2 hidden sm:block">
+              <a class="btn btn--outline" href="doctors.html">
+                <span data-bind="content.doctors.viewAllLabel"></span>
+                <span data-icon="arrow-right" data-icon-class="icon--sm" aria-hidden="true"></span>
+              </a>
+            </div>
+          </div>
+          <div class="doctors-grid reveal-stagger" data-render="doctors"></div>
+        </div>
+      </section>
+
+      <!-- ======================== Appointment CTA ========================= -->
+      <section class="cta-band" id="appointment">
+        <div class="shell">
+          <div class="band-dark reveal" data-render="appointmentCta"></div>
+        </div>
+      </section>
+
+      <!-- ========================== How it works ========================== -->
+      <section class="section" id="how-it-works">
+        <div class="shell">
+          <div class="section-heading section-heading--center reveal">
+            <p class="eyebrow" data-bind="content.howItWorks.eyebrow"></p>
+            <h2 class="heading heading--center">
+              <span data-bind="content.howItWorks.title"></span>
+              <em class="accent" data-bind="content.howItWorks.titleAccent"></em>
+            </h2>
+            <p class="lede" data-bind="content.howItWorks.description"></p>
+          </div>
+          <div class="steps-wrap" data-render="howItWorks"></div>
+        </div>
+      </section>
+
+      <!-- ========================== Testimonials ========================== -->
+      <section class="section" id="testimonials">
+        <div class="shell">
+          <div class="testimonials reveal" data-carousel data-render="testimonials"></div>
+        </div>
+      </section>
+
+      <!-- ============================ Articles ============================ -->
+      <section class="section" id="blog">
+        <div class="shell">
+          <div class="flex flex-wrap items-end justify-between gap-8">
+            <div class="section-heading reveal">
+              <p class="eyebrow" data-bind="content.articles.eyebrow"></p>
+              <h2 class="heading">
+                <span data-bind="content.articles.title"></span>
+                <em class="accent" data-bind="content.articles.titleAccent"></em>
+              </h2>
+            </div>
+            <div class="reveal delay-2 hidden sm:block">
+              <a class="btn btn--outline" href="blog.html">
+                <span data-bind="content.articles.viewAllLabel"></span>
+                <span data-icon="arrow-right" data-icon-class="icon--sm" aria-hidden="true"></span>
+              </a>
+            </div>
+          </div>
+          <div class="articles-grid reveal-stagger" data-render="articles"></div>
+        </div>
+      </section>
+
+      <!-- ============================== FAQ =============================== -->
+      <section class="section" id="faq">
+        <div class="shell faq-grid" data-render="faq"></div>
+      </section>
+
+      <!-- ============================ Final CTA =========================== -->
+      <section class="pb-24">
+        <div class="shell">
+          <div class="panel panel--tint panel--cta reveal" data-render="finalCta"></div>
+        </div>
+      </section>
+    </main>
+
+    <div data-footer></div>
+
+    <script src="assets/js/data/site.js"></script>
+    <script src="assets/js/data/content.js"></script>
+    <script src="assets/js/data/posts.js"></script>
+    <script src="assets/js/data/legal.js"></script>
+    <script src="assets/js/core.js?v=20260926-2"></script>
+    <script src="assets/js/nav.js?v=20260926-6"></script>
+    <script src="assets/js/sections.js?v=20260926-8"></script>
+    <script src="assets/js/forms.js?v=20260926-2"></script>
+    <script src="assets/js/page.js?v=20260926-8"></script>
+  </body>
+</html>

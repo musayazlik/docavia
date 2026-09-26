@@ -1,4 +1,5 @@
 import { ArrowRight, Baby, Brain, Dumbbell, HeartPulse, Smile, Stethoscope, type LucideIcon } from "lucide-react";
+import Link from "next/link";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { getContent } from "@/lib/content/store";
@@ -16,7 +17,7 @@ const HIGHLIGHTS: Array<"dark" | "tint" | undefined> = [
   undefined,
 ];
 
-export async function Services() {
+export async function Services({ onServicesPage = false }: { onServicesPage?: boolean }) {
   const services = (await getContent()).services;
 
   return (
@@ -48,8 +49,9 @@ export async function Services() {
             return (
               <StaggerItem key={service.title + index} className="h-full">
                 <article
+                  id={`service-${index + 1}`}
                   className={cn(
-                    "group flex h-full flex-col rounded-[1.75rem] border p-7 transition-all duration-300 ease-out hover:-translate-y-1.5",
+                    "group flex h-full scroll-mt-24 flex-col rounded-[1.75rem] border p-7 transition-all duration-300 ease-out hover:-translate-y-1.5",
                     highlight === "dark"
                       ? "border-transparent bg-pine text-white shadow-soft hover:shadow-soft hover:brightness-110"
                       : highlight === "tint"
@@ -94,18 +96,20 @@ export async function Services() {
                     {service.description}
                   </p>
 
-                  <span
+                  <Link
+                    href={onServicesPage ? "/appointment" : `/services#service-${index + 1}`}
+                    aria-label={`${onServicesPage ? "Book an appointment for" : "Learn more about"} ${service.title}`}
                     className={cn(
                       "mt-6 inline-flex items-center gap-2 text-sm font-semibold",
                       highlight === "dark" ? "text-primary-light" : "text-primary"
                     )}
                   >
-                    Learn more
+                    {onServicesPage ? "Book appointment" : "Learn more"}
                     <ArrowRight
                       className="size-4 transition-transform duration-300 group-hover:translate-x-1.5"
                       aria-hidden="true"
                     />
-                  </span>
+                  </Link>
                 </article>
               </StaggerItem>
             );

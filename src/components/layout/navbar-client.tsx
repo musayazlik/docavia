@@ -180,7 +180,7 @@ export function NavbarClient({
 
             <nav
               aria-label="Mobile"
-              className="shell flex flex-1 flex-col justify-center gap-1 overflow-y-auto py-8"
+              className="shell flex flex-1 flex-col gap-1 overflow-y-auto py-8"
             >
               {navLinks.map((link, i) => (
                 <motion.div
@@ -196,6 +196,20 @@ export function NavbarClient({
                   >
                     {link.label}
                   </Link>
+                  {link.children && (
+                    <div className="grid grid-cols-2 gap-x-4 border-b border-white/10 py-3 sm:grid-cols-3">
+                      {link.children.map((child) => (
+                        <Link
+                          key={child.label}
+                          href={child.href}
+                          onClick={() => setOpen(false)}
+                          className="rounded-lg py-2 text-sm font-medium text-white/70 transition-colors hover:text-white"
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </nav>

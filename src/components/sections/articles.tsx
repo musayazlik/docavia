@@ -27,7 +27,7 @@ export async function Articles() {
             }
           />
           <Reveal delay={0.1} className="hidden sm:block">
-            <Button href="#blog" variant="outline" withArrow>
+            <Button href="/blog" variant="outline" withArrow>
               {articlesSection.viewAllLabel}
             </Button>
           </Reveal>

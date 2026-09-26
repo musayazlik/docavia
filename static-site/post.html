@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Health Journal — Docavia</title>
+    <meta
+      name="description"
+      content="Practical, physician-reviewed articles on prevention, heart health and everyday wellbeing — no scare tactics, just clarity."
+    />
+    <meta name="theme-color" content="#2f766d" />
+    <link rel="icon" href="assets/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=Instrument+Serif:ital@0;1&amp;family=Manrope:wght@600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/base.css?v=20260926-4" />
+    <link rel="stylesheet" href="assets/css/components.css?v=20260926-7" />
+    <link rel="stylesheet" href="assets/css/pages.css?v=20260926-8" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div data-nav></div>
+
+    <main id="main">
+      <!-- ========================== Article header ========================== -->
+      <section class="post-head">
+        <div class="blob blob--secondary" aria-hidden="true"></div>
+        <div class="shell reveal">
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="index.html">Home</a>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--sm breadcrumb__sep" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+            <a href="blog.html">Blog</a>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--sm breadcrumb__sep" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+            <span class="breadcrumb__current" aria-current="page" data-post-field="crumb"></span>
+          </nav>
+          <div class="max-w-3xl">
+            <span class="pill pill--outline mt-8" data-post-field="category"></span>
+            <h1 class="post-head__title" data-post-field="title"></h1>
+            <p class="post-head__excerpt" data-post-field="excerpt"></p>
+          </div>
+          <div class="post-head__meta">
+            <div class="post-head__author">
+              <img class="avatar" src="assets/images/doctor-emily.jpg" alt="Article author" loading="lazy" width="48" height="48" data-post-field="authorAvatar" />
+              <div>
+                <p class="post-head__name" data-post-field="authorName"></p>
+                <p class="post-head__role" data-post-field="authorRole"></p>
+              </div>
+            </div>
+            <span class="post-head__fact">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--sm" aria-hidden="true"><path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" /><path d="M8 14h.01" /><path d="M12 14h.01" /><path d="M16 14h.01" /><path d="M8 18h.01" /><path d="M12 18h.01" /><path d="M16 18h.01" /></svg>
+              <time data-post-field="date"></time>
+            </span>
+            <span class="post-head__fact">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--sm" aria-hidden="true"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+              <span data-post-field="readingTime"></span>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== Hero image =========================== -->
+      <section class="section--post-image">
+        <div class="shell">
+          <div class="reveal">
+            <img class="post-hero-img" src="assets/images/blog-heart.jpg" alt="Health Journal article cover" loading="lazy" width="1280" height="800" data-post-field="image" />
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================== Article body ========================== -->
+      <section class="section--post-body">
+        <div class="shell">
+          <div class="post-body">
+            <div class="article-body" data-render="postBody"></div>
+
+            <aside class="post-author">
+              <img class="avatar avatar--xl" src="assets/images/doctor-emily.jpg" alt="Article author" loading="lazy" width="72" height="72" data-post-field="authorAvatar" />
+              <div>
+                <p class="post-author__label">Written by</p>
+                <p class="post-author__name">
+                  <span data-post-field="authorName"></span>
+                  · <span class="muted" data-post-field="authorRole"></span>
+                </p>
+                <p class="post-author__bio" data-post-field="authorBio"></p>
+                <p class="post-author__note">Every Docavia article is reviewed for medical accuracy before publication.</p>
+              </div>
+            </aside>
+
+            <div class="comments" data-comments></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================= Related articles ======================== -->
+      <section class="section section--tint" id="related">
+        <div class="shell">
+          <div class="section-heading section-heading--center reveal">
+            <p class="eyebrow">Keep Reading</p>
+            <h2 class="heading heading--center">
+              More from the
+              <em class="accent">Health Journal.</em>
+            </h2>
+          </div>
+          <div class="posts-grid reveal-stagger" data-render="relatedPosts"></div>
+        </div>
+      </section>
+
+      <!-- ======================== Appointment CTA ========================= -->
+      <section class="cta-band" id="appointment">
+        <div class="shell">
+          <div class="band-dark reveal" data-render="appointmentCta"></div>
+        </div>
+      </section>
+    </main>
+
+    <div data-footer></div>
+
+    <script src="assets/js/data/site.js"></script>
+    <script src="assets/js/data/content.js"></script>
+    <script src="assets/js/data/posts.js"></script>
+    <script src="assets/js/data/legal.js"></script>
+    <script src="assets/js/core.js?v=20260926-2"></script>
+    <script src="assets/js/nav.js?v=20260926-6"></script>
+    <script src="assets/js/sections.js?v=20260926-8"></script>
+    <script src="assets/js/forms.js?v=20260926-2"></script>
+    <script src="assets/js/page.js?v=20260926-8"></script>
+  </body>
+</html>

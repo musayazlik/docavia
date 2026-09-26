@@ -103,7 +103,7 @@ export async function About() {
           </Stagger>
 
           <Reveal className="mt-11">
-            <Button href="#services" variant="outline" withArrow>
+            <Button href="/about" variant="outline" withArrow>
               {about.buttonLabel}
             </Button>
           </Reveal>

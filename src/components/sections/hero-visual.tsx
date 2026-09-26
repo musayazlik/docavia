@@ -51,7 +51,7 @@ export function HeroVisual({ imageSrc }: { imageSrc: string }) {
       initial={reduce ? false : { opacity: 0, scale: 0.96, y: 28 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ duration: 0.9, delay: 0.2, ease: EASE }}
-      className="relative mx-auto w-full max-w-[540px]"
+      className="relative mx-auto w-full max-w-[500px] lg:mr-0"
     >
       {/* decorative shapes behind the doctor */}
       <div
@@ -63,26 +63,26 @@ export function HeroVisual({ imageSrc }: { imageSrc: string }) {
         className="bg-dots absolute -bottom-10 -left-10 size-36 opacity-80"
       />
 
-      <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] rounded-tr-[6.5rem] shadow-soft">
+      <div className="relative aspect-[6/7] overflow-hidden rounded-[2.5rem] rounded-tr-[6.5rem] shadow-soft">
         <Image
           src={imageSrc}
           alt="Docavia clinician in the clinic"
           fill
           priority
-          sizes="(min-width: 1024px) 44vw, (min-width: 640px) 70vw, 100vw"
-          className="object-cover"
+          sizes="(min-width: 1024px) 500px, (min-width: 640px) 70vw, 100vw"
+          className="object-cover object-[center_35%]"
         />
       </div>
 
       <FloatingCard
-        className="absolute top-12 -left-3 sm:-left-12"
+        className="absolute top-5 left-2 sm:top-8 sm:-left-8"
         icon={<Users className="size-5" aria-hidden="true" />}
         value="500+"
         label="Experienced Doctors"
         delay={0.55}
       />
       <FloatingCard
-        className="absolute -right-3 bottom-24 sm:-right-10"
+        className="absolute right-2 bottom-16 sm:-right-6 sm:bottom-20"
         icon={<HeartPulse className="size-5" aria-hidden="true" />}
         value="24/7"
         label="Medical Support"
@@ -93,7 +93,7 @@ export function HeroVisual({ imageSrc }: { imageSrc: string }) {
         initial={reduce ? false : { opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.85, ease: EASE }}
-        className="absolute bottom-6 -left-2 sm:-left-8"
+        className="absolute bottom-3 left-3 sm:bottom-5 sm:-left-5"
       >
         <div className="flex animate-float-slow items-center gap-2.5 rounded-full border border-border/70 bg-white/92 py-2.5 pr-4 pl-3 shadow-float backdrop-blur-md motion-reduce:animate-none">
           <span className="flex size-7 items-center justify-center rounded-full bg-primary text-white">

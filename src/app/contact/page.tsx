@@ -14,6 +14,7 @@ import { PageHero } from "@/components/ui/page-hero";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { ContactForm } from "@/components/sections/contact-form";
 import { Faq } from "@/components/sections/faq";
+import { FinalCta } from "@/components/sections/final-cta";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { getContent } from "@/lib/content/store";
 
@@ -254,6 +255,7 @@ export default async function ContactPage() {
         </section>
 
         <Faq />
+        <FinalCta onContactPage />
       </main>
       <Footer />
     </>

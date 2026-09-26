@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contact — Docavia</title>
+    <meta
+      name="description"
+      content="Contact Docavia — call, email or visit our clinic in New York. Send our care team a message and we reply within one working day."
+    />
+    <meta name="theme-color" content="#2f766d" />
+    <link rel="icon" href="assets/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=Instrument+Serif:ital@0;1&amp;family=Manrope:wght@600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/base.css?v=20260926-4" />
+    <link rel="stylesheet" href="assets/css/components.css?v=20260926-7" />
+    <link rel="stylesheet" href="assets/css/pages.css?v=20260926-8" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div data-nav></div>
+
+    <main id="main">
+      <!-- ============================= Page hero ============================= -->
+      <section class="page-hero page-hero--side">
+        <div class="blob blob--secondary" aria-hidden="true"></div>
+        <div class="bg-dots masked" aria-hidden="true"></div>
+        <span class="cross" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M18 4h12v14h14v12H30v14H18V30H4V18h14V4Z" /></svg>
+        </span>
+        <div class="shell">
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="index.html">Home</a>
+            <span class="breadcrumb__sep" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--sm" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+            </span>
+            <span class="breadcrumb__current" aria-current="page" data-bind="content.pages.contact.label"></span>
+          </nav>
+          <div class="page-hero__grid">
+            <div>
+              <p class="eyebrow reveal" data-bind="content.pages.contact.eyebrow"></p>
+              <h1 class="page-hero__title reveal delay-1">
+                <span data-bind="content.pages.contact.title"></span>
+                <em class="accent" data-bind="content.pages.contact.titleAccent"></em>
+              </h1>
+              <p class="lede reveal delay-3" data-bind="content.pages.contact.description"></p>
+            </div>
+            <div class="page-hero__media reveal delay-4">
+              <img class="page-hero__img page-hero__img--focus-right" src="assets/images/og.jpg" alt="A Docavia physician speaking with a patient at the clinic" loading="eager" fetchpriority="high" width="1200" height="750" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================== Contact channels ======================== -->
+      <section class="section--tight" aria-label="Contact channels">
+        <div class="shell">
+          <div class="channels reveal-stagger" data-render="contactChannels"></div>
+        </div>
+      </section>
+
+      <!-- ========================== Send a message ========================== -->
+      <section class="section section--tint" id="appointment">
+        <div class="shell contact-grid">
+          <div>
+            <div class="section-heading reveal">
+              <p class="eyebrow">Send a Message</p>
+              <h2 class="heading">
+                <span>How Can We</span>
+                <em class="accent">Help?</em>
+              </h2>
+              <p class="lede">Fill in the form and our care team will point you to the right department — usually within one working day.</p>
+            </div>
+            <div class="reveal delay-2 mt-10">
+              <div data-contact-form></div>
+            </div>
+          </div>
+          <div class="appt-side">
+            <div class="map-frame map-frame--tall reveal delay-3">
+              <iframe
+                src="https://maps.google.com/maps?q=40.7440,-73.9860&amp;z=15&amp;output=embed"
+                title="Map showing the Docavia clinic location in New York"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              ></iframe>
+              <div class="map-frame__tint" aria-hidden="true"></div>
+              <span class="map-frame__badge">
+                <a class="pill pill--glass" data-bind="inline.contactChannels.items.2.actionHref" data-bind-attr="href" target="_blank" rel="noopener noreferrer">
+                  <span>Open in Google Maps</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--sm" aria-hidden="true"><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg>
+                </a>
+              </span>
+              <div class="map-frame__bar">
+              <div class="map-frame__text"><p data-bind="site.address"></p><span data-bind="site.city"></span></div>
+                <a class="btn btn--primary btn--sm" data-bind="inline.contactChannels.items.2.actionHref" data-bind-attr="href" target="_blank" rel="noopener noreferrer">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--sm" aria-hidden="true"><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg>
+                  <span>Directions</span>
+                </a>
+              </div>
+            </div>
+            <div class="emergency reveal delay-5">
+              <div class="bg-dots-light masked" aria-hidden="true"></div>
+              <span class="well well--lg well--on-dark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--lg" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+              </span>
+              <h2 class="emergency__title" data-bind="inline.emergency.title"></h2>
+              <p class="emergency__text" data-bind="inline.emergency.description"></p>
+              <a class="emergency__phone" data-bind="site.phoneHref" data-bind-attr="href"><span data-bind="site.phone"></span></a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== FAQ =============================== -->
+      <section class="section" id="faq">
+        <div class="shell faq-grid" data-render="faq"></div>
+      </section>
+
+      <!-- ============================ Final CTA =========================== -->
+      <section class="pb-24">
+        <div class="shell">
+          <div class="panel panel--tint panel--cta reveal" data-render="finalCta"></div>
+        </div>
+      </section>
+    </main>
+
+    <div data-footer></div>
+
+    <script src="assets/js/data/site.js"></script>
+    <script src="assets/js/data/content.js"></script>
+    <script src="assets/js/data/posts.js"></script>
+    <script src="assets/js/data/legal.js"></script>
+    <script src="assets/js/core.js?v=20260926-2"></script>
+    <script src="assets/js/nav.js?v=20260926-6"></script>
+    <script src="assets/js/sections.js?v=20260926-8"></script>
+    <script src="assets/js/forms.js?v=20260926-2"></script>
+    <script src="assets/js/page.js?v=20260926-8"></script>
+  </body>
+</html>

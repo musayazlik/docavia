@@ -29,9 +29,19 @@ const BRAND_LABELS = new Set([
 
 export async function Footer() {
   const site = (await getContent()).site;
+  const socials = site.socials
+    .map((social) => {
+      const legacy = social as { platform?: string; url?: string };
+      return {
+        ...social,
+        label: social.label ?? legacy.platform ?? "Link",
+        href: social.href ?? legacy.url ?? "",
+      };
+    })
+    .filter((social) => /^https?:\/\//i.test(social.href));
 
   return (
-    <footer id="contact" className="bg-pine-deep text-white/65">
+    <footer className="bg-pine-deep text-white/65">
       <div className="shell pt-20 pb-10 md:pt-24">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-[1.3fr_0.7fr_0.7fr_1fr] lg:gap-10">
           <div>
@@ -50,12 +60,10 @@ export async function Footer() {
             <p className="mt-5 max-w-xs text-[0.9375rem] leading-relaxed">
               {site.footerTagline}
             </p>
-            <div className="mt-6 flex gap-3">
-              {site.socials.map((social, index) => {
-                // Rows saved by older panel versions may use {platform,url}.
-                const legacy = social as { platform?: string; url?: string };
-                const label = social.label ?? legacy.platform ?? "Link";
-                const href = social.href ?? legacy.url ?? "#";
+            {socials.length > 0 && <div className="mt-6 flex gap-3">
+              {socials.map((social, index) => {
+                const label = social.label;
+                const href = social.href;
                 // Picked icon wins; known brand labels fall back to their
                 // simple-icons logo; anything else gets a globe.
                 const slug = label.trim().toLowerCase();
@@ -67,6 +75,8 @@ export async function Footer() {
                     key={`${label}-${index}`}
                     href={href}
                     aria-label={label}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex size-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition-all duration-300 hover:border-white/30 hover:bg-white/10 hover:text-white"
                   >
                     <CmsIcon
@@ -77,7 +87,7 @@ export async function Footer() {
                   </a>
                 );
               })}
-            </div>
+            </div>}
           </div>
 
           {footerColumns.map((column) => (

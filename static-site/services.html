@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Services — Docavia</title>
+    <meta
+      name="description"
+      content="Explore Docavia's medical services — general medicine, cardiology, dental care, pediatrics, neurology and physiotherapy under one calm roof."
+    />
+    <meta name="theme-color" content="#2f766d" />
+    <link rel="icon" href="assets/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=Instrument+Serif:ital@0;1&amp;family=Manrope:wght@600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/base.css?v=20260926-4" />
+    <link rel="stylesheet" href="assets/css/components.css?v=20260926-7" />
+    <link rel="stylesheet" href="assets/css/pages.css?v=20260926-8" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div data-nav></div>
+
+    <main id="main">
+      <!-- ============================ Page hero ============================= -->
+      <section class="page-hero">
+        <div class="blob blob--primary" aria-hidden="true"></div>
+        <div class="bg-dots masked" aria-hidden="true"></div>
+        <div class="shell">
+          <nav class="breadcrumb reveal" aria-label="Breadcrumb">
+            <a href="index.html" data-bind="navLinks.0.label"></a>
+            <span class="breadcrumb__sep" aria-hidden="true">/</span>
+            <span class="breadcrumb__current" aria-current="page" data-bind="content.pages.services.label"></span>
+          </nav>
+          <p class="eyebrow reveal delay-1 mt-6" data-bind="content.pages.services.eyebrow"></p>
+          <div class="page-hero__grid">
+            <div>
+              <h1 class="page-hero__title reveal delay-3">
+                <span data-bind="content.pages.services.title"></span>
+                <em class="accent" data-bind="content.pages.services.titleAccent"></em>
+              </h1>
+              <p class="lede reveal delay-5" data-bind="content.pages.services.description"></p>
+            </div>
+            <div class="page-hero__media reveal delay-4">
+              <img class="page-hero__img" src="assets/images/blog-checkup.jpg" alt="A routine check-up at the Docavia clinic" loading="eager" fetchpriority="high" width="880" height="704" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================= Services ============================ -->
+      <section class="section section--tint" id="services">
+        <div class="shell">
+          <div class="services-head">
+            <div class="section-heading reveal">
+              <p class="eyebrow" data-bind="content.services.eyebrow"></p>
+              <h2 class="heading">
+                <span data-bind="content.services.title"></span>
+                <em class="accent" data-bind="content.services.titleAccent"></em>
+              </h2>
+            </div>
+            <p class="services-head__intro muted reveal delay-2" data-bind="content.services.intro"></p>
+          </div>
+          <div class="services-grid reveal-stagger" data-render="services"></div>
+        </div>
+      </section>
+
+      <!-- =========================== Assurances ============================ -->
+      <section class="section section--mid" aria-label="Patient assurances">
+        <div class="shell">
+          <div class="assurances reveal-stagger" data-render="assurances"></div>
+        </div>
+      </section>
+
+      <!-- =========================== How it works ========================== -->
+      <section class="section" id="how-it-works">
+        <div class="shell">
+          <div class="section-heading section-heading--center reveal">
+            <p class="eyebrow" data-bind="content.howItWorks.eyebrow"></p>
+            <h2 class="heading heading--center">
+              <span data-bind="content.howItWorks.title"></span>
+              <em class="accent" data-bind="content.howItWorks.titleAccent"></em>
+            </h2>
+            <p class="lede" data-bind="content.howItWorks.description"></p>
+          </div>
+          <div class="steps-wrap" data-render="howItWorks"></div>
+        </div>
+      </section>
+
+      <!-- ========================== Referral note ========================== -->
+      <section class="pb-16">
+        <div class="shell">
+          <div class="referral reveal">
+            <div class="bg-dots-light masked" aria-hidden="true"></div>
+            <h2 class="referral__title">
+              <span data-bind="inline.referral.title"></span>
+              <em class="accent accent--inverted" data-bind="inline.referral.titleAccent"></em>
+            </h2>
+            <p class="referral__text" data-bind="inline.referral.description"></p>
+            <a class="btn btn--light" href="appointment.html#appointment">
+              <span data-bind="inline.referral.buttonLabel"></span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon--sm" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== FAQ =============================== -->
+      <section class="section" id="faq">
+        <div class="shell faq-grid" data-render="faq"></div>
+      </section>
+
+      <!-- ======================== Appointment CTA ========================= -->
+      <section class="cta-band" id="appointment">
+        <div class="shell">
+          <div class="band-dark reveal" data-render="appointmentCta"></div>
+        </div>
+      </section>
+    </main>
+
+    <div data-footer></div>
+
+    <script src="assets/js/data/site.js"></script>
+    <script src="assets/js/data/content.js"></script>
+    <script src="assets/js/data/posts.js"></script>
+    <script src="assets/js/data/legal.js"></script>
+    <script src="assets/js/core.js?v=20260926-2"></script>
+    <script src="assets/js/nav.js?v=20260926-6"></script>
+    <script src="assets/js/sections.js?v=20260926-8"></script>
+    <script src="assets/js/forms.js?v=20260926-2"></script>
+    <script src="assets/js/page.js?v=20260926-8"></script>
+  </body>
+</html>

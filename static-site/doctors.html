@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Doctors — Docavia</title>
+    <meta
+      name="description"
+      content="Meet Docavia's specialists — board-certified cardiologists, neurologists, pediatricians and general practitioners who listen first."
+    />
+    <meta name="theme-color" content="#2f766d" />
+    <link rel="icon" href="assets/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=Instrument+Serif:ital@0;1&amp;family=Manrope:wght@600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/base.css?v=20260926-4" />
+    <link rel="stylesheet" href="assets/css/components.css?v=20260926-7" />
+    <link rel="stylesheet" href="assets/css/pages.css?v=20260926-8" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div data-nav></div>
+
+    <main id="main">
+      <!-- ============================ Page hero ============================ -->
+      <section class="page-hero page-hero--center">
+        <div class="blob blob--secondary" aria-hidden="true"></div>
+        <div class="bg-dots masked" aria-hidden="true"></div>
+        <span class="cross hidden lg:block" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M18 4h12v14h14v12H30v14H18V30H4V18h14V4Z" /></svg>
+        </span>
+        <div class="shell reveal">
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="index.html">Home</a>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--sm breadcrumb__sep" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+            <span class="breadcrumb__current" aria-current="page" data-bind="content.pages.doctors.label"></span>
+          </nav>
+          <p class="eyebrow mt-7" data-bind="content.pages.doctors.eyebrow"></p>
+          <div class="page-hero__grid">
+            <div>
+              <h1 class="page-hero__title">
+                <span data-bind="content.pages.doctors.title"></span>
+                <em class="accent" data-bind="content.pages.doctors.titleAccent"></em>
+              </h1>
+              <p class="lede" data-bind="content.pages.doctors.description"></p>
+            </div>
+            <div class="page-hero__media">
+              <img class="page-hero__img" src="assets/images/why-us.jpg" alt="A Docavia specialist in consultation" loading="eager" fetchpriority="high" width="880" height="704" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================= Doctors ============================= -->
+      <section class="section" id="doctors">
+        <div class="shell">
+          <div class="section-heading reveal">
+            <p class="eyebrow" data-bind="content.doctors.eyebrow"></p>
+            <h2 class="heading">
+              <span data-bind="content.doctors.title"></span>
+              <em class="accent" data-bind="content.doctors.titleAccent"></em>
+            </h2>
+          </div>
+          <div class="doctors-grid reveal-stagger" data-render="doctors" data-view-all="false"></div>
+        </div>
+      </section>
+
+      <!-- =========================== Care by field ========================= -->
+      <section class="section section--tint" aria-label="Care by field">
+        <div class="shell field-grid">
+          <div class="section-heading reveal">
+            <p class="eyebrow">Care by Field</p>
+            <h2 class="heading">
+              Find the Right
+              <em class="accent">Specialist.</em>
+            </h2>
+          </div>
+          <div class="field-links reveal-stagger" data-render="serviceLinks"></div>
+        </div>
+      </section>
+
+      <!-- =========================== Testimonials ========================== -->
+      <section class="section" id="testimonials">
+        <div class="shell">
+          <div class="testimonials reveal" data-carousel data-render="testimonials"></div>
+        </div>
+      </section>
+
+      <!-- ============================= Careers ============================= -->
+      <section aria-label="Careers at Docavia">
+        <div class="shell">
+          <div class="careers reveal">
+            <div class="bg-dots masked" aria-hidden="true"></div>
+            <h2 class="careers__title">
+              <span data-bind="inline.careers.title"></span>
+              <em class="accent" data-bind="inline.careers.titleAccent"></em>
+            </h2>
+            <p class="careers__text" data-bind="inline.careers.description"></p>
+            <a class="btn btn--pine" href="mailto:hello@docavia.com?subject=Joining%20Docavia">
+              <span data-bind="inline.careers.buttonLabel"></span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon--sm" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================== Appointment CTA ========================= -->
+      <section class="cta-band" id="appointment">
+        <div class="shell">
+          <div class="band-dark reveal" data-render="appointmentCta"></div>
+        </div>
+      </section>
+    </main>
+
+    <div data-footer></div>
+
+    <script src="assets/js/data/site.js"></script>
+    <script src="assets/js/data/content.js"></script>
+    <script src="assets/js/data/posts.js"></script>
+    <script src="assets/js/data/legal.js"></script>
+    <script src="assets/js/core.js?v=20260926-2"></script>
+    <script src="assets/js/nav.js?v=20260926-6"></script>
+    <script src="assets/js/sections.js?v=20260926-8"></script>
+    <script src="assets/js/forms.js?v=20260926-2"></script>
+    <script src="assets/js/page.js?v=20260926-8"></script>
+  </body>
+</html>
