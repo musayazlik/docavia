@@ -12,10 +12,6 @@ import { cn } from "@/lib/utils";
  */
 
 const PINE = "#2f766d";
-const HONEY = "#d97706";
-
-/** Palette for callers building legends/segments outside this file. */
-export const CHART_COLORS = { primary: PINE, accent: HONEY };
 
 /* ------------------------------ area chart -------------------------------- */
 

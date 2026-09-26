@@ -20,10 +20,13 @@ import { getSession } from "@/lib/auth-server";
 import {
   AreaChart,
   BarList,
-  CHART_COLORS,
   DonutChart,
   RadialGauge,
 } from "@/components/admin/charts";
+
+// Chart colors live here (server side) — plain values from a "use client"
+// module would serialize as client references, i.e. undefined.
+const CHART_COLORS = { primary: "#2f766d", accent: "#d97706" };
 
 function greeting() {
   const hour = new Date().getHours();
