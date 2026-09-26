@@ -7,9 +7,10 @@ import {
   CheckCircle2,
   Copy,
   Hospital,
+  Mail,
   Video,
 } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { cn } from "@/lib/utils";
 import {
   SelectField,
@@ -19,7 +20,10 @@ import {
 } from "@/components/ui/select-field";
 import { DatePicker } from "@/components/ui/date-picker";
 import { TimePicker, slotsForDate } from "@/components/ui/time-picker";
-import { createAppointment } from "@/app/actions/appointments";
+import {
+  createAppointment,
+  getBookedAppointmentSlots,
+} from "@/app/actions/appointments";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -52,12 +56,46 @@ export function AppointmentForm({
   const [departmentError, setDepartmentError] = useState(false);
   const [doctor, setDoctor] = useState("");
   const [time, setTime] = useState("");
+  const [bookedAvailability, setBookedAvailability] = useState<{
+    key: string;
+    slots: string[];
+  }>({ key: "", slots: [] });
   const [visitType, setVisitType] = useState<string>("in-person");
   const [date, setDate] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [code, setCode] = useState("");
+  const [submittedEmail, setSubmittedEmail] = useState("");
   const [copied, setCopied] = useState(false);
   const reduce = useReducedMotion();
+
+  useEffect(() => {
+    let active = true;
+    const availabilityKey = `${doctor}::${date}`;
+
+    if (!doctor || doctor === "no-preference" || !date) {
+      return () => {
+        active = false;
+      };
+    }
+
+    getBookedAppointmentSlots({ doctor, date })
+      .then((slots) => {
+        if (!active) return;
+        setBookedAvailability({ key: availabilityKey, slots });
+        setTime((current) => (current && slots.includes(current) ? "" : current));
+      })
+      .catch(() => {
+        if (active) setBookedAvailability({ key: availabilityKey, slots: [] });
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [date, doctor]);
+
+  const availabilityKey = `${doctor}::${date}`;
+  const bookedSlots =
+    bookedAvailability.key === availabilityKey ? bookedAvailability.slots : [];
 
   // a new day can invalidate the chosen slot (different hours, full day)
   const handleDateChange = (iso: string) => {
@@ -108,6 +146,7 @@ export function AppointmentForm({
 
     if (result.ok) {
       setCode(result.code ?? "");
+      setSubmittedEmail(String(data.get("email") ?? "").trim());
       setStatus("sent");
     } else {
       setStatus("idle");
@@ -137,6 +176,7 @@ export function AppointmentForm({
     setDate("");
     setFormError(null);
     setCode("");
+    setSubmittedEmail("");
   };
 
   const summaryRows = [
@@ -214,6 +254,12 @@ export function AppointmentForm({
                     with it below.
                   </p>
                 </div>
+              )}
+              {submittedEmail && (
+                <p className="mt-4 flex items-center justify-center gap-2 text-sm text-muted">
+                  <Mail className="size-4 text-primary" aria-hidden="true" />
+                  Confirmation email: {submittedEmail}
+                </p>
               )}
             </div>
 
@@ -338,6 +384,7 @@ export function AppointmentForm({
                   value={time}
                   onChange={setTime}
                   dateIso={date}
+                  disabledSlots={bookedSlots}
                   placeholder="No preference"
                 />
               </div>

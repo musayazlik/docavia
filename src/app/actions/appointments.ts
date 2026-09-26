@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
 export type AppointmentResult = {
@@ -28,6 +29,31 @@ function normalizeCode(value: string): string {
 
 function str(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
+}
+
+/** Returns active booked slots for a doctor and date so the public picker can disable them. */
+export async function getBookedAppointmentSlots(input: {
+  doctor: string;
+  date: string;
+}): Promise<string[]> {
+  const doctor = str(input.doctor);
+  const dateValue = str(input.date);
+  if (!doctor || doctor === "no-preference" || !dateValue) return [];
+
+  const date = new Date(`${dateValue}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return [];
+
+  const rows = await prisma.appointment.findMany({
+    where: {
+      doctor,
+      date,
+      timeSlot: { not: null },
+      status: { not: "cancelled" },
+    },
+    select: { timeSlot: true },
+  });
+
+  return rows.flatMap((row) => (row.timeSlot ? [row.timeSlot] : []));
 }
 
 /**
@@ -120,6 +146,7 @@ export async function createAppointment(input: {
           status: "new",
         },
       });
+      revalidatePath("/admin/appointments");
       return { ok: true, message: "Request received.", code };
     } catch (error) {
       // The partial unique index is the final guard against races.

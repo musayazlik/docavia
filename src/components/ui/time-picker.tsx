@@ -69,6 +69,7 @@ export function TimePicker({
   value,
   onChange,
   dateIso,
+  disabledSlots = [],
   placeholder = "No preference",
 }: {
   id: string;
@@ -78,6 +79,8 @@ export function TimePicker({
   onChange: (time: string) => void;
   /** Local ISO date (yyyy-mm-dd) the slots apply to, or "" when unset. */
   dateIso: string;
+  /** Slots already booked for the selected doctor and date. */
+  disabledSlots?: string[];
   placeholder?: string;
 }) {
   const tick = useNow();
@@ -113,7 +116,9 @@ export function TimePicker({
       const panel = panelRef.current;
       if (!panel) return;
       const target = slot
-        ? panel.querySelector<HTMLButtonElement>(`[data-slot="${slot}"]`)
+        ? panel.querySelector<HTMLButtonElement>(
+            `[data-slot="${slot}"]:not(:disabled)`
+          )
         : panel.querySelector<HTMLButtonElement>(
             'button[role="option"]:not(:disabled)'
           );
@@ -280,6 +285,7 @@ export function TimePicker({
                     >
                       {group.slots.map((slot) => {
                         const isSelected = value === slot;
+                        const isDisabled = disabledSlots.includes(slot);
                         return (
                           <button
                             key={slot}
@@ -287,12 +293,16 @@ export function TimePicker({
                             role="option"
                             data-slot={slot}
                             aria-selected={isSelected}
+                            aria-label={isDisabled ? `${slot}, unavailable` : slot}
+                            disabled={isDisabled}
                             onClick={() => pick(slot)}
                             className={cn(
                               "rounded-lg px-1 py-2 text-[0.8125rem] font-medium transition-colors duration-150",
                               isSelected
                                 ? "bg-primary font-semibold text-white"
-                                : "text-foreground/80 hover:bg-secondary hover:text-foreground"
+                                : isDisabled
+                                  ? "cursor-not-allowed bg-secondary/70 text-muted/45 line-through"
+                                  : "text-foreground/80 hover:bg-secondary hover:text-foreground"
                             )}
                           >
                             {slot}
