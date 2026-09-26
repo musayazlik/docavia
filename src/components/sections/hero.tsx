@@ -4,17 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/motion/reveal";
 import { getContent } from "@/lib/content/store";
+import { defaultContent } from "@/lib/content/defaults";
 import { HeroVisual } from "./hero-visual";
-
-const heroAvatars = [
-  { src: "/images/avatar-p1.jpg", alt: "Docavia patient" },
-  { src: "/images/patient-sophia.jpg", alt: "Docavia patient" },
-  { src: "/images/avatar-p3.jpg", alt: "Docavia patient" },
-];
 
 export async function Hero() {
   const content = await getContent();
   const hero = content.hero;
+  const heroAvatars = [
+    hero.patientAvatar1,
+    hero.patientAvatar2,
+    hero.patientAvatar3,
+  ].filter((src) => typeof src === "string" && src.trim().length > 0);
 
   return (
     <section id="home" className="relative overflow-hidden pt-32 pb-28 md:pt-40 md:pb-36">
@@ -72,18 +72,20 @@ export async function Hero() {
 
           <Reveal delay={0.32}>
             <div className="mt-11 flex items-center gap-4">
-              <div className="flex -space-x-3">
-                {heroAvatars.map((avatar) => (
-                  <Image
-                    key={avatar.src}
-                    src={avatar.src}
-                    alt={avatar.alt}
-                    width={44}
-                    height={44}
-                    className="size-11 rounded-full border-2 border-white object-cover shadow-sm"
-                  />
-                ))}
-              </div>
+              {heroAvatars.length > 0 && (
+                <div className="flex -space-x-3">
+                  {heroAvatars.map((src, index) => (
+                    <Image
+                      key={index}
+                      src={src}
+                      alt=""
+                      width={44}
+                      height={44}
+                      className="size-11 rounded-full border-2 border-white object-cover shadow-sm"
+                    />
+                  ))}
+                </div>
+              )}
               <div>
                 <div
                   className="flex items-center gap-1.5"
@@ -106,7 +108,7 @@ export async function Hero() {
           </Reveal>
         </div>
 
-        <HeroVisual />
+        <HeroVisual imageSrc={hero.image || defaultContent.hero.image} />
       </div>
     </section>
   );

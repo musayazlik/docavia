@@ -52,6 +52,10 @@ export default async function DoctorsPage() {
         <PageHero
           label={hero.label}
           eyebrow={hero.eyebrow}
+          image={{
+            src: "/images/why-us.jpg",
+            alt: "Physician discussing results with a patient",
+          }}
           title={
             <>
               {hero.title}{" "}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
 import { Eyebrow } from "@/components/ui/section-heading";
@@ -6,14 +7,14 @@ import { Reveal } from "@/components/motion/reveal";
 import { cn } from "@/lib/utils";
 
 /**
- * Shared hero for inner pages — breadcrumb, eyebrow, page title and
- * description, decorated with the site's dot-grid and cross motifs.
+ * Shared hero for inner pages with an optional editorial photo.
  */
 export function PageHero({
   label,
   eyebrow,
   title,
   description,
+  image,
   children,
   className,
 }: {
@@ -22,6 +23,7 @@ export function PageHero({
   eyebrow: string;
   title: ReactNode;
   description?: string;
+  image?: { src: string; alt: string; objectPosition?: string };
   children?: ReactNode;
   className?: string;
 }) {
@@ -76,14 +78,38 @@ export function PageHero({
             </ol>
           </nav>
 
-          <div className="mt-7 grid items-end gap-10 lg:grid-cols-[1.25fr_0.75fr]">
+          <div
+            className={cn(
+              "mt-7 grid gap-10",
+              image
+                ? "items-center lg:grid-cols-[1.1fr_0.9fr] lg:gap-16"
+                : "items-end lg:grid-cols-[1.25fr_0.75fr]"
+            )}
+          >
             <div>
               <Eyebrow>{eyebrow}</Eyebrow>
               <h1 className="font-heading mt-4 max-w-3xl text-[2.5rem] leading-[1.08] font-bold tracking-[-0.025em] text-balance text-foreground sm:text-[3.1rem] lg:text-[3.6rem]">
                 {title}
               </h1>
+              {image && description && (
+                <p className="mt-6 max-w-xl text-[1.0625rem] leading-relaxed text-muted">
+                  {description}
+                </p>
+              )}
             </div>
-            {description && (
+            {image ? (
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] rounded-tr-[5rem] shadow-soft sm:aspect-[16/9] lg:aspect-[5/4]">
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  sizes="(min-width: 1024px) 42vw, 100vw"
+                  loading="eager"
+                  className="object-cover"
+                  style={{ objectPosition: image.objectPosition ?? "center" }}
+                />
+              </div>
+            ) : description && (
               <p className="max-w-md pb-2 text-[1.0625rem] leading-relaxed text-muted lg:ml-auto">
                 {description}
               </p>

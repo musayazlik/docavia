@@ -28,6 +28,8 @@ export type FieldDef = {
   type: FieldType;
   placeholder?: string;
   help?: string;
+  aspect?: "portrait" | "square" | "wide";
+  removable?: boolean;
 };
 
 export type ListDef = {
@@ -130,22 +132,60 @@ export const contentGroups: ContentGroup[] = [
     key: "hero",
     title: "Hero",
     description:
-      "The first screen of the homepage — headline, intro copy and both call-to-action buttons.",
+      "The first screen of the homepage — copy, main photo and patient avatars.",
     icon: Sparkles,
     category: "home",
-    fields: [
-      { key: "eyebrow", label: "Eyebrow", type: "text" },
-      { key: "title", label: "Title", type: "text" },
+    fields: [],
+    cards: [
       {
-        key: "titleAccent",
-        label: "Title accent (italic part)",
-        type: "text",
+        title: "Message and actions",
+        fields: [
+          { key: "eyebrow", label: "Eyebrow", type: "text" },
+          { key: "title", label: "Title", type: "text" },
+          { key: "titleAccent", label: "Title accent (italic part)", type: "text" },
+          { key: "description", label: "Description", type: "textarea" },
+          { key: "primaryCta", label: "Primary button", type: "text" },
+          { key: "secondaryCta", label: "Secondary button", type: "text" },
+          { key: "ratingValue", label: "Rating (e.g. 4.9/5)", type: "text" },
+          { key: "ratingLabel", label: "Rating caption", type: "text" },
+        ],
       },
-      { key: "description", label: "Description", type: "textarea" },
-      { key: "primaryCta", label: "Primary button", type: "text" },
-      { key: "secondaryCta", label: "Secondary button", type: "text" },
-      { key: "ratingValue", label: "Rating (e.g. 4.9/5)", type: "text" },
-      { key: "ratingLabel", label: "Rating caption", type: "text" },
+      {
+        title: "Hero photos",
+        description:
+          "Upload a portrait for the large photo and square images for the three patient circles. Save & Publish to update the homepage.",
+        fields: [
+          {
+            key: "image",
+            label: "Main doctor photo",
+            type: "image",
+            aspect: "portrait",
+            removable: false,
+            help: "Portrait image; a 4:5 crop works best.",
+          },
+          {
+            key: "patientAvatar1",
+            label: "Patient photo 1",
+            type: "image",
+            aspect: "square",
+            help: "Square image, displayed as a circle.",
+          },
+          {
+            key: "patientAvatar2",
+            label: "Patient photo 2",
+            type: "image",
+            aspect: "square",
+            help: "Square image, displayed as a circle.",
+          },
+          {
+            key: "patientAvatar3",
+            label: "Patient photo 3",
+            type: "image",
+            aspect: "square",
+            help: "Square image, displayed as a circle.",
+          },
+        ],
+      },
     ],
     lists: [],
   },

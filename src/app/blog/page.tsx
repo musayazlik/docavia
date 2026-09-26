@@ -49,6 +49,10 @@ export default async function BlogPage() {
         <PageHero
           label={hero.label}
           eyebrow={hero.eyebrow}
+          image={{
+            src: "/images/blog-sleep.jpg",
+            alt: "Woman resting peacefully in a softly lit bedroom",
+          }}
           title={
             <>
               {hero.title}{" "}

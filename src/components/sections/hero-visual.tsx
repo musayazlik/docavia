@@ -43,7 +43,7 @@ function FloatingCard({
   );
 }
 
-export function HeroVisual() {
+export function HeroVisual({ imageSrc }: { imageSrc: string }) {
   const reduce = useReducedMotion();
 
   return (
@@ -65,10 +65,10 @@ export function HeroVisual() {
 
       <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] rounded-tr-[6.5rem] shadow-soft">
         <Image
-          src="/images/hero-doctor.jpg"
-          alt="Smiling doctor in a white coat standing in a bright, modern clinic corridor"
+          src={imageSrc}
+          alt="Docavia clinician in the clinic"
           fill
-          priority
+          loading="eager"
           sizes="(min-width: 1024px) 44vw, (min-width: 640px) 70vw, 100vw"
           className="object-cover"
         />

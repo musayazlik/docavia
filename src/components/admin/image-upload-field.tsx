@@ -39,6 +39,7 @@ export function ImageUploadField({
   help,
   aspect = "portrait",
   layout = "row",
+  allowRemove = true,
 }: {
   label: string;
   value: unknown;
@@ -47,6 +48,7 @@ export function ImageUploadField({
   help?: string;
   aspect?: keyof typeof ASPECT_CLASSES;
   layout?: "row" | "stack";
+  allowRemove?: boolean;
 }) {
   const current = typeof value === "string" ? value : "";
   const inputRef = useRef<HTMLInputElement>(null);
@@ -170,13 +172,15 @@ export function ImageUploadField({
                 <ImagePlus className="size-4" aria-hidden="true" />
                 Replace photo
               </button>
-              <button
-                type="button"
-                onClick={() => onChange("")}
-                className={removeClasses}
-              >
-                Remove
-              </button>
+              {allowRemove && (
+                <button
+                  type="button"
+                  onClick={() => onChange("")}
+                  className={removeClasses}
+                >
+                  Remove
+                </button>
+              )}
             </div>
             {!canUpload && (
               <p className="mt-2.5 text-xs leading-relaxed text-muted">

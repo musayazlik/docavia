@@ -60,6 +60,10 @@ export default async function ServicesPage() {
         <PageHero
           label={hero.label}
           eyebrow={hero.eyebrow}
+          image={{
+            src: "/images/blog-checkup.jpg",
+            alt: "Doctor checking a patient's blood pressure",
+          }}
           title={
             <>
               {hero.title}{" "}

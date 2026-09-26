@@ -84,6 +84,8 @@ function Field({
         canUpload={canUpload ?? false}
         onChange={onChange}
         help={def.help}
+        aspect={def.aspect}
+        allowRemove={def.removable !== false}
       />
     );
   }
@@ -555,7 +557,9 @@ export function GroupEditor({
                   <div
                     key={field.key}
                     className={
-                      field.type === "textarea" ? "sm:col-span-2" : undefined
+                      field.type === "textarea" || field.type === "image"
+                        ? "sm:col-span-2"
+                        : undefined
                     }
                   >
                     <Field

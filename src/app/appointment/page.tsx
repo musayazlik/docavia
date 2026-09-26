@@ -119,6 +119,11 @@ export default async function AppointmentPage() {
         <PageHero
           label={hero.label}
           eyebrow={hero.eyebrow}
+          image={{
+            src: "/images/cta-doctor.jpg",
+            alt: "Docavia doctor ready to welcome patients",
+            objectPosition: "center 25%",
+          }}
           title={
             <>
               {hero.title}{" "}

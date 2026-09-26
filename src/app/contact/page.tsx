@@ -96,6 +96,11 @@ export default async function ContactPage() {
         <PageHero
           label={hero.label}
           eyebrow={hero.eyebrow}
+          image={{
+            src: "/images/og.jpg",
+            alt: "Docavia physician speaking with a patient at the clinic",
+            objectPosition: "70% center",
+          }}
           title={
             <>
               {hero.title}{" "}

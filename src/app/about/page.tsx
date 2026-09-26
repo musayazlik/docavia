@@ -43,6 +43,11 @@ export default async function AboutPage() {
         <PageHero
           label={hero.label}
           eyebrow={hero.eyebrow}
+          image={{
+            src: "/images/hero-doctor.jpg",
+            alt: "Docavia physician in a bright clinic corridor",
+            objectPosition: "center 30%",
+          }}
           title={
             <>
               {hero.title}{" "}

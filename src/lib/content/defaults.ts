@@ -59,6 +59,10 @@ export const defaultContent = {
     secondaryCta: "Find a Doctor",
     ratingValue: "4.9/5",
     ratingLabel: "Trusted by 12,000+ patients",
+    image: "/images/hero-doctor.jpg",
+    patientAvatar1: "/images/avatar-p1.jpg",
+    patientAvatar2: "/images/patient-sophia.jpg",
+    patientAvatar3: "/images/avatar-p3.jpg",
   },
 
   /* ------------------------------ About section ----------------------------- */
