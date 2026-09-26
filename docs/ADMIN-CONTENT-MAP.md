@@ -95,7 +95,7 @@ günceller.
 
 ### 3. Inner Pages (`pages` + `openingHours`)
 
-- **Page Heroes**: about / services / doctors / blog / contact / appointment — eyebrow, title,
+- **Page Intros**: about / services / doctors / blog / contact / appointment — eyebrow, title,
   title accent, description.
 - **Opening Hours**: 7 günlük program (day + hours). "Closed" yazan gün kapalı; Open/Closed
   rozeti saatleri parse eder.

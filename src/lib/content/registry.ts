@@ -142,7 +142,7 @@ export const contentGroups: ContentGroup[] = [
   },
   {
     key: "about",
-    title: "About Section",
+    title: "About",
     description:
       "Homepage about block — story copy, the experience badge and the four benefit bullets.",
     icon: HeartPulse,
@@ -170,7 +170,7 @@ export const contentGroups: ContentGroup[] = [
   },
   {
     key: "services",
-    title: "Services Section",
+    title: "Services",
     description:
       "Homepage services grid — heading, intro paragraph and the six service cards.",
     icon: Stethoscope,
@@ -196,7 +196,7 @@ export const contentGroups: ContentGroup[] = [
   },
   {
     key: "whyUs",
-    title: "Why Us Section",
+    title: "Why Us",
     description:
       "Homepage why-Docavia block — heading, the satisfaction badge and the numbered feature list.",
     icon: Star,
@@ -223,7 +223,7 @@ export const contentGroups: ContentGroup[] = [
   },
   {
     key: "stats",
-    title: "Stats Band",
+    title: "Stats",
     description:
       "The four counters shown under the why-us block (years, specialists, patients, services).",
     icon: TrendingUp,
@@ -244,7 +244,7 @@ export const contentGroups: ContentGroup[] = [
   },
   {
     key: "doctors",
-    title: "Doctors Section",
+    title: "Doctors",
     description:
       "Homepage specialists grid — heading only. The doctors themselves are managed under Administration → Doctors.",
     icon: Users,
@@ -259,7 +259,7 @@ export const contentGroups: ContentGroup[] = [
   },
   {
     key: "appointmentCta",
-    title: "Appointment CTA",
+    title: "Appointment Banner",
     description:
       "Dark banner driving visitors to the appointment page — heading, copy and button.",
     icon: CalendarClock,
@@ -300,7 +300,7 @@ export const contentGroups: ContentGroup[] = [
   },
   {
     key: "testimonials",
-    title: "Testimonials Section",
+    title: "Testimonials",
     description:
       "Patient quotes carousel — heading only. The quotes themselves are managed under Adminstration → Testimonials.",
     icon: Quote,
@@ -314,7 +314,7 @@ export const contentGroups: ContentGroup[] = [
   },
   {
     key: "articles",
-    title: "Articles Section",
+    title: "Articles",
     description: "Homepage journal heading. Article posts live in the blog.",
     icon: BookOpenCheck,
     category: "home",
@@ -328,7 +328,7 @@ export const contentGroups: ContentGroup[] = [
   },
   {
     key: "faq",
-    title: "FAQ Section",
+    title: "FAQ",
     description:
       "Questions accordion used on the homepage, services, contact and appointment pages.",
     icon: CircleHelp,
@@ -354,7 +354,7 @@ export const contentGroups: ContentGroup[] = [
   },
   {
     key: "finalCta",
-    title: "Final CTA",
+    title: "Closing Banner",
     description: "Closing banner of the homepage — heading, copy and buttons.",
     icon: Sparkles,
     category: "home",
@@ -389,7 +389,7 @@ export const contentGroups: ContentGroup[] = [
   },
   {
     key: "pages",
-    title: "Page Heroes",
+    title: "Page Intros",
     description:
       "Breadcrumb label, eyebrow, heading and intro of every inner page hero.",
     icon: LayoutTemplate,
