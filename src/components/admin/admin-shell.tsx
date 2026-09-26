@@ -170,8 +170,9 @@ function NavList({
 }
 
 function BrandMark() {
+  // Same height as the top header so the two border lines align.
   return (
-    <div className="relative flex items-center border-b border-border px-7 pt-7 pb-6">
+    <div className="flex h-[4.5rem] shrink-0 items-center border-b border-border px-7">
       <Link href="/admin" aria-label="Docavia admin dashboard">
         <Logo />
       </Link>
