@@ -13,6 +13,7 @@ import { Footer } from "@/components/layout/footer";
 import { PageHero } from "@/components/ui/page-hero";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { AppointmentForm } from "@/components/sections/appointment-form";
+import { AppointmentLookup } from "@/components/sections/appointment-lookup";
 import { OpeningHours } from "@/components/sections/opening-hours";
 import { Faq } from "@/components/sections/faq";
 import { Reveal } from "@/components/motion/reveal";
@@ -163,6 +164,10 @@ export default async function AppointmentPage() {
                     specialty: item.specialty,
                   }))}
                 />
+              </Reveal>
+
+              <Reveal className="mt-8" delay={0.15}>
+                <AppointmentLookup />
               </Reveal>
             </div>
 

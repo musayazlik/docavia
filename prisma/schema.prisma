@@ -170,6 +170,8 @@ model MediaAsset {
 
 model Appointment {
   id         String    @id @default(cuid())
+  /// Human-readable lookup code shared with the patient (e.g. APT-7F3K2Q).
+  code       String    @unique
   name       String
   phone      String
   email      String?

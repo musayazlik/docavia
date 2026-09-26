@@ -103,8 +103,8 @@ export function PageHero({
                   src={image.src}
                   alt={image.alt}
                   fill
+                  priority
                   sizes="(min-width: 1024px) 42vw, 100vw"
-                  loading="eager"
                   className="object-cover"
                   style={{ objectPosition: image.objectPosition ?? "center" }}
                 />

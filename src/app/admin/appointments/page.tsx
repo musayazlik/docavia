@@ -12,6 +12,7 @@ export default async function AppointmentsPage() {
     <AppointmentsClient
       rows={rows.map((row) => ({
         id: row.id,
+        code: row.code,
         name: row.name,
         phone: row.phone,
         email: row.email,

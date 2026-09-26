@@ -1,7 +1,15 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ArrowRight, CircleAlert, LayoutDashboard, Lock, Mail, ShieldCheck } from "lucide-react";
+import {
+  ArrowRight,
+  CircleAlert,
+  LayoutDashboard,
+  Lock,
+  Mail,
+  ShieldCheck,
+  UserRound,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import {
@@ -108,6 +116,32 @@ export function LoginForm() {
             }
             description="Sign in to manage appointments, doctors, services and site content."
           />
+
+          <button
+            type="button"
+            onClick={() => {
+              setEmail("demo@docavia.com");
+              setPassword("demo2026");
+              setErrors({});
+            }}
+            className="group mt-7 flex w-full items-center gap-4 rounded-2xl border border-primary/20 bg-primary-light/45 px-4 py-3.5 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-primary-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white text-primary shadow-sm">
+              <UserRound className="size-4.5" aria-hidden="true" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-heading text-sm font-bold tracking-tight text-foreground">
+                Try the demo account
+              </span>
+              <span className="mt-0.5 block truncate text-xs text-muted">
+                Read-only access · demo@docavia.com · demo2026
+              </span>
+            </span>
+            <ArrowRight
+              className="size-4 shrink-0 text-primary transition-transform duration-300 group-hover:translate-x-1"
+              aria-hidden="true"
+            />
+          </button>
 
           <form onSubmit={handleSubmit} noValidate className="mt-9">
             {errors.form && (

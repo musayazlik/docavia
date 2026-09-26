@@ -1427,6 +1427,7 @@ export type MediaAssetScalarFieldEnum = (typeof MediaAssetScalarFieldEnum)[keyof
 
 export const AppointmentScalarFieldEnum = {
   id: 'id',
+  code: 'code',
   name: 'name',
   phone: 'phone',
   email: 'email',

@@ -26,6 +26,7 @@ export type AggregateAppointment = {
 
 export type AppointmentMinAggregateOutputType = {
   id: string | null
+  code: string | null
   name: string | null
   phone: string | null
   email: string | null
@@ -42,6 +43,7 @@ export type AppointmentMinAggregateOutputType = {
 
 export type AppointmentMaxAggregateOutputType = {
   id: string | null
+  code: string | null
   name: string | null
   phone: string | null
   email: string | null
@@ -58,6 +60,7 @@ export type AppointmentMaxAggregateOutputType = {
 
 export type AppointmentCountAggregateOutputType = {
   id: number
+  code: number
   name: number
   phone: number
   email: number
@@ -76,6 +79,7 @@ export type AppointmentCountAggregateOutputType = {
 
 export type AppointmentMinAggregateInputType = {
   id?: true
+  code?: true
   name?: true
   phone?: true
   email?: true
@@ -92,6 +96,7 @@ export type AppointmentMinAggregateInputType = {
 
 export type AppointmentMaxAggregateInputType = {
   id?: true
+  code?: true
   name?: true
   phone?: true
   email?: true
@@ -108,6 +113,7 @@ export type AppointmentMaxAggregateInputType = {
 
 export type AppointmentCountAggregateInputType = {
   id?: true
+  code?: true
   name?: true
   phone?: true
   email?: true
@@ -197,6 +203,7 @@ export type AppointmentGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 
 export type AppointmentGroupByOutputType = {
   id: string
+  code: string
   name: string
   phone: string
   email: string | null
@@ -234,6 +241,7 @@ export type AppointmentWhereInput = {
   OR?: Prisma.AppointmentWhereInput[]
   NOT?: Prisma.AppointmentWhereInput | Prisma.AppointmentWhereInput[]
   id?: Prisma.StringFilter<"Appointment"> | string
+  code?: Prisma.StringFilter<"Appointment"> | string
   name?: Prisma.StringFilter<"Appointment"> | string
   phone?: Prisma.StringFilter<"Appointment"> | string
   email?: Prisma.StringNullableFilter<"Appointment"> | string | null
@@ -250,6 +258,7 @@ export type AppointmentWhereInput = {
 
 export type AppointmentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -266,6 +275,7 @@ export type AppointmentOrderByWithRelationInput = {
 
 export type AppointmentWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  code?: string
   AND?: Prisma.AppointmentWhereInput | Prisma.AppointmentWhereInput[]
   OR?: Prisma.AppointmentWhereInput[]
   NOT?: Prisma.AppointmentWhereInput | Prisma.AppointmentWhereInput[]
@@ -281,10 +291,11 @@ export type AppointmentWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.StringFilter<"Appointment"> | string
   createdAt?: Prisma.DateTimeFilter<"Appointment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Appointment"> | Date | string
-}, "id">
+}, "id" | "code">
 
 export type AppointmentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -307,6 +318,7 @@ export type AppointmentScalarWhereWithAggregatesInput = {
   OR?: Prisma.AppointmentScalarWhereWithAggregatesInput[]
   NOT?: Prisma.AppointmentScalarWhereWithAggregatesInput | Prisma.AppointmentScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Appointment"> | string
+  code?: Prisma.StringWithAggregatesFilter<"Appointment"> | string
   name?: Prisma.StringWithAggregatesFilter<"Appointment"> | string
   phone?: Prisma.StringWithAggregatesFilter<"Appointment"> | string
   email?: Prisma.StringNullableWithAggregatesFilter<"Appointment"> | string | null
@@ -323,6 +335,7 @@ export type AppointmentScalarWhereWithAggregatesInput = {
 
 export type AppointmentCreateInput = {
   id?: string
+  code: string
   name: string
   phone: string
   email?: string | null
@@ -339,6 +352,7 @@ export type AppointmentCreateInput = {
 
 export type AppointmentUncheckedCreateInput = {
   id?: string
+  code: string
   name: string
   phone: string
   email?: string | null
@@ -355,6 +369,7 @@ export type AppointmentUncheckedCreateInput = {
 
 export type AppointmentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -371,6 +386,7 @@ export type AppointmentUpdateInput = {
 
 export type AppointmentUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -387,6 +403,7 @@ export type AppointmentUncheckedUpdateInput = {
 
 export type AppointmentCreateManyInput = {
   id?: string
+  code: string
   name: string
   phone: string
   email?: string | null
@@ -403,6 +420,7 @@ export type AppointmentCreateManyInput = {
 
 export type AppointmentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -419,6 +437,7 @@ export type AppointmentUpdateManyMutationInput = {
 
 export type AppointmentUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -435,6 +454,7 @@ export type AppointmentUncheckedUpdateManyInput = {
 
 export type AppointmentCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -451,6 +471,7 @@ export type AppointmentCountOrderByAggregateInput = {
 
 export type AppointmentMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -467,6 +488,7 @@ export type AppointmentMaxOrderByAggregateInput = {
 
 export type AppointmentMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  code?: Prisma.SortOrder
   name?: Prisma.SortOrder
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrder
@@ -485,6 +507,7 @@ export type AppointmentMinOrderByAggregateInput = {
 
 export type AppointmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  code?: boolean
   name?: boolean
   phone?: boolean
   email?: boolean
@@ -501,6 +524,7 @@ export type AppointmentSelect<ExtArgs extends runtime.Types.Extensions.InternalA
 
 export type AppointmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  code?: boolean
   name?: boolean
   phone?: boolean
   email?: boolean
@@ -517,6 +541,7 @@ export type AppointmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
 
 export type AppointmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  code?: boolean
   name?: boolean
   phone?: boolean
   email?: boolean
@@ -533,6 +558,7 @@ export type AppointmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
 
 export type AppointmentSelectScalar = {
   id?: boolean
+  code?: boolean
   name?: boolean
   phone?: boolean
   email?: boolean
@@ -547,13 +573,17 @@ export type AppointmentSelectScalar = {
   updatedAt?: boolean
 }
 
-export type AppointmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "phone" | "email" | "department" | "doctor" | "date" | "timeSlot" | "visitType" | "notes" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["appointment"]>
+export type AppointmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "phone" | "email" | "department" | "doctor" | "date" | "timeSlot" | "visitType" | "notes" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["appointment"]>
 
 export type $AppointmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Appointment"
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    /**
+     * Human-readable lookup code shared with the patient (e.g. APT-7F3K2Q).
+     */
+    code: string
     name: string
     phone: string
     email: string | null
@@ -990,6 +1020,7 @@ export interface Prisma__AppointmentClient<T, Null = never, ExtArgs extends runt
  */
 export interface AppointmentFieldRefs {
   readonly id: Prisma.FieldRef<"Appointment", 'String'>
+  readonly code: Prisma.FieldRef<"Appointment", 'String'>
   readonly name: Prisma.FieldRef<"Appointment", 'String'>
   readonly phone: Prisma.FieldRef<"Appointment", 'String'>
   readonly email: Prisma.FieldRef<"Appointment", 'String'>

@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 
 export type AppointmentRow = {
   id: string;
+  code: string;
   name: string;
   phone: string;
   email: string | null;
@@ -151,7 +152,7 @@ export function AppointmentsClient({ rows }: { rows: AppointmentRow[] }) {
       </div>
 
       <DataTable
-        headers={["Patient", "Department", "Preferred", "Type", "Status", "Requested", ""]}
+        headers={["Code", "Patient", "Department", "Preferred", "Type", "Status", "Requested", ""]}
       >
         {visible.length === 0 ? (
           <TableEmptyState
@@ -168,6 +169,11 @@ export function AppointmentsClient({ rows }: { rows: AppointmentRow[] }) {
               key={row.id}
               className="group transition-colors duration-200 hover:bg-secondary/40"
             >
+              <td className="px-5 py-4">
+                <code className="rounded-lg bg-secondary px-2 py-1 font-mono text-xs font-bold text-primary-dark">
+                  {row.code}
+                </code>
+              </td>
               <td className="px-5 py-4">
                 <p className="font-heading text-[0.9375rem] font-bold text-foreground">
                   {row.name}
@@ -273,6 +279,7 @@ export function AppointmentsClient({ rows }: { rows: AppointmentRow[] }) {
           <div className="space-y-5">
             <dl className="grid gap-x-8 gap-y-4 rounded-2xl bg-secondary/60 p-6 sm:grid-cols-2">
               {[
+                { label: "Code", value: viewing.code },
                 { label: "Phone", value: viewing.phone },
                 { label: "Email", value: viewing.email || "—" },
                 { label: "Department", value: viewing.department },

@@ -53,6 +53,7 @@ export function AppointmentForm({
   const [visitType, setVisitType] = useState<string>("in-person");
   const [date, setDate] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
+  const [code, setCode] = useState("");
   const reduce = useReducedMotion();
 
   // a new day can invalidate the chosen slot (different hours, full day)
@@ -103,6 +104,7 @@ export function AppointmentForm({
     });
 
     if (result.ok) {
+      setCode(result.code ?? "");
       setStatus("sent");
     } else {
       setStatus("idle");
@@ -119,6 +121,7 @@ export function AppointmentForm({
     setVisitType("in-person");
     setDate("");
     setFormError(null);
+    setCode("");
   };
 
   const summaryRows = [
@@ -164,6 +167,20 @@ export function AppointmentForm({
                 Thank you — we have your request. Our care team will call to
                 confirm the exact slot within one working day.
               </p>
+              {code && (
+                <div className="mt-6 rounded-2xl border border-primary/25 bg-primary-light/50 px-6 py-4">
+                  <p className="font-heading text-xs font-bold tracking-[0.14em] text-primary-dark uppercase">
+                    Your appointment code
+                  </p>
+                  <p className="font-heading mt-1.5 text-2xl font-bold tracking-[0.08em] text-primary-dark">
+                    {code}
+                  </p>
+                  <p className="mt-1.5 text-xs leading-relaxed text-primary-dark/80">
+                    Keep this code — you can look up or cancel your appointment
+                    with it below.
+                  </p>
+                </div>
+              )}
             </div>
 
             <dl className="mt-8 grid gap-x-8 gap-y-4 rounded-2xl bg-secondary/60 p-6 sm:grid-cols-2">

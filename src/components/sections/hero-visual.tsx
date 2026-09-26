@@ -68,7 +68,7 @@ export function HeroVisual({ imageSrc }: { imageSrc: string }) {
           src={imageSrc}
           alt="Docavia clinician in the clinic"
           fill
-          loading="eager"
+          priority
           sizes="(min-width: 1024px) 44vw, (min-width: 640px) 70vw, 100vw"
           className="object-cover"
         />
