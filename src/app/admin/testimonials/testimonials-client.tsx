@@ -41,7 +41,7 @@ export function TestimonialsClient({
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const { toastError } = useToast();
+  const { toastSuccess, toastError } = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY);
   const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
@@ -76,6 +76,7 @@ export function TestimonialsClient({
       });
       if (result.ok) {
         setFormOpen(false);
+        toastSuccess(result.message);
         router.refresh();
       } else {
         toastError(result.message);
@@ -93,6 +94,7 @@ export function TestimonialsClient({
       }
       if (result.ok) {
         setDeleteTarget(null);
+        toastSuccess("Testimonial removed.");
         router.refresh();
       }
     });

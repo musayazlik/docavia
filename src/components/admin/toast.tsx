@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { AlertCircle, CheckCircle2, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, Info, X } from "lucide-react";
 import {
   createContext,
   useCallback,
@@ -15,7 +15,7 @@ import {
 const EASE = [0.22, 1, 0.36, 1] as const;
 const TOAST_DURATION = 5000;
 
-type ToastKind = "success" | "error";
+type ToastKind = "success" | "error" | "info";
 
 type ToastItem = {
   id: number;
@@ -26,6 +26,7 @@ type ToastItem = {
 type ToastContextValue = {
   toastSuccess: (message: string) => void;
   toastError: (message: string) => void;
+  toastInfo: (message: string) => void;
 };
 
 const ToastContext = createContext<ToastContextValue | null>(null);
@@ -56,6 +57,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     () => ({
       toastSuccess: (message) => push("success", message),
       toastError: (message) => push("error", message),
+      toastInfo: (message) => push("info", message),
     }),
     [push]
   );
@@ -83,6 +85,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               {item.kind === "success" ? (
                 <CheckCircle2
                   className="mt-0.5 size-5 shrink-0 text-primary"
+                  aria-hidden="true"
+                />
+              ) : item.kind === "info" ? (
+                <Info
+                  className="mt-0.5 size-5 shrink-0 text-muted"
                   aria-hidden="true"
                 />
               ) : (

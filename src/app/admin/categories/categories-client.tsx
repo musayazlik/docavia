@@ -29,7 +29,7 @@ export function CategoriesClient({
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const { toastError } = useToast();
+  const { toastSuccess, toastError } = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY);
   const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
@@ -60,6 +60,7 @@ export function CategoriesClient({
       });
       if (result.ok) {
         setFormOpen(false);
+        toastSuccess(result.message);
         router.refresh();
       } else {
         toastError(result.message);
@@ -77,6 +78,7 @@ export function CategoriesClient({
       }
       if (result.ok) {
         setDeleteTarget(null);
+        toastSuccess("Category deleted.");
         router.refresh();
       }
     });

@@ -50,7 +50,7 @@ export function PostEditor({
   const [form, setForm] = useState<PostDraft>(initial ?? EMPTY);
   const [contentJson, setContentJson] = useState<object | null>(null);
   const [pending, startTransition] = useTransition();
-  const { toastError } = useToast();
+  const { toastSuccess, toastError } = useToast();
   const editing = Boolean(initial?.id);
 
   const update = (patch: Partial<PostDraft>) => {
@@ -73,6 +73,7 @@ export function PostEditor({
         published: publish,
       });
       if (result.ok) {
+        toastSuccess(publish ? "Post published." : "Post saved as draft.");
         router.push("/admin/posts");
         router.refresh();
       } else {

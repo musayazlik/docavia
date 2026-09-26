@@ -1,9 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Loader2, Search, Upload } from "lucide-react";
 import { Dialog } from "@/components/admin/ui/dialog";
 import { cn } from "@/lib/utils";
+import { useUploadThing } from "@/lib/uploadthing";
+
+/** Uploaded icons are stored as their UploadThing CDN URL. */
+export function isRemoteIcon(value: string): boolean {
+  return /^https?:\/\//.test(value);
+}
 
 type CatalogIcon = {
   name: string;
@@ -69,6 +75,24 @@ export function IconPickerDialog({
 }) {
   const [query, setQuery] = useState("");
   const items = useCatalog(open);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const { startUpload, isUploading } = useUploadThing("imageUploader", {
+    onClientUploadComplete: (files) => {
+      const url = files?.[0]?.ufsUrl;
+      if (url) {
+        onPick(url);
+        onClose();
+      }
+    },
+    onUploadError: (error) => setUploadError(error.message),
+  });
+
+  const uploadFile = (file?: File) => {
+    if (!file) return;
+    setUploadError(null);
+    void startUpload([file]);
+  };
 
   const filtered = useMemo(() => {
     if (!items) return null;
@@ -105,6 +129,55 @@ export function IconPickerDialog({
             className="w-full rounded-xl border border-border bg-white py-3 pr-4 pl-10 text-[0.9375rem] text-foreground transition-all duration-200 placeholder:text-muted/60 hover:border-primary/35 focus:border-primary focus:shadow-[0_0_0_3px_rgb(47_118_109/0.12)] focus:outline-none"
           />
         </div>
+
+        {/* Custom icon upload — lands on UploadThing, stored as a URL with the section */}
+        <div className="flex items-center gap-3 rounded-xl border-2 border-dashed border-border bg-secondary/30 p-3">
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              event.target.value = "";
+              uploadFile(file);
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={isUploading}
+            aria-label="Upload a custom icon"
+            className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white text-primary shadow-[0_1px_2px_rgb(24_63_58/0.05)] ring-1 ring-border transition-all duration-200 hover:-translate-y-0.5 hover:text-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isUploading ? (
+              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Upload className="size-4" aria-hidden="true" />
+            )}
+          </button>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-foreground">
+              {isUploading ? "Uploading icon…" : "Upload a custom icon"}
+            </p>
+            <p className="text-xs text-muted">
+              SVG or PNG · hosted on UploadThing, stored with this section
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={isUploading}
+            className="shrink-0 rounded-xl border border-primary/30 bg-white px-3.5 py-2 text-sm font-semibold text-primary transition-colors duration-200 hover:border-primary hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Choose file
+          </button>
+        </div>
+        {uploadError && (
+          <p role="alert" className="text-xs font-medium text-red-600">
+            {uploadError}
+          </p>
+        )}
 
         {filtered === null ? (
           <p className="py-12 text-center text-sm text-muted">Loading icons…</p>
@@ -176,6 +249,7 @@ export function IconSelectButton({
 }) {
   const [open, setOpen] = useState(false);
   const current = typeof value === "string" ? value : "";
+  const remote = isRemoteIcon(current);
   const items = useCatalog(open || Boolean(current));
   const preview = items?.find((entry) => entry.name === current);
 
@@ -193,7 +267,10 @@ export function IconSelectButton({
         )}
       >
         <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary">
-          {preview ? (
+          {remote ? (
+            // eslint-disable-next-line @next/next/no-img-element -- CDN icon; currentColor branding does not apply
+            <img src={current} alt="" className="size-4.5 object-contain" />
+          ) : preview ? (
             <IconSvg icon={preview} className="size-4.5" />
           ) : (
             <span className="font-heading text-xs font-bold text-muted">?</span>
@@ -202,7 +279,9 @@ export function IconSelectButton({
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[0.9375rem] text-foreground">
             {current
-              ? (preview?.label ?? current)
+              ? remote
+                ? "Custom upload"
+                : (preview?.label ?? current)
               : "Auto (design default)"}
           </span>
           <span className="block text-xs text-muted">

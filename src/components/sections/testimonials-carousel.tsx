@@ -148,7 +148,8 @@ export function TestimonialsCarousel({
             </motion.div>
           </div>
 
-          <div className="mt-8 flex justify-center gap-2">
+          {/* Dot hit areas meet the 24×24px minimum; the visible dot is smaller */}
+          <div className="mt-8 flex justify-center gap-1">
             {items.map((_, i) => (
               <button
                 key={i}
@@ -157,12 +158,17 @@ export function TestimonialsCarousel({
                 aria-label={`Go to testimonial ${i + 1}`}
                 aria-current={i === index}
                 className={cn(
-                  "h-2 rounded-full transition-all duration-300",
-                  i === index
-                    ? "w-7 bg-primary"
-                    : "w-2 bg-primary/25 hover:bg-primary/45"
+                  "flex h-6 w-6 items-center justify-center rounded-full transition-colors duration-300",
+                  i === index ? "text-primary" : "text-primary/25 hover:text-primary/45",
                 )}
-              />
+              >
+                <span
+                  className={cn(
+                    "rounded-full bg-current transition-all duration-300",
+                    i === index ? "h-2 w-7" : "h-2 w-2",
+                  )}
+                />
+              </button>
             ))}
           </div>
         </div>

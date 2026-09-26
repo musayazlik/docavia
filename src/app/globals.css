@@ -12,7 +12,8 @@
   --primary-light: #dcebe7;
 
   --secondary: #eef6f3;
-  --muted: #667873;
+  /* ≥4.5:1 against white, --background and --secondary alike (WCAG AA). */
+  --muted: #5a6b66;
   --border: #dce7e3;
 
   --pine: #0f2d27;

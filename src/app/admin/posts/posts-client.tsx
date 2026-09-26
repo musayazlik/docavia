@@ -47,7 +47,7 @@ export function PostsClient({
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const { toastError } = useToast();
+  const { toastSuccess, toastError } = useToast();
   const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
 
   const togglePublish = (row: Row) => {
@@ -59,6 +59,7 @@ export function PostsClient({
         return;
       }
       router.refresh();
+        toastSuccess(result.message);
     });
   };
 
@@ -72,6 +73,7 @@ export function PostsClient({
       }
       setDeleteTarget(null);
       router.refresh();
+        toastSuccess("Post deleted.");
     });
   };
 

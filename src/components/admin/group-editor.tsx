@@ -6,6 +6,7 @@ import {
   ArrowDown,
   ArrowUp,
   Check,
+  Globe,
   Loader2,
   Pencil,
   Plus,
@@ -22,8 +23,10 @@ import type { FieldCard, FieldDef, ListDef } from "@/lib/content/registry";
 import { cn } from "@/lib/utils";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { IconSelectButton } from "@/components/admin/icon-picker-dialog";
+import { ActionMenu } from "@/components/admin/ui/actions-menu";
 import { Dialog } from "@/components/admin/ui/dialog";
 import { DataTable, TableEmptyState } from "@/components/admin/ui/table";
+import { CmsIcon, resolveCmsIconName } from "@/components/ui/cms-icon";
 import { useToast } from "@/components/admin/toast";
 
 type Json = Record<string, unknown>;
@@ -193,11 +196,17 @@ function ListEditor({
   items,
   canUpload,
   onChange,
+  onAutoSave,
+  onApplied,
 }: {
   list: ListDef;
   items: Json[];
   canUpload?: boolean;
   onChange: (next: Json[]) => void;
+  /** Persist the whole group right away (used by delete). */
+  onAutoSave?: (next: Json[]) => void;
+  /** Fired after a local (staged) add/edit so the UI can toast a hint. */
+  onApplied?: () => void;
 }) {
   const [editing, setEditing] = useState<{ index: number | null; draft: Json } | null>(
     null,
@@ -236,12 +245,15 @@ function ListEditor({
     } else {
       onChange(items.toSpliced(editing.index, 1, editing.draft));
     }
+    onApplied?.();
     setEditing(null);
   };
 
   const confirmDelete = () => {
     if (deleting === null) return;
-    onChange(items.filter((_, i) => i !== deleting));
+    const next = items.filter((_, i) => i !== deleting);
+    onChange(next);
+    onAutoSave?.(next);
     setDeleting(null);
   };
 
@@ -301,58 +313,64 @@ function ListEditor({
                       : "max-w-sm px-5 py-4"
                   }
                 >
-                  <span
-                    className={cn(
-                      "block truncate text-sm",
-                      field === list.fields[0]
-                        ? "font-semibold text-foreground"
-                        : "text-muted",
-                    )}
-                  >
-                    {previewText(getPath(item, field.key)) || "—"}
-                  </span>
+                  {field.type === "icon" ? (
+                    <span className="flex size-9 items-center justify-center rounded-lg bg-secondary text-foreground">
+                      <CmsIcon
+                        name={resolveCmsIconName(
+                          String(getPath(item, field.key) ?? ""),
+                          String(previewText(getPath(item, "label"))),
+                        )}
+                        fallback={Globe}
+                        className="size-4"
+                      />
+                    </span>
+                  ) : (
+                    <span
+                      className={cn(
+                        "block truncate text-sm",
+                        field === list.fields[0]
+                          ? "font-semibold text-foreground"
+                          : "text-muted",
+                      )}
+                    >
+                      {previewText(getPath(item, field.key)) || "—"}
+                    </span>
+                  )}
                 </td>
               ))}
               <td className="px-5 py-4">
-                <div className={cn("flex justify-end gap-1", "opacity-70 transition-opacity duration-200 group-hover:opacity-100")}>
-                  {(
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => move(index, -1)}
-                        disabled={index === 0}
-                        aria-label={`Move ${list.itemLabel} ${index + 1} up`}
-                        className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-secondary hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
-                      >
-                        <ArrowUp className="size-4" aria-hidden="true" />
-                      </button>
-                    <button
-                      type="button"
-                      onClick={() => move(index, 1)}
-                      disabled={index === items.length - 1}
-                      aria-label={`Move ${list.itemLabel} ${index + 1} down`}
-                      className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-secondary hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
-                    >
-                      <ArrowDown className="size-4" aria-hidden="true" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => openEdit(index)}
-                      aria-label={`Edit ${list.itemLabel} ${index + 1}`}
-                      className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-secondary hover:text-foreground"
-                    >
-                      <Pencil className="size-4" aria-hidden="true" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDeleting(index)}
-                      aria-label={`Remove ${list.itemLabel} ${index + 1}`}
-                      className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-red-50 hover:text-red-600"
-                    >
-                      <Trash2 className="size-4" aria-hidden="true" />
-                    </button>
-                    </>
-                  )}
+                <div className="flex justify-end">
+                  <ActionMenu
+                    label={`Actions for ${
+                      previewText(getPath(item, list.fields[0]?.key ?? "")) ||
+                      `${capitalize(list.itemLabel)} ${index + 1}`
+                    }`}
+                    items={[
+                      {
+                        label: "Move up",
+                        icon: ArrowUp,
+                        disabled: index === 0,
+                        onSelect: () => move(index, -1),
+                      },
+                      {
+                        label: "Move down",
+                        icon: ArrowDown,
+                        disabled: index === items.length - 1,
+                        onSelect: () => move(index, 1),
+                      },
+                      {
+                        label: "Edit",
+                        icon: Pencil,
+                        onSelect: () => openEdit(index),
+                      },
+                      {
+                        label: "Remove",
+                        icon: Trash2,
+                        danger: true,
+                        onSelect: () => setDeleting(index),
+                      },
+                    ]}
+                  />
                 </div>
               </td>
             </tr>
@@ -438,8 +456,8 @@ function ListEditor({
         title={`Remove ${list.itemLabel}`}
         description={
           deletingPreview
-            ? `“${deletingPreview}” will be removed from this section once you publish.`
-            : "This row will be removed from this section once you publish."
+            ? `“${deletingPreview}” will be removed from this section and published immediately.`
+            : "This row will be removed from this section and published immediately."
         }
       >
         <div className="flex justify-end gap-3">
@@ -489,7 +507,7 @@ export function GroupEditor({
   const [value, setValue] = useState<Json>(initialValue);
   const [status, setStatus] = useState<ActionResult | null>(null);
   const [pending, startTransition] = useTransition();
-  const { toastError } = useToast();
+  const { toastSuccess, toastError, toastInfo } = useToast();
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [savedJson, setSavedJson] = useState(() => JSON.stringify(initialValue));
 
@@ -497,6 +515,30 @@ export function GroupEditor({
     () => JSON.stringify(value) !== savedJson,
     [value, savedJson],
   );
+
+  /**
+   * Row deletion publishes the whole group immediately — otherwise a
+   * refresh (or the next Save & Publish of unrelated fields) would silently
+   * resurrect the deleted item.
+   */
+  const persistList = (listKey: string, nextItems: Json[]) => {
+    const draft = clone(value);
+    setMutablePath(draft, listKey, nextItems);
+    setValue(draft);
+    setStatus(null);
+    startTransition(async () => {
+      const result = await saveContentGroup(groupKey, JSON.stringify(draft));
+      if (!result.ok) {
+        setStatus(result);
+        toastError(result.message);
+        return;
+      }
+      setSavedJson(JSON.stringify(draft));
+      setStatus({ ok: true, message: "Item deleted and published." });
+      toastSuccess("Item deleted and published.");
+      router.refresh();
+    });
+  };
 
   const save = () => {
     if (pending || !dirty) return;
@@ -508,6 +550,7 @@ export function GroupEditor({
         return;
       }
       setStatus(result);
+      toastSuccess("Changes published to the site.");
       setSavedJson(JSON.stringify(value));
       router.refresh();
     });
@@ -531,7 +574,10 @@ export function GroupEditor({
         const restored = JSON.parse(fresh) as Json;
         setValue(restored);
         setSavedJson(JSON.stringify(restored));
+        toastSuccess("Section restored to its original copy.");
         router.refresh();
+      } else {
+        toastError(result.message);
       }
     });
   };
@@ -620,7 +666,13 @@ export function GroupEditor({
               key={list.key}
               list={list}
               canUpload={uploadsEnabled}
-                            items={Array.isArray(items) ? (items as Json[]) : []}
+              onAutoSave={(next) => persistList(list.key, next)}
+              onApplied={() =>
+                toastInfo(
+                  "Applied locally — publish with Save & Publish to go live.",
+                )
+              }
+              items={Array.isArray(items) ? (items as Json[]) : []}
               onChange={(next) => {
                 const draft = clone(value);
                 setMutablePath(draft, list.key, next);

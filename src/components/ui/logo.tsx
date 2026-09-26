@@ -18,6 +18,7 @@ export function Logo({
       alt="Docavia"
       width={1946}
       height={476}
+      sizes="176px"
       priority={priority}
       draggable={false}
       className={cn("h-10 w-auto", className)}

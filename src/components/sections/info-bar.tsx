@@ -11,11 +11,11 @@ export async function InfoBar() {
   return (
     <div className="shell relative z-10 -mt-16 md:-mt-20">
       <Reveal>
-        <dl className="grid gap-px overflow-hidden rounded-[1.75rem] border border-border/80 bg-border/80 shadow-card sm:grid-cols-3">
+        <ul className="grid gap-px overflow-hidden rounded-[1.75rem] border border-border/80 bg-border/80 shadow-card sm:grid-cols-3">
           {content.infoBar.items.map((item, index) => {
             const Fallback = ICONS[index % ICONS.length];
             return (
-              <div
+              <li
                 key={item.title + index}
                 className="flex items-start gap-4 bg-white p-6 md:p-7"
               >
@@ -27,16 +27,17 @@ export async function InfoBar() {
                   />
                 </span>
                 <div className="min-w-0">
-                  <dt className="font-heading text-[1.05rem] font-bold tracking-tight text-foreground">
+                  {/* p, not a heading — heading-order stays sequential on the page */}
+                  <p className="font-heading text-[1.05rem] font-bold tracking-tight text-foreground">
                     {item.title}
-                  </dt>
-                  <dd className="mt-1 text-sm leading-relaxed text-muted">
+                  </p>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">
                     {item.lines.map((line, lineIndex) => (
                       <span key={line + lineIndex} className="block">
                         {line}
                       </span>
                     ))}
-                  </dd>
+                  </p>
                   {item.actionLabel && item.actionHref && (
                     <a
                       href={item.actionHref}
@@ -50,10 +51,10 @@ export async function InfoBar() {
                     </a>
                   )}
                 </div>
-              </div>
+              </li>
             );
           })}
-        </dl>
+        </ul>
       </Reveal>
     </div>
   );
