@@ -58,10 +58,10 @@ export async function createAppointment(input: {
     const email = str(input.email);
     const department = str(input.department);
 
-    if (!name || !phone || !department) {
+    if (!name || !phone || !email || !department) {
       return {
         ok: false,
-        message: "Name, phone and department are required.",
+        message: "Name, phone, email and department are required.",
       };
     }
     if (name.length > 120 || phone.length > 40 || email.length > 160) {

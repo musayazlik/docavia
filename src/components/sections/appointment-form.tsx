@@ -3,7 +3,9 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
   CalendarCheck,
+  Check,
   CheckCircle2,
+  Copy,
   Hospital,
   Video,
 } from "lucide-react";
@@ -54,6 +56,7 @@ export function AppointmentForm({
   const [date, setDate] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [code, setCode] = useState("");
+  const [copied, setCopied] = useState(false);
   const reduce = useReducedMotion();
 
   // a new day can invalidate the chosen slot (different hours, full day)
@@ -110,6 +113,18 @@ export function AppointmentForm({
       setStatus("idle");
       setFormError(result.message);
     }
+  };
+
+  const copyCode = async () => {
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(code);
+    } catch {
+      // Clipboard unavailable (permissions/insecure context) — still show the
+      // code so the user can copy it manually.
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2500);
   };
 
   const reset = () => {
@@ -172,9 +187,28 @@ export function AppointmentForm({
                   <p className="font-heading text-xs font-bold tracking-[0.14em] text-primary-dark uppercase">
                     Your appointment code
                   </p>
-                  <p className="font-heading mt-1.5 text-2xl font-bold tracking-[0.08em] text-primary-dark">
-                    {code}
-                  </p>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-3">
+                    <p className="font-heading text-2xl font-bold tracking-[0.08em] text-primary-dark">
+                      {code}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={copyCode}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-primary-dark/25 bg-white/70 px-3 py-1.5 text-xs font-semibold text-primary-dark transition-colors duration-200 hover:bg-white"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="size-3.5" aria-hidden="true" />
+                          Copied!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="size-3.5" aria-hidden="true" />
+                          Copy code
+                        </>
+                      )}
+                    </button>
+                  </div>
                   <p className="mt-1.5 text-xs leading-relaxed text-primary-dark/80">
                     Keep this code — you can look up or cancel your appointment
                     with it below.
@@ -246,15 +280,13 @@ export function AppointmentForm({
               </div>
               <div className="sm:col-span-2">
                 <label htmlFor="appointment-email" className={labelClass}>
-                  Email{" "}
-                  <span className="font-body font-normal text-muted">
-                    (optional)
-                  </span>
+                  Email
                 </label>
                 <input
                   id="appointment-email"
                   name="email"
                   type="email"
+                  required
                   autoComplete="email"
                   placeholder="jane@example.com"
                   className={fieldClass}
