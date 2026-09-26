@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import {
   ArrowUpRight,
+  CalendarCheck,
   ExternalLink,
   FileText,
   FolderOpen,
@@ -43,6 +44,7 @@ type NavEntry = {
 
 const ENTITY_NAV: NavEntry[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, category: "general", exact: true },
+  { href: "/admin/appointments", label: "Appointments", icon: CalendarCheck, category: "admin" },
   { href: "/admin/users", label: "Users", icon: Users, category: "admin" },
   { href: "/admin/doctors", label: "Doctors", icon: Stethoscope, category: "admin" },
   { href: "/admin/testimonials", label: "Testimonials", icon: Quote, category: "admin" },
@@ -52,6 +54,7 @@ const ENTITY_NAV: NavEntry[] = [
 
 /** Title shown in the fixed top bar for entity routes. */
 const ROUTE_TITLES: Array<[RegExp, string]> = [
+  [/^\/admin\/appointments$/, "Appointments"],
   [/^\/admin\/users$/, "Users"],
   [/^\/admin\/doctors$/, "Doctors"],
   [/^\/admin\/testimonials$/, "Testimonials"],

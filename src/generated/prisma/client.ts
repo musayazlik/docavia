@@ -91,3 +91,8 @@ export type BlogPost = Prisma.BlogPostModel
  * 
  */
 export type MediaAsset = Prisma.MediaAssetModel
+/**
+ * Model Appointment
+ * 
+ */
+export type Appointment = Prisma.AppointmentModel

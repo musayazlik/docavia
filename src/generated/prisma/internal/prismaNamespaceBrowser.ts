@@ -60,7 +60,8 @@ export const ModelName = {
   Testimonial: 'Testimonial',
   BlogCategory: 'BlogCategory',
   BlogPost: 'BlogPost',
-  MediaAsset: 'MediaAsset'
+  MediaAsset: 'MediaAsset',
+  Appointment: 'Appointment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -222,6 +223,25 @@ export const MediaAssetScalarFieldEnum = {
 } as const
 
 export type MediaAssetScalarFieldEnum = (typeof MediaAssetScalarFieldEnum)[keyof typeof MediaAssetScalarFieldEnum]
+
+
+export const AppointmentScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  phone: 'phone',
+  email: 'email',
+  department: 'department',
+  doctor: 'doctor',
+  date: 'date',
+  timeSlot: 'timeSlot',
+  visitType: 'visitType',
+  notes: 'notes',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AppointmentScalarFieldEnum = (typeof AppointmentScalarFieldEnum)[keyof typeof AppointmentScalarFieldEnum]
 
 
 export const SortOrder = {

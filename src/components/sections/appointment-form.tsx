@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select-field";
 import { DatePicker } from "@/components/ui/date-picker";
 import { TimePicker, slotsForDate } from "@/components/ui/time-picker";
+import { createAppointment } from "@/app/actions/appointments";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -51,6 +52,7 @@ export function AppointmentForm({
   const [time, setTime] = useState("");
   const [visitType, setVisitType] = useState<string>("in-person");
   const [date, setDate] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
   const reduce = useReducedMotion();
 
   // a new day can invalidate the chosen slot (different hours, full day)
@@ -76,16 +78,36 @@ export function AppointmentForm({
     { value: "no-preference", label: "No preference — match me" },
   ];
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (status !== "idle") return;
     if (!department) {
       setDepartmentError(true);
       return;
     }
+    const data = new FormData(event.currentTarget);
     setStatus("sending");
-    // Demo clinic — no backend yet; simulate a short round-trip.
-    window.setTimeout(() => setStatus("sent"), 900);
+    setFormError(null);
+
+    const result = await createAppointment({
+      name: String(data.get("name") ?? ""),
+      phone: String(data.get("phone") ?? ""),
+      email: String(data.get("email") ?? ""),
+      department,
+      doctor: doctor || "no-preference",
+      date,
+      timeSlot: time,
+      visitType,
+      notes: String(data.get("notes") ?? ""),
+      website: String(data.get("website") ?? ""),
+    });
+
+    if (result.ok) {
+      setStatus("sent");
+    } else {
+      setStatus("idle");
+      setFormError(result.message);
+    }
   };
 
   const reset = () => {
@@ -96,6 +118,7 @@ export function AppointmentForm({
     setTime("");
     setVisitType("in-person");
     setDate("");
+    setFormError(null);
   };
 
   const summaryRows = [
@@ -308,6 +331,26 @@ export function AppointmentForm({
                 />
               </div>
             </div>
+
+            <div aria-hidden="true" className="sr-only">
+              <label htmlFor="appointment-website">Website</label>
+              <input
+                id="appointment-website"
+                name="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
+
+            {formError && (
+              <p
+                role="alert"
+                className="mt-5 rounded-2xl bg-red-50 px-5 py-4 text-sm font-medium text-red-700"
+              >
+                {formError}
+              </p>
+            )}
 
             <div className="mt-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <button

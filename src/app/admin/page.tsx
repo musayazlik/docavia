@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   ArrowUpRight,
+  CalendarCheck,
   CalendarClock,
   ExternalLink,
   FileText,
@@ -132,6 +133,7 @@ export default async function AdminDashboard() {
   ];
 
   const manageLinks = [
+    { href: "/admin/appointments", label: "Appointments", icon: CalendarCheck },
     { href: "/admin/users", label: "Users", icon: Users },
     { href: "/admin/doctors", label: "Doctors", icon: Stethoscope },
     { href: "/admin/testimonials", label: "Testimonials", icon: Quote },
@@ -283,7 +285,7 @@ export default async function AdminDashboard() {
         >
           Manage
         </h2>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
           {manageLinks.map((link) => (
             <li key={link.href}>
               <Link

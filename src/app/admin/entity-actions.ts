@@ -436,3 +436,38 @@ export async function deletePost(id: string): Promise<ActionResult> {
     return { ok: false, message: toActionError(error, "Could not delete the post.") };
   }
 }
+
+/* ------------------------------- Appointments ------------------------------- */
+
+const APPOINTMENT_STATUSES = new Set(["new", "confirmed", "completed", "cancelled"]);
+
+export async function setAppointmentStatus(input: {
+  id: string;
+  status: string;
+}): Promise<ActionResult> {
+  try {
+    await requireEditor();
+    const status = str(input.status);
+    if (!APPOINTMENT_STATUSES.has(status)) {
+      return { ok: false, message: "Unknown status." };
+    }
+    await prisma.appointment.update({ where: { id: input.id }, data: { status } });
+    revalidateAll();
+    return { ok: true, message: `Marked as ${status}.` };
+  } catch (error) {
+    console.error("[admin] setAppointmentStatus failed:", error);
+    return { ok: false, message: "Could not update the appointment." };
+  }
+}
+
+export async function deleteAppointment(id: string): Promise<ActionResult> {
+  try {
+    await requireEditor();
+    await prisma.appointment.delete({ where: { id } });
+    revalidateAll();
+    return { ok: true, message: "Appointment deleted." };
+  } catch (error) {
+    console.error("[admin] deleteAppointment failed:", error);
+    return { ok: false, message: "Could not delete the appointment." };
+  }
+}
