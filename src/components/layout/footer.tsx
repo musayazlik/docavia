@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Globe, Mail, MapPin, Phone } from "lucide-react";
 import { footerColumns } from "@/lib/data";
 import { getContent } from "@/lib/content/store";
+import { iconByName } from "@/lib/icons";
 
 function FacebookIcon({ className }: { className?: string }) {
   return (
@@ -74,14 +75,21 @@ export async function Footer() {
               {site.footerTagline}
             </p>
             <div className="mt-6 flex gap-3">
-              {site.socials.map(({ platform, url }, index) => {
-                const Icon =
-                  SOCIAL_ICONS[platform.trim().toLowerCase()] ?? Globe;
+              {site.socials.map((social, index) => {
+                // Rows saved by older panel versions may use {platform,url}.
+                const legacy = social as { platform?: string; url?: string };
+                const label = social.label ?? legacy.platform ?? "Link";
+                const href = social.href ?? legacy.url ?? "#";
+                // Lucide picker choice wins; otherwise fall back to the
+                // hand-drawn brand SVG matching the label, then a globe.
+                const BrandIcon =
+                  SOCIAL_ICONS[label.trim().toLowerCase()] ?? Globe;
+                const Icon = iconByName(social.icon) ?? BrandIcon;
                 return (
                   <a
-                    key={`${platform}-${index}`}
-                    href={url || "#"}
-                    aria-label={platform}
+                    key={`${label}-${index}`}
+                    href={href}
+                    aria-label={label}
                     className="flex size-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition-all duration-300 hover:border-white/30 hover:bg-white/10 hover:text-white"
                   >
                     <Icon className="size-4" />

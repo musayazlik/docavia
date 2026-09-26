@@ -23,10 +23,10 @@ export const defaultContent = {
     footerTagline:
       "Modern, patient-centered healthcare — expert specialists, effortless appointments and care built around you.",
     socials: [
-      { platform: "Facebook", url: "#" },
-      { platform: "Instagram", url: "#" },
-      { platform: "X", url: "#" },
-      { platform: "LinkedIn", url: "#" },
+      { icon: "", label: "Facebook", href: "#" },
+      { icon: "", label: "Instagram", href: "#" },
+      { icon: "", label: "X", href: "#" },
+      { icon: "", label: "LinkedIn", href: "#" },
     ],
   },
 
@@ -34,18 +34,21 @@ export const defaultContent = {
   infoBar: {
     items: [
       {
+        icon: "",
         title: "Emergency Care",
         lines: ["24/7 Emergency Support", "+1 234 567 890"],
         actionLabel: "",
         actionHref: "",
       },
       {
+        icon: "",
         title: "Opening Hours",
         lines: ["Mon – Fri", "08:00 – 20:00"],
         actionLabel: "",
         actionHref: "",
       },
       {
+        icon: "",
         title: "Appointment",
         lines: ["Schedule your consultation"],
         actionLabel: "Book Now",
@@ -110,31 +113,37 @@ export const defaultContent = {
       "From everyday check-ups to specialist programs, thirty medical services under one calm roof — always with the same standard of attention.",
     items: [
       {
+        icon: "",
         title: "General Medicine",
         description:
           "Everyday primary care, annual check-ups and preventive screenings for the whole family.",
       },
       {
+        icon: "",
         title: "Cardiology",
         description:
           "Advanced heart care — from ECG and stress testing to long-term cardiovascular programs.",
       },
       {
+        icon: "",
         title: "Dental Care",
         description:
           "Gentle dentistry with modern imaging, hygiene treatments and cosmetic procedures.",
       },
       {
+        icon: "",
         title: "Pediatrics",
         description:
           "Compassionate care for newborns, children and teens through every growth stage.",
       },
       {
+        icon: "",
         title: "Neurology",
         description:
           "Diagnosis and treatment for headaches, sleep disorders and neurological conditions.",
       },
       {
+        icon: "",
         title: "Physiotherapy",
         description:
           "Personalized rehabilitation programs that restore movement and build lasting strength.",

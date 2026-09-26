@@ -1,6 +1,7 @@
 import { ArrowRight, CalendarCheck, HeartPulse, Stethoscope, type LucideIcon } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { getContent } from "@/lib/content/store";
+import { iconByName } from "@/lib/icons";
 
 const ICONS: LucideIcon[] = [HeartPulse, Stethoscope, CalendarCheck];
 
@@ -12,7 +13,7 @@ export async function InfoBar() {
       <Reveal>
         <dl className="grid gap-px overflow-hidden rounded-[1.75rem] border border-border/80 bg-border/80 shadow-card sm:grid-cols-3">
           {content.infoBar.items.map((item, index) => {
-            const Icon = ICONS[index % ICONS.length];
+            const Icon = iconByName(item.icon) ?? ICONS[index % ICONS.length];
             return (
               <div
                 key={item.title + index}

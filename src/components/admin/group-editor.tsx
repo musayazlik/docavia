@@ -21,6 +21,7 @@ import {
 import type { FieldCard, FieldDef, ListDef } from "@/lib/content/registry";
 import { cn } from "@/lib/utils";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
+import { IconSelectButton } from "@/components/admin/icon-picker-dialog";
 import { Dialog } from "@/components/admin/ui/dialog";
 import { DataTable, TableEmptyState } from "@/components/admin/ui/table";
 import { useToast } from "@/components/admin/toast";
@@ -76,6 +77,15 @@ function Field({
   disabled?: boolean;
   onChange: (next: unknown) => void;
 }) {
+  if (def.type === "icon") {
+    return (
+      <IconSelectButton
+        value={value}
+        disabled={disabled}
+        onChange={onChange}
+      />
+    );
+  }
   if (def.type === "image") {
     return (
       <ImageUploadField

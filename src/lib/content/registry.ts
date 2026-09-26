@@ -19,7 +19,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-export type FieldType = "text" | "textarea" | "number" | "image";
+export type FieldType = "text" | "textarea" | "number" | "image" | "icon";
 
 export type FieldDef = {
   /** Dotted path within the group value, e.g. "about.title". */
@@ -103,10 +103,11 @@ export const contentGroups: ContentGroup[] = [
         key: "socials",
         label: "Social media",
         itemLabel: "social link",
-        help: "Round icon buttons in the footer. Platform: Facebook, Instagram, X, LinkedIn or YouTube — other names get a globe icon.",
+        help: "Round icon buttons in the footer. Pick a Lucide icon, or leave it empty — Facebook, Instagram, X and LinkedIn labels automatically get their brand mark.",
         fields: [
-          { key: "platform", label: "Platform", type: "text", placeholder: "Instagram" },
-          { key: "url", label: "URL", type: "text", placeholder: "https://instagram.com/docavia" },
+          { key: "icon", label: "Icon", type: "icon" },
+          { key: "label", label: "Label", type: "text", placeholder: "Instagram" },
+          { key: "href", label: "URL", type: "text", placeholder: "https://instagram.com/docavia" },
         ],
       },
     ],
@@ -127,6 +128,7 @@ export const contentGroups: ContentGroup[] = [
         help: "One line per row in the card. Leave the action empty to hide the link.",
         fields: [
           { key: "title", label: "Title", type: "text" },
+          { key: "icon", label: "Icon", type: "icon" },
           {
             key: "lines",
             label: "Lines",
@@ -246,9 +248,10 @@ export const contentGroups: ContentGroup[] = [
         key: "items",
         label: "Service Cards",
         itemLabel: "service",
-        help: "Card colors and icons stay as designed; first and fourth cards use the accent styles.",
+        help: "Card colors keep the designed accents; first and fourth cards use the highlight styles.",
         fields: [
           { key: "title", label: "Title", type: "text" },
+          { key: "icon", label: "Icon", type: "icon" },
           { key: "description", label: "Description", type: "textarea" },
         ],
       },
