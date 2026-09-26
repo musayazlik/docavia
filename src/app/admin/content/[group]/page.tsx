@@ -4,7 +4,6 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import { GroupEditor } from "@/components/admin/group-editor";
 import { getContent, getOverrideMeta } from "@/lib/content/store";
 import { contentGroups, getGroup } from "@/lib/content/registry";
-import { getSession, isReadOnly } from "@/lib/auth-server";
 import type { FieldDef, ListDef } from "@/lib/content/registry";
 
 export function generateStaticParams() {
@@ -30,10 +29,9 @@ export default async function GroupEditorPage({
   const group = getGroup(groupKey);
   if (!group) notFound();
 
-  const [content, meta, session] = await Promise.all([
+  const [content, meta] = await Promise.all([
     getContent(),
     getOverrideMeta(),
-    getSession(),
   ]);
   const value = content[group.key as keyof typeof content];
   const customized = group.key in meta;
@@ -82,10 +80,10 @@ export default async function GroupEditorPage({
           groupKey={group.key}
           fields={fields}
           lists={lists}
+          cards={group.cards}
           initialValue={JSON.parse(JSON.stringify(value))}
           customized={customized}
           uploadsEnabled={Boolean(process.env.UPLOADTHING_TOKEN)}
-          readOnly={isReadOnly(session)}
         />
       </div>
     </div>

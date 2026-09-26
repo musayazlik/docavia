@@ -47,11 +47,11 @@ yalnızca `main` içinde. Kayıt çubukları (section editörleri) sticky.
 ```bash
 docker compose up -d          # docavia-postgres (55432)
 npm run db:migrate            # prisma migrate dev
-npm run db:seed               # admin@docavia.com / docavia2026 + örnek veri
+npm run db:seed               # admin@docavia.com / docavia2026 + superadmin + örnek veri
 npm run dev
 ```
 
-Seed idempotenttir: admin kullanıcısı, 4 doktor, 3 yorum, 3 kategorili blog yazısı.
+Seed idempotenttir: admin kullanıcısı, gizli superadmin, 4 doktor, 3 yorum, 3 kategorili blog yazısı.
 
 ---
 
@@ -104,7 +104,7 @@ günceller.
 
 | Sayfa | Tablo kolonları | Dialog işlemleri |
 | --- | --- | --- |
-| `/admin/users` | kullanıcı (avatar+isim+email), rol, doğrulama, katılım | Ekle (isim/email/şifre/rol), Düzenle (isim/rol/görsel/yeni şifre — scrypt hash), Sil (kendi hesabı silinemez) |
+| `/admin/users` | kullanıcı (avatar+isim+email), rol, doğrulama, katılım | Ekle (isim/email/şifre/rol), Düzenle (isim/rol/görsel/yeni şifre — scrypt hash), Sil (kendi hesabı silinemez) — **superadmin listede görünmez, hiçbir işlem uygulanamaz** |
 | `/admin/doctors` | portre+isim, uzmanlık, bio, sıra | Ekle/Düzenle dialog'da (ImageUploadField/UploadThing), Sil onaylı |
 | `/admin/testimonials` | hasta, rol, quote, sıra | Ekle/Düzenle dialog'da, Sil onaylı |
 
@@ -114,9 +114,15 @@ Entity sayfaları **anında kaydeder** (server action + revalidate).
 
 | Rol | Yetki |
 | --- | --- |
+| `superadmin` | **Tüm yetkiler** — gizli tekil hesap; Staff Users listesinde görünmez, panelden oluşturulamaz/düzenlenemez/silinemez. Yalnız seed / `SUPERADMIN_EMAIL`+`SUPERADMIN_PASSWORD` env'leri ile yönetilir (`superadmin@docavia.com` / `SuperAdmin2026!` varsayılan) |
 | `admin` | Tam yetki — her şeyi görüntüler ve düzenler |
 | `editor` | İçerik düzenleyebilir (yazma eylemleri açık) |
 | `demo` | **Salt-okunur** — her admin sayfasını gezebilir; hiçbir kaydetme eylemi çalışmaz |
+
+Superadmin uygulaması: `isSuperAdmin()` (`auth-server.ts`) rolü VEYA rezerve e-postayı kontrol eder.
+`createUser`/`updateUser` rolleri `ASSIGNABLE_ROLES` beyaz listesinden geçer (`superadmin` hariç,
+rezerve e-posta da engellenir); `updateUser`/`deleteUser` hedef superadmin ise reddeder; users
+listesi sunucu tarafında superadmin'i filtreler. Seed her koşumda rolü onarır (drift → `superadmin`).
 
 Demo uygulaması: tüm yazan server action'lar `requireEditor()`'dan geçer (rolü `demo` olan
 reddedilir); arayüzde `readOnly` prop'u Add/Edit/Delete butonlarını, tablo satır aksiyonlarını,

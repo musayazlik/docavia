@@ -211,7 +211,6 @@ export function DonutChart({
   centerLabel: string;
   ariaLabel: string;
 }) {
-  const reduce = useReducedMotion();
   const size = 168;
   const stroke = 20;
   const r = (size - stroke) / 2 - 2;
@@ -247,22 +246,17 @@ export function DonutChart({
             strokeWidth={stroke}
           />
           {arcs.map((arc) => (
-            <motion.circle
+            <circle
               key={arc.label}
               cx={size / 2}
               cy={size / 2}
               r={r}
               fill="none"
-              style={{ stroke: arc.color }}
+              stroke={arc.color}
               strokeWidth={stroke}
               strokeLinecap="round"
+              strokeDasharray={`${Math.max(arc.len - 3, 0)} ${C}`}
               strokeDashoffset={-arc.offset}
-              initial={reduce ? false : { strokeDasharray: `0 ${C}` }}
-              whileInView={{
-                strokeDasharray: `${Math.max(arc.len - 3, 0)} ${C}`,
-              }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             />
           ))}
         </g>
@@ -365,7 +359,6 @@ export function RadialGauge({
   caption: string;
   ariaLabel: string;
 }) {
-  const reduce = useReducedMotion();
   const size = 168;
   const stroke = 20;
   const r = (size - stroke) / 2 - 2;
@@ -389,18 +382,15 @@ export function RadialGauge({
             strokeWidth={stroke}
           />
           {frac > 0 && (
-            <motion.circle
+            <circle
               cx={size / 2}
               cy={size / 2}
               r={r}
               fill="none"
-              style={{ stroke: PINE }}
+              stroke={PINE}
               strokeWidth={stroke}
               strokeLinecap="round"
-              initial={reduce ? false : { strokeDasharray: `0 ${C}` }}
-              whileInView={{ strokeDasharray: `${frac * C} ${C}` }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              strokeDasharray={`${frac * C} ${C}`}
             />
           )}
         </g>

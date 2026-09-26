@@ -9,6 +9,7 @@ import { FormField, inputClasses } from "@/components/admin/ui/dialog";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { SelectField } from "@/components/ui/select-field";
 import { savePost } from "@/app/admin/entity-actions";
+import { useToast } from "@/components/admin/toast";
 
 type Category = { id: string; name: string };
 
@@ -20,9 +21,6 @@ export type PostDraft = {
   coverImage: string;
   contentHtml: string;
   categoryId: string | null;
-  authorName: string;
-  authorRole: string;
-  authorAvatar: string;
   readingTime: number;
   published: boolean;
 };
@@ -35,9 +33,6 @@ const EMPTY: PostDraft = {
   coverImage: "/images/blog-heart.jpg",
   contentHtml: "",
   categoryId: null,
-  authorName: "",
-  authorRole: "",
-  authorAvatar: "",
   readingTime: 4,
   published: false,
 };
@@ -46,18 +41,16 @@ export function PostEditor({
   initial,
   categories,
   uploadsEnabled,
-  readOnly = false,
 }: {
   initial: PostDraft | null;
   categories: Category[];
   uploadsEnabled: boolean;
-  readOnly?: boolean;
 }) {
   const router = useRouter();
   const [form, setForm] = useState<PostDraft>(initial ?? EMPTY);
   const [contentJson, setContentJson] = useState<object | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const { toastError } = useToast();
   const editing = Boolean(initial?.id);
 
   const update = (patch: Partial<PostDraft>) => {
@@ -66,7 +59,6 @@ export function PostEditor({
 
   const submit = (publish: boolean) => {
     if (pending) return;
-    setError(null);
     startTransition(async () => {
       const result = await savePost({
         id: editing ? initial!.id : null,
@@ -77,9 +69,6 @@ export function PostEditor({
         contentHtml: form.contentHtml,
         contentJson,
         categoryId: form.categoryId,
-        authorName: form.authorName || "Docavia Team",
-        authorRole: form.authorRole,
-        authorAvatar: form.authorAvatar,
         readingTime: form.readingTime,
         published: publish,
       });
@@ -87,8 +76,7 @@ export function PostEditor({
         router.push("/admin/posts");
         router.refresh();
       } else {
-        setError(result.message);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        toastError(result.message);
       }
     });
   };
@@ -113,42 +101,18 @@ export function PostEditor({
         </p>
       </header>
 
-      {error && (
-        <p
-          role="alert"
-          className="mt-6 rounded-2xl bg-red-50 px-5 py-4 text-sm font-medium text-red-700"
-        >
-          {error}
-        </p>
-      )}
-
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_20rem]">
         {/* Main column */}
         <div className="space-y-6">
           <FormField label="Title" htmlFor="post-title">
             <input
               id="post-title"
-              disabled={readOnly}
               className={inputClasses}
               value={form.title}
               placeholder="5 Simple Ways to Improve Your Heart Health"
               onChange={(e) => update({ title: e.target.value })}
             />
           </FormField>
-
-          <div>
-            <p className="text-sm font-semibold text-foreground">Article body</p>
-            <div className="mt-2">
-              <TiptapEditor
-                initialHtml={form.contentHtml}
-                editable={!readOnly}
-                onChange={(html, json) => {
-                  update({ contentHtml: html });
-                  setContentJson(json);
-                }}
-              />
-            </div>
-          </div>
 
           <FormField
             label="Excerpt"
@@ -158,13 +122,27 @@ export function PostEditor({
             <textarea
               id="post-excerpt"
               rows={3}
-              disabled={readOnly}
               className={inputClasses}
               value={form.excerpt}
               placeholder="One or two sentences summarizing the article."
               onChange={(e) => update({ excerpt: e.target.value })}
             />
           </FormField>
+
+          <div>
+            <p className="text-sm font-semibold text-foreground">Article body</p>
+            <div className="mt-2">
+              <TiptapEditor
+                initialHtml={form.contentHtml}
+                editable
+                canUpload={uploadsEnabled}
+                onChange={(html, json) => {
+                  update({ contentHtml: html });
+                  setContentJson(json);
+                }}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Sidebar */}
@@ -173,13 +151,6 @@ export function PostEditor({
             <p className="font-heading text-[0.8125rem] font-bold tracking-[0.12em] text-muted uppercase">
               Publish
             </p>
-            {readOnly ? (
-              <p className="mt-4 rounded-xl bg-secondary/60 px-4 py-3 text-xs leading-relaxed text-muted">
-                Read-only account — you can review this post but cannot save
-                changes.
-              </p>
-            ) : (
-              <>
             <div className="mt-4 flex flex-col gap-3">
               <button
                 type="button"
@@ -204,8 +175,6 @@ export function PostEditor({
                 Save as Draft
               </button>
             </div>
-              </>
-            )}
             {editing && (
               <p className="mt-4 flex items-center gap-2 text-xs text-muted">
                 <span
@@ -232,7 +201,6 @@ export function PostEditor({
               >
                 <input
                   id="post-slug"
-                  disabled={readOnly}
               className={inputClasses}
                   value={form.slug}
                   placeholder="improve-your-heart-health"
@@ -243,7 +211,6 @@ export function PostEditor({
                 id="post-category"
                 label="Category"
                 placeholder="Uncategorized"
-                disabled={readOnly}
                 options={[
                   { value: "", label: "Uncategorized" },
                   ...categories.map((category) => ({
@@ -262,49 +229,12 @@ export function PostEditor({
                 aspect="wide"
                 layout="stack"
               />
-            </div>
-          </div>
-
-          <div className="rounded-3xl border border-border bg-white p-6">
-            <p className="font-heading text-[0.8125rem] font-bold tracking-[0.12em] text-muted uppercase">
-              Author
-            </p>
-            <div className="mt-4 space-y-4">
-              <FormField label="Name" htmlFor="post-author">
-                <input
-                  id="post-author"
-                  disabled={readOnly}
-              className={inputClasses}
-                  value={form.authorName}
-                  placeholder="Dr. Emily Carter"
-                  onChange={(e) => update({ authorName: e.target.value })}
-                />
-              </FormField>
-              <FormField label="Role" htmlFor="post-author-role">
-                <input
-                  id="post-author-role"
-                  disabled={readOnly}
-              className={inputClasses}
-                  value={form.authorRole}
-                  placeholder="Cardiologist"
-                  onChange={(e) => update({ authorRole: e.target.value })}
-                />
-              </FormField>
-              <ImageUploadField
-                label="Author avatar"
-                value={form.authorAvatar}
-                canUpload={uploadsEnabled}
-                onChange={(authorAvatar) => update({ authorAvatar })}
-                aspect="square"
-                help="Optional — shown beside the article byline."
-              />
               <FormField label="Reading time (minutes)" htmlFor="post-reading-time">
                 <input
                   id="post-reading-time"
                   type="number"
                   min={1}
-                  disabled={readOnly}
-              className={inputClasses}
+                  className={inputClasses}
                   value={form.readingTime}
                   onChange={(e) =>
                     update({ readingTime: Number(e.target.value) })
@@ -313,6 +243,7 @@ export function PostEditor({
               </FormField>
             </div>
           </div>
+
         </div>
       </div>
     </div>

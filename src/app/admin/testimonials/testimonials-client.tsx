@@ -8,7 +8,9 @@ import { Dialog, FormField, inputClasses } from "@/components/admin/ui/dialog";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { DataTable, PageToolbar, TableEmptyState } from "@/components/admin/ui/table";
 import { deleteTestimonial, saveTestimonial } from "@/app/admin/entity-actions";
+import { ActionMenu } from "@/components/admin/ui/actions-menu";
 import type { TestimonialView } from "@/lib/entities";
+import { useToast } from "@/components/admin/toast";
 
 type Row = TestimonialView & { id: string; order: number };
 
@@ -33,22 +35,19 @@ const EMPTY: FormState = {
 export function TestimonialsClient({
   rows,
   uploadsEnabled,
-  readOnly = false,
 }: {
   rows: Row[];
   uploadsEnabled: boolean;
-  readOnly?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const { toastError } = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY);
-  const [formError, setFormError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
 
   const openCreate = () => {
     setForm({ ...EMPTY, order: rows.length });
-    setFormError(null);
     setFormOpen(true);
   };
 
@@ -61,13 +60,11 @@ export function TestimonialsClient({
       avatar: row.avatar,
       order: row.order,
     });
-    setFormError(null);
     setFormOpen(true);
   };
 
   const submit = () => {
     if (pending) return;
-    setFormError(null);
     startTransition(async () => {
       const result = await saveTestimonial({
         id: form.id,
@@ -81,7 +78,7 @@ export function TestimonialsClient({
         setFormOpen(false);
         router.refresh();
       } else {
-        setFormError(result.message);
+        toastError(result.message);
       }
     });
   };
@@ -90,6 +87,10 @@ export function TestimonialsClient({
     if (pending || !deleteTarget) return;
     startTransition(async () => {
       const result = await deleteTestimonial(deleteTarget.id);
+      if (!result.ok) {
+        toastError(result.message);
+        return;
+      }
       if (result.ok) {
         setDeleteTarget(null);
         router.refresh();
@@ -103,7 +104,7 @@ export function TestimonialsClient({
         title="Testimonials"
         description="Patient quotes shown in the homepage carousel and the doctors page. Lower Order numbers appear first."
       >
-        {!readOnly && (
+        {(
           <button
             type="button"
             onClick={openCreate}
@@ -145,29 +146,19 @@ export function TestimonialsClient({
                 </span>
               </td>
               <td className="px-5 py-4 text-sm text-muted">{row.order}</td>
-              <td className="px-5 py-4">
-                <div className={"flex justify-end gap-1.5" + (!readOnly ? " opacity-60 transition-opacity duration-200 group-hover:opacity-100" : "")}>
-                {!readOnly && (
-                  <>
-                  <button
-                    type="button"
-                    onClick={() => openEdit(row)}
-                    aria-label={`Edit testimonial by ${row.name}`}
-                    className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-secondary hover:text-foreground"
-                  >
-                    <Pencil className="size-4" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDeleteTarget(row)}
-                    aria-label={`Remove testimonial by ${row.name}`}
-                    className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-red-50 hover:text-red-600"
-                  >
-                    <Trash2 className="size-4" aria-hidden="true" />
-                  </button>
-                  </>
-                )}
-                </div>
+              <td className="px-5 py-4 text-right">
+                <ActionMenu
+                  label={`Actions for ${row.name}`}
+                  items={[
+                    { label: "Edit", icon: Pencil, onSelect: () => openEdit(row) },
+                    {
+                      label: "Delete",
+                      icon: Trash2,
+                      danger: true,
+                      onSelect: () => setDeleteTarget(row),
+                    },
+                  ]}
+                />
               </td>
             </tr>
           ))
@@ -231,12 +222,6 @@ export function TestimonialsClient({
               />
             </FormField>
           </div>
-
-          {formError && (
-            <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-              {formError}
-            </p>
-          )}
 
           <div className="flex justify-end gap-3 pt-2">
             <button

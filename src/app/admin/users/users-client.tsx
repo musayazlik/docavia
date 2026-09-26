@@ -7,8 +7,10 @@ import { Loader2, Pencil, Plus, ShieldCheck, Trash2, UserRound } from "lucide-re
 import { Dialog, FormField, inputClasses } from "@/components/admin/ui/dialog";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { DataTable, PageToolbar, TableEmptyState } from "@/components/admin/ui/table";
+import { ActionMenu } from "@/components/admin/ui/actions-menu";
 import { SelectField } from "@/components/ui/select-field";
 import { createUser, deleteUser, updateUser } from "@/app/admin/entity-actions";
+import { useToast } from "@/components/admin/toast";
 
 type Row = {
   id: string;
@@ -52,24 +54,21 @@ export function UsersClient({
   rows,
   currentUserId,
   uploadsEnabled,
-  readOnly = false,
 }: {
   rows: Row[];
   currentUserId: string;
   uploadsEnabled: boolean;
-  readOnly?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const { toastError } = useToast();
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY);
-  const [formError, setFormError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
   const openCreate = () => {
     setForm(EMPTY);
-    setFormError(null);
     setFormOpen(true);
   };
 
@@ -82,13 +81,11 @@ export function UsersClient({
       password: "",
       role: row.role ?? "admin",
     });
-    setFormError(null);
     setFormOpen(true);
   };
 
   const submit = () => {
     if (pending) return;
-    setFormError(null);
     startTransition(async () => {
       const result = form.id
         ? await updateUser({
@@ -109,7 +106,7 @@ export function UsersClient({
         setNotice(result.message);
         router.refresh();
       } else {
-        setFormError(result.message);
+        toastError(result.message);
       }
     });
   };
@@ -118,6 +115,10 @@ export function UsersClient({
     if (pending || !deleteTarget) return;
     startTransition(async () => {
       const result = await deleteUser({ id: deleteTarget.id });
+      if (!result.ok) {
+        toastError(result.message);
+        return;
+      }
       if (result.ok) {
         setDeleteTarget(null);
         setNotice(result.message);
@@ -134,7 +135,7 @@ export function UsersClient({
         title="Staff Users"
         description="Accounts with access to this admin panel. Users sign in with email and password on /login."
       >
-        {!readOnly && (
+        {(
           <button
             type="button"
             onClick={openCreate}
@@ -215,35 +216,24 @@ export function UsersClient({
                   year: "numeric",
                 }).format(row.createdAt)}
               </td>
-              <td className="px-5 py-4">
-                <div className={"flex justify-end gap-1.5" + (!readOnly ? " opacity-60 transition-opacity duration-200 group-hover:opacity-100" : "")}>
-                {!readOnly && (
-                  <>
-                  <button
-                    type="button"
-                    onClick={() => openEdit(row)}
-                    aria-label={`Edit ${row.email}`}
-                    className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-secondary hover:text-foreground"
-                  >
-                    <Pencil className="size-4" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDeleteTarget(row)}
-                    disabled={row.id === currentUserId}
-                    aria-label={`Delete ${row.email}`}
-                    title={
-                      row.id === currentUserId
-                        ? "You cannot delete your own account"
-                        : "Delete user"
-                    }
-                    className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
-                  >
-                    <Trash2 className="size-4" aria-hidden="true" />
-                  </button>
-                  </>
-                )}
-                </div>
+              <td className="px-5 py-4 text-right">
+                <ActionMenu
+                  label={`Actions for ${row.name || row.email}`}
+                  items={[
+                    { label: "Edit", icon: Pencil, onSelect: () => openEdit(row) },
+                    {
+                      label: "Delete",
+                      icon: Trash2,
+                      danger: true,
+                      disabled: row.id === currentUserId,
+                      title:
+                        row.id === currentUserId
+                          ? "You cannot delete your own account"
+                          : "Delete user",
+                      onSelect: () => setDeleteTarget(row),
+                    },
+                  ]}
+                />
               </td>
             </tr>
           ))
@@ -320,12 +310,6 @@ export function UsersClient({
               onChange={(e) => setForm({ ...form, password: e.target.value })}
             />
           </FormField>
-
-          {formError && (
-            <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-              {formError}
-            </p>
-          )}
 
           <div className="flex justify-end gap-3 pt-2">
             <button

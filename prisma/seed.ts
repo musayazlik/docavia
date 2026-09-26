@@ -20,6 +20,17 @@ const name = process.env.ADMIN_NAME ?? "Docavia Admin";
 const DEMO_EMAIL = process.env.DEMO_EMAIL ?? "demo@docavia.com";
 const DEMO_PASSWORD = process.env.DEMO_PASSWORD ?? "demo2026";
 
+/**
+ * The single hidden super-admin — full permissions, excluded from the
+ * Staff Users list and unmanageable through the panel. Exists only here
+ * and in the SUPERADMIN_* env vars.
+ */
+const SUPERADMIN_EMAIL = (
+  process.env.SUPERADMIN_EMAIL ?? "superadmin@docavia.com"
+).toLowerCase();
+const SUPERADMIN_PASSWORD = process.env.SUPERADMIN_PASSWORD ?? "SuperAdmin2026!";
+const SUPERADMIN_NAME = process.env.SUPERADMIN_NAME ?? "Docavia Super Admin";
+
 /* ---------------------------- article → HTML ------------------------------ */
 
 function blocksToHtml(blocks: ArticleBlock[]): string {
@@ -135,6 +146,33 @@ async function seedAdmin() {
       data: { role: "demo", emailVerified: true },
     });
     console.log(`Created demo (read-only) user: ${DEMO_EMAIL} (password from DEMO_PASSWORD or 'demo2026')`);
+  }
+
+  // The super-admin is repaired on every run: created when missing, and its
+  // role is forced back if it ever drifted. The password is left untouched
+  // on existing accounts (override via SUPERADMIN_* env vars).
+  const superExisting = await prisma.user.findUnique({ where: { email: SUPERADMIN_EMAIL } });
+  if (superExisting) {
+    if (superExisting.role !== "superadmin" || !superExisting.emailVerified) {
+      await prisma.user.update({
+        where: { email: SUPERADMIN_EMAIL },
+        data: { role: "superadmin", emailVerified: true },
+      });
+      console.log(`Repaired super-admin role: ${SUPERADMIN_EMAIL}`);
+    } else {
+      console.log(`Super-admin already exists: ${SUPERADMIN_EMAIL}`);
+    }
+  } else {
+    await auth.api.signUpEmail({
+      body: { name: SUPERADMIN_NAME, email: SUPERADMIN_EMAIL, password: SUPERADMIN_PASSWORD },
+    });
+    await prisma.user.update({
+      where: { email: SUPERADMIN_EMAIL },
+      data: { role: "superadmin", emailVerified: true },
+    });
+    console.log(
+      `Created hidden super-admin: ${SUPERADMIN_EMAIL} (password from SUPERADMIN_PASSWORD or 'SuperAdmin2026!')`,
+    );
   }
 }
 

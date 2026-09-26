@@ -200,3 +200,70 @@
   pointer-events: none;
   color: var(--muted);
 }
+
+/* ---------------------------------------------------------------------------
+   Rich text editor chrome — kill the global focus outline inside the writing
+   area (the outer card already shows focus) and cap nothing here; the height
+   cap lives on the wrapper in the component.
+--------------------------------------------------------------------------- */
+.article-body:focus,
+.article-body:focus-visible,
+.article-body :focus,
+.article-body :focus-visible {
+  outline: none;
+}
+
+/* Embedded media + code inside article bodies (editor preview and public) */
+.article-body img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 1.5rem;
+  margin-inline: auto;
+}
+
+.article-body div[data-youtube-video] {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background: var(--pine);
+}
+
+.article-body div[data-youtube-video] iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.article-body hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  width: 60%;
+  margin: 2.2em auto;
+}
+
+.article-body :not(pre) > code {
+  background: var(--secondary);
+  padding: 0.15em 0.45em;
+  border-radius: 0.4em;
+  font-size: 0.85em;
+}
+
+.article-body pre {
+  background: var(--pine);
+  color: #e8f3f0;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1.25rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.article-body pre code {
+  background: transparent;
+  padding: 0;
+}

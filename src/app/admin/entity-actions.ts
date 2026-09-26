@@ -3,10 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { hashPassword } from "better-auth/crypto";
 import { auth } from "@/lib/auth";
-import { requireEditor } from "@/lib/auth-server";
+import { requireEditor, toActionError, SUPERADMIN_EMAIL, isSuperAdmin } from "@/lib/auth-server";
 import { prisma } from "@/lib/prisma";
 
 export type ActionResult = { ok: boolean; message: string };
+
+/**
+ * Roles assignable through the panel. "superadmin" is deliberately absent —
+ * the hidden super-admin account exists only via the seed / env vars.
+ */
+const ASSIGNABLE_ROLES = ["admin", "editor", "demo"];
 
 function revalidateAll() {
   revalidatePath("/", "layout");
@@ -57,8 +63,7 @@ export async function saveDoctor(input: {
     revalidateAll();
     return { ok: true, message: input.id ? "Doctor updated." : "Doctor added." };
   } catch (error) {
-    console.error("[admin] saveDoctor failed:", error);
-    return { ok: false, message: "Could not save the doctor." };
+    return { ok: false, message: toActionError(error, "Could not save the doctor.") };
   }
 }
 
@@ -69,8 +74,7 @@ export async function deleteDoctor(id: string): Promise<ActionResult> {
     revalidateAll();
     return { ok: true, message: "Doctor removed." };
   } catch (error) {
-    console.error("[admin] deleteDoctor failed:", error);
-    return { ok: false, message: "Could not remove the doctor." };
+    return { ok: false, message: toActionError(error, "Could not remove the doctor.") };
   }
 }
 
@@ -111,8 +115,7 @@ export async function saveTestimonial(input: {
       message: input.id ? "Testimonial updated." : "Testimonial added.",
     };
   } catch (error) {
-    console.error("[admin] saveTestimonial failed:", error);
-    return { ok: false, message: "Could not save the testimonial." };
+    return { ok: false, message: toActionError(error, "Could not save the testimonial.") };
   }
 }
 
@@ -123,8 +126,7 @@ export async function deleteTestimonial(id: string): Promise<ActionResult> {
     revalidateAll();
     return { ok: true, message: "Testimonial removed." };
   } catch (error) {
-    console.error("[admin] deleteTestimonial failed:", error);
-    return { ok: false, message: "Could not remove the testimonial." };
+    return { ok: false, message: toActionError(error, "Could not remove the testimonial.") };
   }
 }
 
@@ -143,6 +145,15 @@ export async function createUser(input: {
     const password = typeof input.password === "string" ? input.password : "";
     const role = str(input.role) || "admin";
 
+    if (!ASSIGNABLE_ROLES.includes(role)) {
+      return {
+        ok: false,
+        message: "That role is not available. Choose admin, editor or demo.",
+      };
+    }
+    if (email === SUPERADMIN_EMAIL) {
+      return { ok: false, message: "That email is reserved and cannot be used." };
+    }
     if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return { ok: false, message: "A valid name and email are required." };
     }
@@ -171,8 +182,7 @@ export async function createUser(input: {
     revalidateAll();
     return { ok: true, message: `User ${email} created.` };
   } catch (error) {
-    console.error("[admin] createUser failed:", error);
-    return { ok: false, message: "Could not create the user." };
+    return { ok: false, message: toActionError(error, "Could not create the user.") };
   }
 }
 
@@ -188,6 +198,21 @@ export async function updateUser(input: {
     const name = str(input.name);
     const role = str(input.role) || "admin";
     if (!name) return { ok: false, message: "Name is required." };
+    if (!ASSIGNABLE_ROLES.includes(role)) {
+      return {
+        ok: false,
+        message: "That role is not available. Choose admin, editor or demo.",
+      };
+    }
+
+    const target = await prisma.user.findUnique({ where: { id: input.id } });
+    if (!target) return { ok: false, message: "User not found." };
+    if (isSuperAdmin(target)) {
+      return {
+        ok: false,
+        message: "The super admin account is protected and cannot be edited here.",
+      };
+    }
 
     const image = typeof input.image === "string" ? input.image.trim() : "";
     await prisma.user.update({
@@ -220,8 +245,7 @@ export async function updateUser(input: {
           : "User updated.",
     };
   } catch (error) {
-    console.error("[admin] updateUser failed:", error);
-    return { ok: false, message: "Could not update the user." };
+    return { ok: false, message: toActionError(error, "Could not update the user.") };
   }
 }
 
@@ -233,12 +257,18 @@ export async function deleteUser(input: {
     if (session.user.id === input.id) {
       return { ok: false, message: "You cannot delete your own account." };
     }
+    const target = await prisma.user.findUnique({ where: { id: input.id } });
+    if (target && isSuperAdmin(target)) {
+      return {
+        ok: false,
+        message: "The super admin account is protected and cannot be deleted.",
+      };
+    }
     await prisma.user.delete({ where: { id: input.id } });
     revalidateAll();
     return { ok: true, message: "User deleted." };
   } catch (error) {
-    console.error("[admin] deleteUser failed:", error);
-    return { ok: false, message: "Could not delete the user." };
+    return { ok: false, message: toActionError(error, "Could not delete the user.") };
   }
 }
 
@@ -276,8 +306,7 @@ export async function saveCategory(input: {
       message: input.id ? "Category updated." : "Category created.",
     };
   } catch (error) {
-    console.error("[admin] saveCategory failed:", error);
-    return { ok: false, message: "Could not save the category." };
+    return { ok: false, message: toActionError(error, "Could not save the category.") };
   }
 }
 
@@ -288,8 +317,7 @@ export async function deleteCategory(id: string): Promise<ActionResult> {
     revalidateAll();
     return { ok: true, message: "Category deleted. Its posts are now uncategorized." };
   } catch (error) {
-    console.error("[admin] deleteCategory failed:", error);
-    return { ok: false, message: "Could not delete the category." };
+    return { ok: false, message: toActionError(error, "Could not delete the category.") };
   }
 }
 
@@ -304,19 +332,15 @@ export async function savePost(input: {
   contentHtml: string;
   contentJson?: object | null;
   categoryId?: string | null;
-  authorName: string;
-  authorRole?: string;
-  authorAvatar?: string;
   readingTime: number;
   published: boolean;
 }): Promise<ActionResult & { slug?: string }> {
   try {
-    await requireEditor();
+    const session = await requireEditor();
     const title = str(input.title);
     const excerpt = str(input.excerpt);
-    const authorName = str(input.authorName);
-    if (!title || !excerpt || !authorName) {
-      return { ok: false, message: "Title, excerpt and author are required." };
+    if (!title || !excerpt) {
+      return { ok: false, message: "Title and excerpt are required." };
     }
     const slug = str(input.slug) ? slugify(str(input.slug)!) : slugify(title);
     if (!slug) return { ok: false, message: "Slug could not be derived." };
@@ -340,9 +364,10 @@ export async function savePost(input: {
           ? input.contentJson
           : undefined,
       categoryId: input.categoryId || null,
-      authorName,
-      authorRole: str(input.authorRole) || null,
-      authorAvatar: str(input.authorAvatar) || null,
+      // Attribution follows the signed-in staff member, not free-text input.
+      authorName: session.user.name?.trim() || "Docavia Team",
+      authorRole: session.user.role || "admin",
+      authorAvatar: session.user.image || null,
       readingTime:
         Number.isFinite(input.readingTime) && input.readingTime > 0
           ? Math.trunc(input.readingTime)
@@ -374,8 +399,7 @@ export async function savePost(input: {
       slug,
     };
   } catch (error) {
-    console.error("[admin] savePost failed:", error);
-    return { ok: false, message: "Could not save the post." };
+    return { ok: false, message: toActionError(error, "Could not save the post.") };
   }
 }
 
@@ -398,8 +422,7 @@ export async function setPostPublished(input: {
       message: input.published ? "Post published." : "Post moved to drafts.",
     };
   } catch (error) {
-    console.error("[admin] setPostPublished failed:", error);
-    return { ok: false, message: "Could not update the post." };
+    return { ok: false, message: toActionError(error, "Could not update the post.") };
   }
 }
 
@@ -410,7 +433,6 @@ export async function deletePost(id: string): Promise<ActionResult> {
     revalidateAll();
     return { ok: true, message: "Post deleted." };
   } catch (error) {
-    console.error("[admin] deletePost failed:", error);
-    return { ok: false, message: "Could not delete the post." };
+    return { ok: false, message: toActionError(error, "Could not delete the post.") };
   }
 }

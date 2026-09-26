@@ -16,6 +16,8 @@ import {
 import { Dialog } from "@/components/admin/ui/dialog";
 import { DataTable, PageToolbar, TableEmptyState } from "@/components/admin/ui/table";
 import { deletePost, setPostPublished } from "@/app/admin/entity-actions";
+import { ActionMenu } from "@/components/admin/ui/actions-menu";
+import { useToast } from "@/components/admin/toast";
 
 type Row = {
   id: string;
@@ -40,19 +42,22 @@ function formatDate(date: Date | null) {
 
 export function PostsClient({
   rows,
-  readOnly = false,
 }: {
   rows: Row[];
-  readOnly?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const { toastError } = useToast();
   const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
 
   const togglePublish = (row: Row) => {
     if (pending) return;
     startTransition(async () => {
-      await setPostPublished({ id: row.id, published: !row.published });
+      const result = await setPostPublished({ id: row.id, published: !row.published });
+      if (!result.ok) {
+        toastError(result.message);
+        return;
+      }
       router.refresh();
     });
   };
@@ -60,7 +65,11 @@ export function PostsClient({
   const confirmDelete = () => {
     if (pending || !deleteTarget) return;
     startTransition(async () => {
-      await deletePost(deleteTarget.id);
+      const result = await deletePost(deleteTarget.id);
+      if (!result.ok) {
+        toastError(result.message);
+        return;
+      }
       setDeleteTarget(null);
       router.refresh();
     });
@@ -72,7 +81,7 @@ export function PostsClient({
         title="Blog Posts"
         description="Everything published here appears on /blog the moment it is saved as published."
       >
-        {!readOnly && (
+        {(
           <Link
             href="/admin/posts/new"
             className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_-14px_rgb(47_118_109/0.6)] transition-all duration-200 hover:bg-primary-dark"
@@ -135,51 +144,31 @@ export function PostsClient({
                   {row.readingTime} min read
                 </span>
               </td>
-              <td className="px-5 py-4">
-                <div className={"flex justify-end gap-1.5" + (!readOnly ? " opacity-60 transition-opacity duration-200 group-hover:opacity-100" : "")}>
-                {!readOnly && (
-                  <>
-                  <button
-                    type="button"
-                    onClick={() => togglePublish(row)}
-                    disabled={pending}
-                    aria-label={row.published ? `Unpublish ${row.title}` : `Publish ${row.title}`}
-                    title={row.published ? "Move to drafts" : "Publish"}
-                    className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-secondary hover:text-foreground disabled:opacity-40"
-                  >
-                    {row.published ? (
-                      <EyeOff className="size-4" aria-hidden="true" />
-                    ) : (
-                      <Eye className="size-4" aria-hidden="true" />
-                    )}
-                  </button>
-                  <Link
-                    href={`/blog/${row.slug}`}
-                    target="_blank"
-                    aria-label={`Preview ${row.title}`}
-                    title="Preview on the site"
-                    className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-secondary hover:text-foreground"
-                  >
-                    <FileText className="size-4" aria-hidden="true" />
-                  </Link>
-                  <Link
-                    href={`/admin/posts/${row.id}`}
-                    aria-label={`Edit ${row.title}`}
-                    className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-secondary hover:text-foreground"
-                  >
-                    <Pencil className="size-4" aria-hidden="true" />
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => setDeleteTarget(row)}
-                    aria-label={`Delete ${row.title}`}
-                    className="flex size-9 items-center justify-center rounded-lg text-muted transition-colors duration-200 hover:bg-red-50 hover:text-red-600"
-                  >
-                    <Trash2 className="size-4" aria-hidden="true" />
-                  </button>
-                  </>
-                )}
-                </div>
+              <td className="px-5 py-4 text-right">
+                <ActionMenu
+                  label={`Actions for ${row.title}`}
+                  disabled={pending}
+                  items={[
+                    {
+                      label: row.published ? "Move to Drafts" : "Publish",
+                      icon: row.published ? EyeOff : Eye,
+                      onSelect: () => togglePublish(row),
+                    },
+                    {
+                      label: "Preview on site",
+                      icon: FileText,
+                      href: `/blog/${row.slug}`,
+                      external: true,
+                    },
+                    { label: "Edit", icon: Pencil, href: `/admin/posts/${row.id}` },
+                    {
+                      label: "Delete",
+                      icon: Trash2,
+                      danger: true,
+                      onSelect: () => setDeleteTarget(row),
+                    },
+                  ]}
+                />
               </td>
             </tr>
           ))

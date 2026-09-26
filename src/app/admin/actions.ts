@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireAdmin, requireEditor } from "@/lib/auth-server";
+import { requireAdmin, requireEditor, toActionError } from "@/lib/auth-server";
 import { prisma } from "@/lib/prisma";
 import { getGroup } from "@/lib/content/registry";
 
@@ -45,8 +45,7 @@ export async function saveContentGroup(
     revalidateAll();
     return { ok: true, message: "Changes published to the site." };
   } catch (error) {
-    console.error("[admin] saveContentGroup failed:", error);
-    return { ok: false, message: "Could not save — check the server logs." };
+    return { ok: false, message: toActionError(error, "Could not save — check the server logs.") };
   }
 }
 
@@ -64,8 +63,7 @@ export async function resetContentGroup(
     revalidateAll();
     return { ok: true, message: "Section restored to its original copy." };
   } catch (error) {
-    console.error("[admin] resetContentGroup failed:", error);
-    return { ok: false, message: "Could not reset — check the server logs." };
+    return { ok: false, message: toActionError(error, "Could not reset — check the server logs.") };
   }
 }
 

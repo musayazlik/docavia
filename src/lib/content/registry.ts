@@ -39,6 +39,13 @@ export type ListDef = {
   help?: string;
 };
 
+export type FieldCard = {
+  /** Card heading in the editor, e.g. the page name. */
+  title: string;
+  description?: string;
+  fields: FieldDef[];
+};
+
 export type ContentGroup = {
   /** DB key — one SiteContent row per group. */
   key: string;
@@ -48,6 +55,8 @@ export type ContentGroup = {
   category: "general" | "home" | "pages";
   fields: FieldDef[];
   lists: ListDef[];
+  /** Optional editor-only sub-grouping of fields into titled cards. */
+  cards?: FieldCard[];
 };
 
 const CONTACT_FIELDS: FieldDef[] = [
@@ -394,7 +403,9 @@ export const contentGroups: ContentGroup[] = [
       "Breadcrumb label, eyebrow, heading and intro of every inner page hero.",
     icon: LayoutTemplate,
     category: "pages",
-    fields: (
+    fields: [],
+    lists: [],
+    cards: (
       [
         ["about", "About"],
         ["services", "Services"],
@@ -403,21 +414,23 @@ export const contentGroups: ContentGroup[] = [
         ["contact", "Contact"],
         ["appointment", "Appointment"],
       ] as const
-    ).flatMap(([page, title]) => [
-      { key: `${page}.eyebrow`, label: `${title} — eyebrow`, type: "text" as FieldType },
-      { key: `${page}.title`, label: `${title} — title`, type: "text" as FieldType },
-      {
-        key: `${page}.titleAccent`,
-        label: `${title} — title accent (italic part)`,
-        type: "text" as FieldType,
-      },
-      {
-        key: `${page}.description`,
-        label: `${title} — description`,
-        type: "textarea" as FieldType,
-      },
-    ]),
-    lists: [],
+    ).map(([page, title]) => ({
+      title,
+      fields: [
+        { key: `${page}.eyebrow`, label: "Eyebrow", type: "text" as FieldType },
+        { key: `${page}.title`, label: "Title", type: "text" as FieldType },
+        {
+          key: `${page}.titleAccent`,
+          label: "Title accent (italic part)",
+          type: "text" as FieldType,
+        },
+        {
+          key: `${page}.description`,
+          label: "Description",
+          type: "textarea" as FieldType,
+        },
+      ],
+    })),
   },
 ];
 

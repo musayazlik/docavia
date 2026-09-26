@@ -22,9 +22,13 @@ const CATEGORY_ORDER = ["general", "home", "pages"] as const;
 
 function describeGroup(group: (typeof contentGroups)[number]) {
   const parts: string[] = [];
-  const scalarCount = group.fields.length;
+  const scalarCount =
+    group.fields.length +
+    (group.cards?.reduce((sum, card) => sum + card.fields.length, 0) ?? 0);
   if (scalarCount > 0)
     parts.push(`${scalarCount} field${scalarCount === 1 ? "" : "s"}`);
+  if (group.cards && group.cards.length > 0)
+    parts.push(`${group.cards.length} card${group.cards.length === 1 ? "" : "s"}`);
   for (const list of group.lists) {
     parts.push(list.label.toLowerCase());
   }

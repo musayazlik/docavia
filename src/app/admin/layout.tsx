@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { AdminShell } from "@/components/admin/admin-shell";
+import { ToastProvider } from "@/components/admin/toast";
 import { requireSession } from "@/lib/auth-server";
 
 export const dynamic = "force-dynamic";
@@ -30,5 +31,9 @@ export default async function AdminLayout({
     role: session.user.role ?? "admin",
   };
 
-  return <AdminShell user={user}>{children}</AdminShell>;
+  return (
+    <ToastProvider>
+      <AdminShell user={user}>{children}</AdminShell>
+    </ToastProvider>
+  );
 }

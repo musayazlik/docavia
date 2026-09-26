@@ -18,11 +18,12 @@ import {
   saveContentGroup,
   type ActionResult,
 } from "@/app/admin/actions";
-import type { FieldDef, ListDef } from "@/lib/content/registry";
+import type { FieldCard, FieldDef, ListDef } from "@/lib/content/registry";
 import { cn } from "@/lib/utils";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { Dialog } from "@/components/admin/ui/dialog";
 import { DataTable, TableEmptyState } from "@/components/admin/ui/table";
+import { useToast } from "@/components/admin/toast";
 
 type Json = Record<string, unknown>;
 
@@ -179,13 +180,11 @@ function ListEditor({
   list,
   items,
   canUpload,
-  readOnly,
   onChange,
 }: {
   list: ListDef;
   items: Json[];
   canUpload?: boolean;
-  readOnly?: boolean;
   onChange: (next: Json[]) => void;
 }) {
   const [editing, setEditing] = useState<{ index: number | null; draft: Json } | null>(
@@ -248,7 +247,7 @@ function ListEditor({
             {items.length} {items.length === 1 ? "item" : "items"}
           </span>
         </h3>
-        {!readOnly && (
+        {(
           <button
             type="button"
             onClick={openAdd}
@@ -303,8 +302,8 @@ function ListEditor({
                 </td>
               ))}
               <td className="px-5 py-4">
-                <div className={cn("flex justify-end gap-1", !readOnly && "opacity-70 transition-opacity duration-200 group-hover:opacity-100")}>
-                  {!readOnly && (
+                <div className={cn("flex justify-end gap-1", "opacity-70 transition-opacity duration-200 group-hover:opacity-100")}>
+                  {(
                     <>
                       <button
                         type="button"
@@ -459,24 +458,26 @@ export function GroupEditor({
   groupKey,
   fields,
   lists,
+  cards = [],
   initialValue,
   customized,
   uploadsEnabled,
-  readOnly = false,
 }: {
   groupKey: string;
   fields: FieldDef[];
   lists: ListDef[];
+  /** Optional titled sub-cards (e.g. one per page in "Page Intros"). */
+  cards?: FieldCard[];
   initialValue: Json;
   customized: boolean;
   uploadsEnabled: boolean;
   /** Demo accounts browse everything but can never save. */
-  readOnly?: boolean;
 }) {
   const router = useRouter();
   const [value, setValue] = useState<Json>(initialValue);
   const [status, setStatus] = useState<ActionResult | null>(null);
   const [pending, startTransition] = useTransition();
+  const { toastError } = useToast();
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [savedJson, setSavedJson] = useState(() => JSON.stringify(initialValue));
 
@@ -490,11 +491,13 @@ export function GroupEditor({
     setStatus(null);
     startTransition(async () => {
       const result = await saveContentGroup(groupKey, JSON.stringify(value));
-      setStatus(result);
-      if (result.ok) {
-        setSavedJson(JSON.stringify(value));
-        router.refresh();
+      if (!result.ok) {
+        toastError(result.message);
+        return;
       }
+      setStatus(result);
+      setSavedJson(JSON.stringify(value));
+      router.refresh();
     });
   };
 
@@ -531,29 +534,69 @@ export function GroupEditor({
       )}
 
       <div className="space-y-8">
-        {fields.length > 0 && (
-          <div className="rounded-3xl border border-border bg-white p-6 sm:p-8">
-            <div className="grid gap-6 sm:grid-cols-2">
-              {fields.map((field) => (
-                <div
-                  key={field.key}
-                  className={field.type === "textarea" ? "sm:col-span-2" : undefined}
-                >
-                  <Field
-                    def={field}
-                    canUpload={uploadsEnabled && !readOnly}
-                    disabled={readOnly}
-                    value={getPath(value, field.key)}
-                    onChange={(next) => {
-                      const draft = clone(value);
-                      setMutablePath(draft, field.key, next);
-                      setValue(draft);
-                    }}
-                  />
-                </div>
-              ))}
+        {cards.length > 0 ? (
+          cards.map((card) => (
+            <section
+              key={card.title}
+              className="rounded-3xl border border-border bg-white p-6 sm:p-8"
+            >
+              <header>
+                <h2 className="font-heading text-[1.05rem] font-bold tracking-tight text-foreground">
+                  {card.title}
+                </h2>
+                {card.description && (
+                  <p className="mt-1 text-xs leading-relaxed text-muted">
+                    {card.description}
+                  </p>
+                )}
+              </header>
+              <div className="mt-5 grid gap-6 sm:grid-cols-2">
+                {card.fields.map((field) => (
+                  <div
+                    key={field.key}
+                    className={
+                      field.type === "textarea" ? "sm:col-span-2" : undefined
+                    }
+                  >
+                    <Field
+                      def={field}
+                      canUpload={uploadsEnabled}
+                      value={getPath(value, field.key)}
+                      onChange={(next) => {
+                        const draft = clone(value);
+                        setMutablePath(draft, field.key, next);
+                        setValue(draft);
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </section>
+          ))
+        ) : (
+          fields.length > 0 && (
+            <div className="rounded-3xl border border-border bg-white p-6 sm:p-8">
+              <div className="grid gap-6 sm:grid-cols-2">
+                {fields.map((field) => (
+                  <div
+                    key={field.key}
+                    className={field.type === "textarea" ? "sm:col-span-2" : undefined}
+                  >
+                    <Field
+                      def={field}
+                      canUpload={uploadsEnabled}
+                      value={getPath(value, field.key)}
+                      onChange={(next) => {
+                        const draft = clone(value);
+                        setMutablePath(draft, field.key, next);
+                        setValue(draft);
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )
         )}
 
         {lists.map((list) => {
@@ -562,9 +605,8 @@ export function GroupEditor({
             <ListEditor
               key={list.key}
               list={list}
-              canUpload={uploadsEnabled && !readOnly}
-              readOnly={readOnly}
-              items={Array.isArray(items) ? (items as Json[]) : []}
+              canUpload={uploadsEnabled}
+                            items={Array.isArray(items) ? (items as Json[]) : []}
               onChange={(next) => {
                 const draft = clone(value);
                 setMutablePath(draft, list.key, next);
@@ -574,7 +616,7 @@ export function GroupEditor({
           );
         })}
 
-        {fields.length === 0 && lists.length === 0 && (
+        {fields.length === 0 && lists.length === 0 && cards.length === 0 && (
           <p className="rounded-3xl border border-dashed border-border px-6 py-10 text-center text-muted">
             This section has no editable fields.
           </p>
@@ -583,10 +625,7 @@ export function GroupEditor({
 
       {/* Save bar — demo accounts have nothing to save */}
       <div
-        className={cn(
-          "fixed inset-x-0 bottom-0 z-20 border-t border-border bg-white/92 backdrop-blur-md lg:left-[17.5rem]",
-          readOnly && "hidden",
-        )}
+        className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-white/92 backdrop-blur-md lg:left-[17.5rem]"
       >
         <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-4 px-5 py-4 sm:px-8 lg:px-12">
           <div className="min-w-0 flex-1" aria-live="polite">

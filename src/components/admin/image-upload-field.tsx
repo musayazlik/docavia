@@ -5,8 +5,9 @@ import { useRef, useState, type DragEvent } from "react";
 import { ImageIcon, ImagePlus, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUploadThing } from "@/lib/uploadthing";
+import { useToast } from "@/components/admin/toast";
 
-const SIZE_HINT = "JPG, PNG or WebP · up to 4 MB";
+const SIZE_HINT = "JPG, PNG or WebP · up to 4 MB · auto-optimized as WebP (70%)";
 const INACTIVE_HINT =
   "Uploads are inactive — add your UPLOADTHING_TOKEN to .env and restart the dev server.";
 
@@ -51,15 +52,20 @@ export function ImageUploadField({
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const { toastError } = useToast();
   const { startUpload, isUploading } = useUploadThing("imageUploader", {
     onClientUploadComplete: (files) => {
-      const url = files?.[0]?.ufsUrl;
+      // the server re-encodes uploads as WebP and returns that file's URL
+      const url = files?.[0]?.serverData?.url ?? files?.[0]?.ufsUrl;
       if (url) {
         setError(null);
         onChange(url);
       }
     },
-    onUploadError: (uploadError) => setError(uploadError.message),
+    onUploadError: (uploadError) => {
+      setError(uploadError.message);
+      toastError(uploadError.message);
+    },
   });
 
   const pick = () => inputRef.current?.click();
