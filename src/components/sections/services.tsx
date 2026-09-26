@@ -2,7 +2,7 @@ import { ArrowRight, Baby, Brain, Dumbbell, HeartPulse, Smile, Stethoscope, type
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { getContent } from "@/lib/content/store";
-import { iconByName } from "@/lib/icons";
+import { CmsIcon } from "@/components/ui/cms-icon";
 import { cn } from "@/lib/utils";
 
 const ICONS: LucideIcon[] = [Stethoscope, HeartPulse, Smile, Baby, Brain, Dumbbell];
@@ -43,7 +43,7 @@ export async function Services() {
 
         <Stagger className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {services.items.map((service, index) => {
-            const Icon = iconByName(service.icon) ?? ICONS[index % ICONS.length];
+            const Fallback = ICONS[index % ICONS.length];
             const highlight = HIGHLIGHTS[index] ?? undefined;
             return (
               <StaggerItem key={service.title + index} className="h-full">
@@ -66,7 +66,11 @@ export async function Services() {
                           : "bg-secondary text-primary group-hover:bg-primary group-hover:text-white"
                       )}
                     >
-                      <Icon className="size-6" aria-hidden="true" />
+                      <CmsIcon
+                        name={service.icon}
+                        fallback={Fallback}
+                        className="size-6"
+                      />
                     </span>
                     <span
                       className={cn(

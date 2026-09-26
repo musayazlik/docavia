@@ -1,7 +1,7 @@
 import { ArrowRight, CalendarCheck, HeartPulse, Stethoscope, type LucideIcon } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { getContent } from "@/lib/content/store";
-import { iconByName } from "@/lib/icons";
+import { CmsIcon } from "@/components/ui/cms-icon";
 
 const ICONS: LucideIcon[] = [HeartPulse, Stethoscope, CalendarCheck];
 
@@ -13,14 +13,18 @@ export async function InfoBar() {
       <Reveal>
         <dl className="grid gap-px overflow-hidden rounded-[1.75rem] border border-border/80 bg-border/80 shadow-card sm:grid-cols-3">
           {content.infoBar.items.map((item, index) => {
-            const Icon = iconByName(item.icon) ?? ICONS[index % ICONS.length];
+            const Fallback = ICONS[index % ICONS.length];
             return (
               <div
                 key={item.title + index}
                 className="flex items-start gap-4 bg-white p-6 md:p-7"
               >
                 <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary text-primary">
-                  <Icon className="size-5" aria-hidden="true" />
+                  <CmsIcon
+                    name={item.icon}
+                    fallback={Fallback}
+                    className="size-5"
+                  />
                 </span>
                 <div className="min-w-0">
                   <dt className="font-heading text-[1.05rem] font-bold tracking-tight text-foreground">

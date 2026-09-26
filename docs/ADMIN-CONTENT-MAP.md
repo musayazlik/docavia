@@ -129,14 +129,26 @@ reddedilir); arayüzde `readOnly` prop'u Add/Edit/Delete butonlarını, tablo sa
 Save bar'ı kaldırır ve form alanlarını disable eder. Header'da "Demo · Read-only" rozeti gösterilir.
 Demo hesabı: `demo@docavia.com` / `demo2026` (seed, `DEMO_EMAIL`/`DEMO_PASSWORD` ile override).
 
-### 5. Medya kütüphanesi (Pick from library)
+### 5. Medya kütüphanesi + Icon picker
+
+**Icon picker** (`Pick an icon`): offline Iconify verisiyle (`@iconify-json/lucide` +
+`@iconify-json/simple-icons`) iki grup sunar — **General** (73 lucide ikonu) ve **Logos**
+(31 marka logosu: facebook, instagram, x, linkedin, youtube, tiktok, whatsapp…).
+Seçim düz ad olarak saklanır (`"ambulance"`, `"brand:facebook"`); public tarafta
+`CmsIcon` sunucu tarafında inline SVG basar (Iconify API çağrısı yok). Katalog
+`/api/admin/icons` route'undan (admin-only) gelir.
+
+**Footer socials** `{icon, label, href}` şemasındadır: seçilen ikon önceliklidir,
+boşsa label'a göre marka logosu (Facebook/Instagram/X/LinkedIn…), o da yoksa globe.
+
+### 6. Medya kütüphanesi (Pick from library)
 
 Yükleme alanlarının hepsinde (cover, portre, avatar, editor görseli) "Library" /
 "Pick from library" butonu var: daha önce yüklenmiş görsellerin grid'i açılır,
 tek tıkla seçilip alana/editöre eklenir. UploadThing'e yapılan her yükleme
 otomatik kaydedilir; elle yapıştırılan URL'ler ilk kullanımda kütüphaneye girer.
 
-### 6. Blog (Tiptap v3)
+### 7. Blog (Tiptap v3)
 
 - `/admin/posts` — tablo: kapak+başlık+slug, kategori, durum (Published/Draft), tarih; satır
   işlemleri: publish/unpublish, site önizleme, düzenle, sil (onay dialog'u).
@@ -146,7 +158,7 @@ otomatik kaydedilir; elle yapıştırılan URL'ler ilk kullanımda kütüphaneye
 - `/admin/categories` — ayrı sayfa: kategori oluştur/listele/düzenle/sil; slug boşsa isimden
   türetilir; silinen kategorinin yazıları "Uncategorized" olur.
 
-### 7. Public karşılıklar
+### 8. Public karşılıklar
 
 - Ana sayfa bölüm başlıkları + doktor kartları + yorum karuseli: DB'den
 - İç sayfa hero'ları: DB'den
@@ -154,7 +166,7 @@ otomatik kaydedilir; elle yapıştırılan URL'ler ilk kullanımda kütüphaneye
   dosya bazlı yazılara düşer)
 - Randevu/iletişim formlarındaki departman & doktor seçenekleri: Services + Doctors verisinden
 
-### 8. Henüz düzenlenebilir olmayanlar (sonraki adım adayları)
+### 9. Henüz düzenlenebilir olmayanlar (sonraki adım adayları)
 
 - About sayfasındaki "Our Story" metin bloğu, değerler başlığı, kurucu alıntısı
 - Randevu/iletişim formu sabit metinleri — gönderimler de demo (persist edilmiyor)

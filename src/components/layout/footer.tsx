@@ -3,53 +3,29 @@ import Link from "next/link";
 import { Globe, Mail, MapPin, Phone } from "lucide-react";
 import { footerColumns } from "@/lib/data";
 import { getContent } from "@/lib/content/store";
-import { iconByName } from "@/lib/icons";
+import { CmsIcon } from "@/components/ui/cms-icon";
 
-function FacebookIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
-      <path d="M13.5 21v-7.2h2.42l.36-2.8H13.5V9.2c0-.81.22-1.36 1.38-1.36h1.48V5.35c-.26-.03-1.14-.11-2.16-.11-2.14 0-3.6 1.3-3.6 3.7V11H8.2v2.8h2.4V21h2.9Z" />
-    </svg>
-  );
-}
-
-function InstagramIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true" className={className}>
-      <rect x="3.5" y="3.5" width="17" height="17" rx="4.5" />
-      <circle cx="12" cy="12" r="3.8" />
-      <circle cx="17" cy="7" r="1" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-function XIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
-      <path d="M17.2 4h2.6l-5.7 6.5L20.8 20h-5.3l-4.1-5.4L6.6 20H4l6.1-7L3.6 4H9l3.7 4.9L17.2 4Zm-.9 14.4h1.4L7.9 5.5H6.4l9.9 12.9Z" />
-    </svg>
-  );
-}
-
-function LinkedInIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
-      <path d="M6.9 8.6H4V20h2.9V8.6ZM5.4 7.3a1.7 1.7 0 1 0 0-3.4 1.7 1.7 0 0 0 0 3.4ZM10 20h2.9v-5.7c0-.3 0-.6.1-.8.3-.6.9-1.2 1.9-1.2 1.3 0 1.9.9 1.9 2.3V20h2.9v-5.8c0-3-1.6-4.4-3.7-4.4-1.7 0-2.5 1-2.9 1.6h-.1V8.6H10c0 .8 0 11.4 0 11.4Z" />
-    </svg>
-  );
-}
-
-/** Brand icons are hand-drawn SVGs — lucide ships no brand marks. */
-const SOCIAL_ICONS: Record<
-  string,
-  (props: { className?: string }) => React.JSX.Element
-> = {
-  facebook: FacebookIcon,
-  instagram: InstagramIcon,
-  x: XIcon,
-  twitter: XIcon,
-  linkedin: LinkedInIcon,
-};
+/** Labels that map to a real brand logo via the bundled simple-icons set. */
+const BRAND_LABELS = new Set([
+  "facebook",
+  "instagram",
+  "x",
+  "twitter",
+  "linkedin",
+  "youtube",
+  "tiktok",
+  "whatsapp",
+  "telegram",
+  "snapchat",
+  "pinterest",
+  "reddit",
+  "discord",
+  "spotify",
+  "threads",
+  "bluesky",
+  "mastodon",
+  "signal",
+]);
 
 export async function Footer() {
   const site = (await getContent()).site;
@@ -80,11 +56,12 @@ export async function Footer() {
                 const legacy = social as { platform?: string; url?: string };
                 const label = social.label ?? legacy.platform ?? "Link";
                 const href = social.href ?? legacy.url ?? "#";
-                // Lucide picker choice wins; otherwise fall back to the
-                // hand-drawn brand SVG matching the label, then a globe.
-                const BrandIcon =
-                  SOCIAL_ICONS[label.trim().toLowerCase()] ?? Globe;
-                const Icon = iconByName(social.icon) ?? BrandIcon;
+                // Picked icon wins; known brand labels fall back to their
+                // simple-icons logo; anything else gets a globe.
+                const slug = label.trim().toLowerCase();
+                const iconName =
+                  social.icon ??
+                  (BRAND_LABELS.has(slug) ? `brand:${slug}` : "");
                 return (
                   <a
                     key={`${label}-${index}`}
@@ -92,7 +69,11 @@ export async function Footer() {
                     aria-label={label}
                     className="flex size-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition-all duration-300 hover:border-white/30 hover:bg-white/10 hover:text-white"
                   >
-                    <Icon className="size-4" />
+                    <CmsIcon
+                      name={iconName}
+                      fallback={Globe}
+                      className="size-4"
+                    />
                   </a>
                 );
               })}
