@@ -3,7 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import {
+  CalendarCheck,
   CalendarDays,
+  CheckCircle2,
+  CircleSlash,
   Clock,
   Eye,
   Loader2,
@@ -223,16 +226,19 @@ export function AppointmentsClient({ rows }: { rows: AppointmentRow[] }) {
                       { label: "View details", icon: Eye, onSelect: () => setViewing(row) },
                       {
                         label: "Mark confirmed",
+                        icon: CalendarCheck,
                         disabled: row.status === "confirmed",
                         onSelect: () => changeStatus(row, "confirmed"),
                       },
                       {
                         label: "Mark completed",
+                        icon: CheckCircle2,
                         disabled: row.status === "completed",
                         onSelect: () => changeStatus(row, "completed"),
                       },
                       {
                         label: "Cancel request",
+                        icon: CircleSlash,
                         disabled: row.status === "cancelled",
                         onSelect: () => changeStatus(row, "cancelled"),
                       },
