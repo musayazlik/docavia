@@ -94,7 +94,7 @@ function NavList({
 
         return (
           <div key={category}>
-            <p className="px-4 text-[0.6875rem] font-bold tracking-[0.14em] text-white/35 uppercase">
+            <p className="px-4 text-[0.6875rem] font-bold tracking-[0.14em] text-muted uppercase">
               {CATEGORY_LABELS[category]}
             </p>
             <ul className="mt-3 space-y-1">
@@ -112,16 +112,16 @@ function NavList({
                       className={cn(
                         "group flex items-center gap-3 rounded-xl px-4 py-2.5 text-[0.9375rem] font-medium transition-all duration-200",
                         active
-                          ? "bg-white/10 text-white"
-                          : "text-white/60 hover:bg-white/[0.06] hover:text-white"
+                          ? "bg-primary-light text-primary-dark"
+                          : "text-foreground/70 hover:bg-secondary hover:text-foreground"
                       )}
                     >
                       <Icon
                         className={cn(
                           "size-[1.1rem] shrink-0 transition-colors duration-200",
                           active
-                            ? "text-primary-light"
-                            : "text-white/40 group-hover:text-primary-light"
+                            ? "text-primary"
+                            : "text-muted group-hover:text-primary"
                         )}
                         aria-hidden="true"
                       />
@@ -143,16 +143,16 @@ function NavList({
                       className={cn(
                         "group flex items-center gap-3 rounded-xl px-4 py-2.5 text-[0.9375rem] font-medium transition-all duration-200",
                         active
-                          ? "bg-white/10 text-white"
-                          : "text-white/60 hover:bg-white/[0.06] hover:text-white"
+                          ? "bg-primary-light text-primary-dark"
+                          : "text-foreground/70 hover:bg-secondary hover:text-foreground"
                       )}
                     >
                       <Icon
                         className={cn(
                           "size-[1.1rem] shrink-0 transition-colors duration-200",
                           active
-                            ? "text-primary-light"
-                            : "text-white/40 group-hover:text-primary-light"
+                            ? "text-primary"
+                            : "text-muted group-hover:text-primary"
                         )}
                         aria-hidden="true"
                       />
@@ -171,16 +171,16 @@ function NavList({
 
 function BrandMark() {
   return (
-    <div className="relative flex items-center px-7 pt-8 pb-7">
+    <div className="relative flex items-center border-b border-border px-7 pt-7 pb-6">
       <Link href="/admin" aria-label="Docavia admin dashboard">
-        <Logo inverted />
+        <Logo />
       </Link>
     </div>
   );
 }
 
 /**
- * Admin shell: fixed deep-pine sidebar, fixed top header, fixed footer —
+ * Admin shell: fixed light sidebar, fixed top header, fixed footer —
  * everything between scrolls in <main>.
  */
 export function AdminShell({
@@ -230,19 +230,18 @@ export function AdminShell({
   return (
     <div className="min-h-dvh bg-background">
       {/* Desktop sidebar — fixed, owns its own scroll */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[17.5rem] flex-col bg-pine-deep lg:flex">
-        <div className="bg-dots-light pointer-events-none absolute inset-0 opacity-[0.35] [mask-image:radial-gradient(120%_60%_at_50%_0%,black,transparent)]" />
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[17.5rem] flex-col border-r border-border bg-white lg:flex">
         <div className="relative">
           <BrandMark />
         </div>
         <div className="relative flex-1 overflow-y-auto px-3 pb-6">
           <NavList pathname={pathname} />
         </div>
-        <div className="relative border-t border-white/10 px-7 py-5">
+        <div className="relative border-t border-border px-7 py-5">
           <Link
             href="/"
             target="_blank"
-            className="flex items-center gap-2 text-sm font-medium text-white/55 transition-colors duration-200 hover:text-white"
+            className="flex items-center gap-2 text-sm font-medium text-muted transition-colors duration-200 hover:text-primary"
           >
             View Site
             <ArrowUpRight className="size-3.5" aria-hidden="true" />
@@ -257,16 +256,16 @@ export function AdminShell({
             type="button"
             aria-label="Close admin menu"
             onClick={() => setDrawerOpen(false)}
-            className="absolute inset-0 bg-pine-deep/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-pine-deep/40 backdrop-blur-sm"
           />
-          <aside className="absolute inset-y-0 left-0 flex w-[19rem] max-w-[85vw] flex-col bg-pine-deep shadow-soft">
+          <aside className="absolute inset-y-0 left-0 flex w-[19rem] max-w-[85vw] flex-col bg-white shadow-soft">
             <div className="flex items-center justify-between pr-6">
               <BrandMark />
               <button
                 type="button"
                 onClick={() => setDrawerOpen(false)}
                 aria-label="Close admin menu"
-                className="flex size-10 items-center justify-center rounded-lg text-white/60 hover:bg-white/10 hover:text-white"
+                className="flex size-10 items-center justify-center rounded-lg text-muted hover:bg-secondary hover:text-foreground"
               >
                 <X className="size-5" aria-hidden="true" />
               </button>
