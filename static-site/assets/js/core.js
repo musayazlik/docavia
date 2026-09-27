@@ -761,6 +761,40 @@ window.DOCAVIA = window.DOCAVIA || {};
     close();
   };
 
+  /* ------------------------------ Page chrome ----------------------------- */
+  /* The navbar and footer are plain markup in every HTML file. This only wires
+     up their behaviour: the scrolled header state and the mobile menu. */
+
+  D.initHeader = function () {
+    var header = D.$("[data-header]");
+    if (header) {
+      var onScroll = function () {
+        header.classList.toggle("is-scrolled", window.scrollY > 24);
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+    }
+
+    var openBtn = D.$("[data-menu-open]");
+    var menu = D.$("#mobile-menu");
+    if (!openBtn || !menu) return;
+
+    function setOpen(open) {
+      menu.hidden = !open;
+      openBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      document.body.classList.toggle("is-locked", open);
+    }
+
+    D.on(openBtn, "click", function () { setOpen(true); });
+    D.on(D.$("[data-menu-close]", menu), "click", function () { setOpen(false); });
+    D.on(document, "keydown", function (event) {
+      if (event.key === "Escape" && !menu.hidden) setOpen(false);
+    });
+    D.$$("a", menu).forEach(function (link) {
+      D.on(link, "click", function () { setOpen(false); });
+    });
+  };
+
   /* ------------------------------ Bootstrap ------------------------------- */
 
   D.init = function () {
@@ -768,7 +802,7 @@ window.DOCAVIA = window.DOCAVIA || {};
     if (D.page && D.page.mount) D.page.mount();
 
     /* 2. Chrome, then copy binding and data-driven blocks. */
-    if (D.nav && D.nav.mount) D.nav.mount();
+    D.initHeader();
     if (D.bind) D.bind(document);
     if (D.sections && D.sections.run) D.sections.run(document);
     D.paintIcons(document);
